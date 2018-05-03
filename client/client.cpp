@@ -6,6 +6,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #define PORT 8888
+
+#include "client.h"
   
 int main(int argc, char const *argv[])
 {
@@ -32,11 +34,18 @@ int main(int argc, char const *argv[])
         return -1;
     }
   
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        printf("\nConnection Failed \n");
-        return -1;
-    }
+		bool isConnected = false;
+		while (!isConnected)
+		{
+			if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+			{
+					printf("\nConnection Failed \n");
+					sleep(1);
+			}
+			else
+				isConnected = true;
+		}
+
     send(sock , hello , strlen(hello) , 0 );
     printf("Hello message sent\n");
     valread = read( sock , buffer, 1024);

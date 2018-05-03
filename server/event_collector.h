@@ -10,6 +10,9 @@ class CEventCollector : public IServerMsgListener
 	void StartCapture();
 	void StopCapture();
 
+	//obtain data for drawing
+	void* GetData() const {};
+
 	//IServerMsgListener
 	virtual void OnMsgReceived(void* msg) override;
 
