@@ -1,0 +1,27 @@
+[] General Sketch
+[] Plan
+	Test program											1d
+		Single thread
+		Mulltiple threads, look at c++11
+
+	Linked library
+		API
+		serialize, protobuf???
+		Write data to specific place
+		Share pointer with profiler
+		Interprocess lock
+		Multiple instances
+
+	Profiler
+		Interprocess lock
+		ReadProcessMemory
+		deserialize
+		capture to RAM
+		store on disk
+		imgui UI
+			timelaps view
+		measure performance, estimate the size of copiable data
+	
+	Windows port
+[] Breakdown
+
