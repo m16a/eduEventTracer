@@ -13,3 +13,7 @@ set (CMAKE_CXX_STANDARD 11)
 file(GLOB SOURCES "*.cpp")
 
 add_executable(sv_run ${SOURCES})
+
+find_library(PROTOCOL_LINK_LIB protocol ${CMAKE_SOURCE_DIR}/protocol/)
+include_directories(${CMAKE_SOURCE_DIR}/protocol/include/)
+target_link_libraries(sv_run ${PROTOCOL_LINK_LIB})

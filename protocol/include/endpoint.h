@@ -2,6 +2,7 @@
 
 #include "protocol.h"
 #include "socket.h"
+#include "dispatcher.h"
 #include <memory>
 
 
@@ -19,6 +20,7 @@ class CEndPoint : public ISocketListener
 	template<class argType>
 	void Bind(EMsgType type, bool(*callback)(argType))
 	{
+		m_dispatcher.Bind(type, callback);
 	}
 
 	void Connect(){};
@@ -30,9 +32,7 @@ class CEndPoint : public ISocketListener
 
 	private:
 	
-
 	std::unique_ptr<ISocket> pSock;	
-	std::unique_ptr<CDispatcher> pDispatcher;	
-
+	CDispatcher m_dispatcher;	
 
 };
