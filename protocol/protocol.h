@@ -4,7 +4,40 @@ enum EMsgType
 {
 	StartCapture,
 	StopCapture,
-	Event
+	Event,
+	MsgCnt
+};
+
+
+struct Ser
+{
+	void* buff { nullptr };
+	bool isRead { false };
+	//size_t size { 0 };
+};
+
+
+bool Serialize(Ser& ser);
+
+
+
+/*
+
+bool OnMessage(socket& s)
+{
+	
+	type t = s.readType();
+
+	hndlr = hndlrs[t];
+
+
+	T args;
+
+	deserialize(s.data(), args);
+
+	listener->callback(t, args);
+
+
 }
 
 
@@ -14,16 +47,34 @@ struct IMsg
 	size_t size;
 	void* buffer;
 }
+*/
 
 
 
 /*
-msgProvider->postEvent(timestamp, structA, structB, ...)
+ 
+User side
+
+{
+	msgProvider->postEvent(MsgType type, agrs, ...);
+}
+
+
+
+onEvent(MsgType type, agrs, ...)
+{
+
+}
+
+
+---------------------------------------------------------------------------
+msgProvider::postEvent(timestamp, structA, structB, ...)
 {
 	void*	buff = malloc();
-	f(buff, timestamp, structA, structB)
+	size_t sz = 0;
+	Serialize(buff, sz, type, timestamp, structA, structB)
 
-	send_to_sock(buff)
+	send_to_sock(buff, sz);
 
 
 	free(buff);
@@ -31,12 +82,10 @@ msgProvider->postEvent(timestamp, structA, structB, ...)
 }
 
 
-Serialize(T ser, agrs)
-{
 
 
-}
-
-
-onEvent(timestamp, structA, structB, ...)
 */
+
+
+
+

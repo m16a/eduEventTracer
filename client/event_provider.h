@@ -10,6 +10,7 @@ public:
 
 	void PostEvent(void*);
 
+
 private:
 	IClient& m_cl;
 };

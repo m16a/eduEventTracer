@@ -1,7 +1,8 @@
 #include "client.h"
-#include "event_publisher.h"
+#include "event_provider.h"
 
 
+/*
 int main(int argc, char const* argv[])
 {
 	CClient cl;
@@ -13,3 +14,4 @@ int main(int argc, char const* argv[])
 
 	return 0;
 }
+*/
