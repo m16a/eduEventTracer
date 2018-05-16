@@ -28,7 +28,7 @@ class CEndPoint : public ISocketListener
 	void Poll(){};
 
 	private:
-	virtual void OnMsg(void* buff) override{};
+	virtual void OnMsg(TBuff& buff) override{};
 
 	private:
 	
