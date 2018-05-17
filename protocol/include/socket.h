@@ -1,12 +1,10 @@
 #pragma once
 
+#include "defines.h"
 #include <netinet/in.h>
-#include <vector>
 #include <sys/select.h>
 
 constexpr size_t kMaxClients = 1;
-
-using TBuff = std::vector<char>;
 
 struct ISocketListener
 {

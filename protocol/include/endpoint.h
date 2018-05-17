@@ -6,15 +6,19 @@
 #include <memory>
 
 
-struct CDispatcher;
-
 class CEndPoint : public ISocketListener
 {
 	public:
+	CEndPoint();
+	~CEndPoint();
 	template <class TArg>
 	void PostEvent(EMsgType t, TArg& data)
 	{
-
+		/*
+		 TBuff b;
+		 b = data.serialize();
+		 p_Sock->Send(b);
+		 */	
 	}
 
 	template<class argType>
@@ -23,16 +27,18 @@ class CEndPoint : public ISocketListener
 		m_dispatcher.Bind(type, callback);
 	}
 
-	void Connect(){};
-	void Listen(){};
-	void Poll(){};
+	bool ConnectSync(const char* ip, int port);
+
+	void Listen();
+	void Update();
 
 	private:
-	virtual void OnMsg(TBuff& buff) override{};
+	virtual void OnMsg(TBuff& buff) override;
+	virtual void OnNewListener() override {};
 
 	private:
 	
-	std::unique_ptr<ISocket> pSock;	
+	std::unique_ptr<ISocket> m_pSock;	
 	CDispatcher m_dispatcher;	
 
 };
