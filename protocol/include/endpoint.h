@@ -3,6 +3,7 @@
 #include "protocol.h"
 #include "socket.h"
 #include "dispatcher.h"
+#include "ser.h"
 #include <memory>
 
 
@@ -14,11 +15,10 @@ class CEndPoint : public ISocketListener
 	template <class TArg>
 	void PostEvent(EMsgType t, TArg& data)
 	{
-		/*
-		 TBuff b;
-		 b = data.serialize();
-		 p_Sock->Send(b);
-		 */	
+		Ser ser;	
+		ser.isReading = false;
+		data.Serialize(ser);
+		m_pSock->Send(ser.buffer);
 	}
 
 	template<class argType>

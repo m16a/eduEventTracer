@@ -1,19 +1,13 @@
 #pragma once
 
+#include "ser.h"
+
 enum EMsgType
 {
 	StartCapture,
 	StopCapture,
 	Event,
 	MsgCnt
-};
-
-
-struct Ser
-{
-	void* buff { nullptr };
-	bool isRead { false };
-	//size_t size { 0 };
 };
 
 

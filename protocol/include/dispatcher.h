@@ -2,6 +2,7 @@
 
 #include "protocol.h"
 #include "defines.h"
+#include "ser.h"
 #include <functional> 
 
 
@@ -15,13 +16,16 @@ public:
 		argType a;
 		auto lambda = [callback](TBuff& buffer)
 		{
+			Ser ser;
+			ser.buffer = buffer;//TODO:michaelsh:extra copy
+			ser.isReading = true;
 			argType strct;
-			strct.Serialize(buffer);
+			strct.Serialize(ser);
 
 			return callback(strct);
 		};
 			
-		m_hndlrs[type] = 	lambda;
+		m_hndlrs[type] = lambda;
 	}
 
 	void OnMsg(EMsgType type, TBuff& buffer);
