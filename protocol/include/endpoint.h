@@ -18,6 +18,7 @@ class CEndPoint : public ISocketListener
 		Ser ser;	
 		ser.isReading = false;
 		data.Serialize(ser);
+		ser.buffer.insert(ser.buffer.begin(), static_cast<char>(t));//TODO:avoid mem shiftingb
 		m_pSock->Send(ser.buffer);
 	}
 

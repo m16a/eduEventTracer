@@ -35,7 +35,7 @@ class CLinuxSocket : public ISocket
 	virtual bool ConnectSync(const char* ip, int port) override;
 	virtual void Listen() override;
 	virtual void Update() override;
-	virtual void Send(TBuff& buff) override {};
+	virtual void Send(TBuff& buff) override;
 
 	private:
 	int m_sock { 0 };

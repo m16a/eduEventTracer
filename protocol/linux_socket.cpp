@@ -72,7 +72,7 @@ void CLinuxSocket::Listen()
 			exit(1);  
 	}  
 
-	//TODO: what it is???
+	//TODO: what is it???
 	m_address.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(m_sock, (struct sockaddr*)&m_address, sizeof(m_address)) < 0)
@@ -205,3 +205,21 @@ void CLinuxSocket::Update()
 	}  
 
 }
+
+void CLinuxSocket::Send(TBuff& buff)
+{
+	/*
+	if (m_client_sockets[0])
+	{
+
+		if( send(m_client_sockets[0], message, strlen(message), 0) != strlen(message) )  
+		{  
+				printf("Greating m");  
+		}  
+	}else
+	{
+		printf("Try send to unconected socket");
+	}
+	*/
+}
+

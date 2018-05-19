@@ -29,6 +29,8 @@ void CEndPoint::Update()
 void CEndPoint::OnMsg(TBuff& buff)
 {
 	EMsgType type;
+	type = static_cast<EMsgType>(buff[0]);
+	buff.erase(buff.begin());//TODO: memory shifting
 	m_dispatcher.OnMsg(type, buff);
 }
 
