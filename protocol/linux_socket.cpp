@@ -9,6 +9,21 @@
 
 #define PORT 8888
 
+static bool IsListeningSocket(int sock)
+{
+	bool res = false;
+	int val;
+	socklen_t len = sizeof(val);
+	if (getsockopt(sock, SOL_SOCKET, SO_ACCEPTCONN, &val, &len) == -1){
+			printf("fd %d is not a socket\n", sock);
+	}
+	else if (val){
+			res = true;
+	}
+
+	return res;
+}
+
 CLinuxSocket::CLinuxSocket()
 {
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -107,7 +122,7 @@ void CLinuxSocket::Update()
 					
 			//if valid socket descriptor then add to read list 
 			if(sd > 0)  
-					FD_SET( sd , &m_readfds);  
+					FD_SET(sd , &m_readfds);  
 					
 			//highest file descriptor number, need it for the select function 
 			if(sd > max_sd)  
@@ -206,8 +221,19 @@ void CLinuxSocket::Update()
 
 }
 
+
 void CLinuxSocket::Send(TBuff& buff)
 {
+	/*
+		if main sock is listen
+		{
+		}
+			if connected socket
+			`send to socket
+		else
+			send to main socket
+	 */
+
 	/*
 	if (m_client_sockets[0])
 	{
