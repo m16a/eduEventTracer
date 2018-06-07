@@ -1,8 +1,8 @@
 #pragma once
 
-#include "protocol.h"
+#include "endpoint.h"
 
-class CClient
+class CClient : public CEndPoint
 {
 };
 

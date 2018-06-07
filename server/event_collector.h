@@ -2,10 +2,10 @@
 
 #include "server.h"
 
-class CEventCollector : public IServerMsgListener
+class CEventCollector
 {
 	public:
-	CEventCollector(IServer& s);
+	CEventCollector();
 	~CEventCollector();
 	void StartCapture();
 	void StopCapture();
@@ -13,9 +13,6 @@ class CEventCollector : public IServerMsgListener
 	//obtain data for drawing
 	void* GetData() const {};
 
-	//IServerMsgListener
-	virtual void OnMsgReceived(void* msg) override;
-
 	private:
-	IServer& m_sv;	
+	CServer m_sv;	
 };

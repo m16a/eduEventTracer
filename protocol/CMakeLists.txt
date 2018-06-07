@@ -9,5 +9,5 @@ include_directories(include)
 
 file(GLOB SOURCES "*.cpp")
 
-add_library(protocol ${SOURCES})
+add_library(Protocol ${SOURCES})
 
