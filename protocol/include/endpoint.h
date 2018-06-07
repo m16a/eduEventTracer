@@ -18,7 +18,7 @@ class CEndPoint : public ISocketListener
 		Ser ser;	
 		ser.isReading = false;
 		data.Serialize(ser);
-		ser.buffer.insert(ser.buffer.begin(), static_cast<char>(t));//TODO:avoid mem shiftingb
+		ser.buffer.insert(ser.buffer.begin(), static_cast<char>(t));//TODO:avoid mem shifting
 		m_pSock->Send(ser.buffer);
 	}
 
@@ -41,5 +41,4 @@ class CEndPoint : public ISocketListener
 	
 	std::unique_ptr<ISocket> m_pSock;	
 	CDispatcher m_dispatcher;	
-
 };

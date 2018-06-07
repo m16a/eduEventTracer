@@ -14,10 +14,12 @@ static bool IsListeningSocket(int sock)
 	bool res = false;
 	int val;
 	socklen_t len = sizeof(val);
-	if (getsockopt(sock, SOL_SOCKET, SO_ACCEPTCONN, &val, &len) == -1){
+	if (getsockopt(sock, SOL_SOCKET, SO_ACCEPTCONN, &val, &len) == -1)
+	{
 			printf("fd %d is not a socket\n", sock);
 	}
-	else if (val){
+	else if (val)
+	{
 			res = true;
 	}
 
@@ -105,9 +107,98 @@ void CLinuxSocket::Listen()
 
 void CLinuxSocket::Update()
 {
+	if (IsListeningSocket(m_sock))
+	{
+		UpdateServer();
+	}
+	else
+	{
+		UpdateClient();
+	}
+
+}
+
+
+void CLinuxSocket::Send(TBuff buff)
+{
+	//TODO:avoid copy
+	m_outMsgs.push_back(buff);
+}
+
+//poll socket
+void CLinuxSocket::UpdateClient()
+{
 	int max_sd = 0;
 	//clear the socket set 
 	FD_ZERO(&m_readfds);  
+	FD_ZERO(&m_writefds);  
+
+	//add master socket to set 
+	FD_SET(m_sock, &m_readfds);  
+	max_sd = m_sock;  
+			
+	int activity = select(max_sd + 1, &m_readfds, &m_writefds, NULL , NULL);  
+
+	if ((activity < 0) && (errno!=EINTR))  
+	{  
+			printf("\n Select error \n");  
+	}  
+			
+  struct sockaddr_in address;  
+	int addrlen = -1;
+
+	if (FD_ISSET(m_sock, &m_readfds))  
+	{  
+		size_t valread = 0;
+		TBuff buffer;
+		if ((valread = read(m_sock, buffer.data(), 1024)) == 0)  
+		{  
+				//Somebody disconnected , get his details and print 
+				getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
+				printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+						
+				//Close the socket and mark as 0 in list for reuse 
+				close(m_sock);  
+		}  
+		else
+		{  
+				buffer.resize(valread);
+
+				if (m_listener)
+					m_listener->OnMsg(buffer);
+		}  
+	}  
+			
+	//else its some IO operation on some other socket
+	if (FD_ISSET(m_sock, &m_writefds))
+	{
+		while (!m_outMsgs.empty())
+		{
+			TBuff& msg = m_outMsgs.front();
+
+			ssize_t size = send(m_sock, msg.data(), msg.size(), 0);
+
+			if (size <= 0)
+			{
+				getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
+				printf("Can't send msg to  ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+			}
+			else
+			{
+				m_outMsgs.pop_front();
+			}
+
+		}
+	}
+}
+
+//check new connections + poll socket + send if can
+void CLinuxSocket::UpdateServer()
+{
+	int max_sd = 0;
+	//clear the socket set 
+	FD_ZERO(&m_readfds);  
+	FD_ZERO(&m_writefds);  
 
 	//add master socket to set 
 	FD_SET(m_sock, &m_readfds);  
@@ -122,7 +213,10 @@ void CLinuxSocket::Update()
 					
 			//if valid socket descriptor then add to read list 
 			if(sd > 0)  
+			{
 					FD_SET(sd , &m_readfds);  
+					FD_SET(sd , &m_writefds);  
+			}
 					
 			//highest file descriptor number, need it for the select function 
 			if(sd > max_sd)  
@@ -131,7 +225,7 @@ void CLinuxSocket::Update()
 
 	//wait for an activity on one of the sockets , timeout is NULL , 
 	//so wait indefinitely 
-	int activity = select( max_sd + 1 , &m_readfds , NULL , NULL , NULL);  
+	int activity = select(max_sd + 1, &m_readfds, &m_writefds, NULL , NULL);  
 
 	if ((activity < 0) && (errno!=EINTR))  
 	{  
@@ -188,18 +282,18 @@ void CLinuxSocket::Update()
 	{  
 			sd = m_client_sockets[i];  
 					
-			if (FD_ISSET( sd , &m_readfds))  
+			if (FD_ISSET(sd ,&m_readfds))  
 			{  
 					//Check if it was for closing , and also read the 
 					//incoming message 
 					TBuff buffer;
 					buffer.resize(1024); //1K
 					size_t valread = 0;
-					if ((valread = read( sd , buffer.data(), 1024)) == 0)  
+					if ((valread = read(sd , buffer.data(), 1024)) == 0)  
 					{  
 							//Somebody disconnected , get his details and print 
 							getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);  
-							printf("Host disconnected , ip %s , port %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+							printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
 									
 							//Close the socket and mark as 0 in list for reuse 
 							close( sd );  
@@ -217,35 +311,26 @@ void CLinuxSocket::Update()
 							//send(sd , buffer , strlen(buffer) , 0 );  
 					}  
 			}  
+
+			if (FD_ISSET(sd, &m_writefds))
+			{
+				while (!m_outMsgs.empty())
+				{
+					TBuff& msg = m_outMsgs.front();
+
+					ssize_t size = send(sd, msg.data(), msg.size(), 0);
+
+					if (size <= 0)
+					{
+						getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);  
+						printf("Can't send msg to  ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+					}
+					else
+					{
+						m_outMsgs.pop_front();
+					}
+
+				}
+			}
 	}  
-
 }
-
-
-void CLinuxSocket::Send(TBuff& buff)
-{
-	/*
-		if main sock is listen
-		{
-		}
-			if connected socket
-			`send to socket
-		else
-			send to main socket
-	 */
-
-	/*
-	if (m_client_sockets[0])
-	{
-
-		if( send(m_client_sockets[0], message, strlen(message), 0) != strlen(message) )  
-		{  
-				printf("Greating m");  
-		}  
-	}else
-	{
-		printf("Try send to unconected socket");
-	}
-	*/
-}
-
