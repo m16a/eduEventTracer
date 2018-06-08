@@ -9,3 +9,5 @@ compile_commands.json
 CTestTestfile.cmake
 *.swp
 *.a
+server/sv_run
+client/cl_run

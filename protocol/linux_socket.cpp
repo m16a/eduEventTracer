@@ -152,7 +152,7 @@ void CLinuxSocket::UpdateClient()
 	}  
 			
   struct sockaddr_in address;  
-	int addrlen = -1;
+	int addrlen = sizeof(address);
 
 	TBuff buffer;
 	if (FD_ISSET(m_sock, &m_readfds))  
@@ -249,7 +249,7 @@ void CLinuxSocket::UpdateServer()
 	//then its an incoming connection 
 	int new_socket = 0;
   struct sockaddr_in address;  
-	int addrlen = -1;
+	int addrlen = sizeof(address);
 	if (FD_ISSET(m_sock, &m_readfds))  
 	{  
 			if ((new_socket = accept(m_sock, 
