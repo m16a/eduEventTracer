@@ -20,3 +20,7 @@ void CEventCollector::StopCapture()
 
 }
 
+void CEventCollector::Update()
+{
+	m_sv.Update();
+}

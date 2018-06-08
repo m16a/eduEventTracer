@@ -1,6 +1,6 @@
 #include "server.h"
-
-int main()
+#define SERVER_PORT 60000
+CServer::CServer() : CEndPoint(SERVER_PORT)
 {
-	return 0;
+	Listen();
 }

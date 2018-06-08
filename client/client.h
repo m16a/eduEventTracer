@@ -4,6 +4,8 @@
 
 class CClient : public CEndPoint
 {
+	public:
+	CClient();
 };
 
 

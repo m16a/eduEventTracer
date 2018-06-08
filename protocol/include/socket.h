@@ -5,7 +5,7 @@
 #include <sys/select.h>
 #include <list>
 
-constexpr size_t kMaxClients = 1;
+#define  kMaxClients 1
 
 struct ISocketListener
 {
@@ -32,7 +32,7 @@ class ISocket
 class CLinuxSocket : public ISocket
 {
 	public:
-	CLinuxSocket();
+	CLinuxSocket(int port);
 	virtual bool ConnectSync(const char* ip, int port) override;
 	virtual void Listen() override;
 	virtual void Update() override;

@@ -3,6 +3,8 @@
 
 class CServer : public CEndPoint
 {
+	public:
+	CServer();
 };
 
 

@@ -2,15 +2,28 @@
 
 #include "client.h"
 
+
 class CEventProvider
 {
+	enum class EState
+	{
+		Disconnected,
+		Idle,
+		Capturing
+	};
 public:
-	CEventProvider(IClient& c);
+	CEventProvider();
 	~CEventProvider();
 
 	void PostEvent(void*);
+	void Update();
 
 
 private:
-	IClient& m_cl;
+	void GoToState(EState s);
+
+private:
+
+	CClient m_cl;
+	EState m_state{EState::Disconnected};
 };

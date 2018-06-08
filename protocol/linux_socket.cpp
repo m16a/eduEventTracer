@@ -2,12 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <string.h>
 
 #include <sys/socket.h>
 #include <errno.h>
 #include <unistd.h>   //close 
-
-#define PORT 8888
 
 static bool IsListeningSocket(int sock)
 {
@@ -26,18 +25,23 @@ static bool IsListeningSocket(int sock)
 	return res;
 }
 
-CLinuxSocket::CLinuxSocket()
+CLinuxSocket::CLinuxSocket(int port)
 {
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);
 
-	if (m_sock < 0)
+	if (m_sock <= 0)
 	{
-		printf("\n Socket creation error \n");
+		printf("Socket creation error \n");
 		exit(1);
 	}
+	else
+	{
+		printf("Socket was created: %d\n", m_sock);
+	}
 
+  memset(&m_address, '0', sizeof(m_address));
 	m_address.sin_family = AF_INET;
-	m_address.sin_port = htons(PORT);
+	m_address.sin_port = htons(port);
 
 	for (int i = 0; i < kMaxClients; i++)  
 	{  
@@ -47,12 +51,17 @@ CLinuxSocket::CLinuxSocket()
 
 bool CLinuxSocket::ConnectSync(const char* ip, int port)
 {
+	if (!m_sock)
+	{
+		printf("\n Socket is not created \n");
+		exit(1);
+	}
+
 	if (!ip)
 	{
 		printf("\n Provide IP address to connect \n");
 		exit(1);
 	}
-
 
 	if (inet_pton(AF_INET, ip, &m_address.sin_addr) <= 0)
 	{
@@ -60,14 +69,12 @@ bool CLinuxSocket::ConnectSync(const char* ip, int port)
 		exit(1);
 	}
 
-	if (!m_sock)
+	int res = connect(m_sock, (struct sockaddr*)&m_address, sizeof(m_address));
+	if (res < 0)
 	{
-		printf("\n Socket is not created \n");
-		exit(1);
+		printf("\n Socket connection err %d\n", errno);
 	}
-
-
-	return connect(m_sock, (struct sockaddr*)&m_address, sizeof(m_address)) >= 0;
+	return res >= 0; 
 }
 
 
@@ -82,8 +89,7 @@ void CLinuxSocket::Listen()
 	//set master socket to allow multiple connections , 
 	//this is just a good habit, it will work without this 
 	int opt = 1;
-	if( setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, 
-				sizeof(opt)) < 0 )  
+	if(setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0)  
 	{  
 			printf("\n Setsockopt error \n");  
 			exit(1);  
@@ -94,7 +100,7 @@ void CLinuxSocket::Listen()
 
 	if (bind(m_sock, (struct sockaddr*)&m_address, sizeof(m_address)) < 0)
 	{
-		printf("\n Bind failed \n");
+		printf("Bind err: %d \n", errno);
 		exit(1);
 	}
 
@@ -103,6 +109,7 @@ void CLinuxSocket::Listen()
 		printf("\n Listen failed \n");
 		exit(1);
 	}
+	printf("Start listening\n");
 }
 
 void CLinuxSocket::Update()
@@ -137,7 +144,7 @@ void CLinuxSocket::UpdateClient()
 	FD_SET(m_sock, &m_readfds);  
 	max_sd = m_sock;  
 			
-	int activity = select(max_sd + 1, &m_readfds, &m_writefds, NULL , NULL);  
+	int activity = select(max_sd+1, &m_readfds, &m_writefds, NULL , NULL);  
 
 	if ((activity < 0) && (errno!=EINTR))  
 	{  
@@ -147,26 +154,32 @@ void CLinuxSocket::UpdateClient()
   struct sockaddr_in address;  
 	int addrlen = -1;
 
+	TBuff buffer;
 	if (FD_ISSET(m_sock, &m_readfds))  
 	{  
-		size_t valread = 0;
-		TBuff buffer;
+		ssize_t valread = 0;
 		if ((valread = read(m_sock, buffer.data(), 1024)) == 0)  
 		{  
+				/*
 				//Somebody disconnected , get his details and print 
 				getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
 				printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
 						
 				//Close the socket and mark as 0 in list for reuse 
 				close(m_sock);  
+				*/
 		}  
-		else
+		else if (valread > 0)
 		{  
 				buffer.resize(valread);
 
 				if (m_listener)
 					m_listener->OnMsg(buffer);
 		}  
+		else
+		{
+			printf("read error: %d valread: %d\n", errno, valread);
+		}
 	}  
 			
 	//else its some IO operation on some other socket
@@ -225,7 +238,7 @@ void CLinuxSocket::UpdateServer()
 
 	//wait for an activity on one of the sockets , timeout is NULL , 
 	//so wait indefinitely 
-	int activity = select(max_sd + 1, &m_readfds, &m_writefds, NULL , NULL);  
+	int activity = select(max_sd+1, &m_readfds, &m_writefds, NULL , NULL);  
 
 	if ((activity < 0) && (errno!=EINTR))  
 	{  
@@ -242,8 +255,8 @@ void CLinuxSocket::UpdateServer()
 			if ((new_socket = accept(m_sock, 
 							(struct sockaddr *)&address, (socklen_t*)&addrlen))<0)  
 			{  
-					printf("\n Accept error\n");  
-					exit(1);  
+					printf("Accept error:%d\n", errno);  
+					//exit(1);  
 			}  
 			
 			//inform user of socket number - used in send and receive commands 

@@ -9,6 +9,7 @@ class CEventCollector
 	~CEventCollector();
 	void StartCapture();
 	void StopCapture();
+	void Update();
 
 	//obtain data for drawing
 	void* GetData() const {};

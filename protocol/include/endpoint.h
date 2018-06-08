@@ -10,7 +10,7 @@
 class CEndPoint : public ISocketListener
 {
 	public:
-	CEndPoint();
+	CEndPoint(int port);
 	~CEndPoint();
 	template <class TArg>
 	void PostEvent(EMsgType t, TArg& data)
@@ -30,6 +30,7 @@ class CEndPoint : public ISocketListener
 
 	bool ConnectSync(const char* ip, int port);
 
+	//TODO:set port
 	void Listen();
 	void Update();
 

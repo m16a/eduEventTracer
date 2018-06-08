@@ -1,17 +1,16 @@
-#include "client.h"
-//#include "event_provider.h"
+#include "event_provider.h"
 
 
-/*
+
 int main(int argc, char const* argv[])
 {
-	CClient cl;
+	CEventProvider ep;
 	
-	CEventProvider evntProvider(cl);
-
-	
+	while (true)	
+	{
+		ep.Update();	
+	}
 
 
 	return 0;
 }
-*/
