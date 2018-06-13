@@ -10,6 +10,10 @@ enum EMsgType
 	MsgCnt
 };
 
+struct SEmptyArg
+{
+	void Serialize(Ser& ser){}
+};
 
 bool Serialize(Ser& ser);
 

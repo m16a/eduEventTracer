@@ -2,18 +2,29 @@
 
 #include "server.h"
 
-class CEventCollector
+class CEventCollector : public CServer
 {
+	enum class EState
+	{
+		Listening,
+		ListenerExist,
+		Capturing
+	};
+
 	public:
 	CEventCollector();
 	~CEventCollector();
 	void StartCapture();
 	void StopCapture();
-	void Update();
+	virtual void Update() override;
 
 	//obtain data for drawing
 	void* GetData() const {};
 
+	virtual void OnNewListener() override;
+
 	private:
-	CServer m_sv;	
+		void GoToState(EState s);
+	private:
+	EState m_state {EState::Listening};
 };

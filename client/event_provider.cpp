@@ -23,7 +23,7 @@ void CEventProvider::Update()
 	switch(m_state)
 	{
 		case EState::Disconnected:
-			if (m_cl.ConnectSync("127.0.0.1", 60000))
+			if (ConnectSync("127.0.0.1", 60000))
 				GoToState(EState::Idle);
 			else
 				std::cout << "Connection failed" << std::endl;
@@ -35,7 +35,7 @@ void CEventProvider::Update()
 	}
 
 	if (m_state != EState::Disconnected)
-		m_cl.Update();
+		CClient::Update();
 
 }
 
@@ -43,4 +43,9 @@ void CEventProvider::GoToState(EState s)
 {
 	m_state = s;
 	std::cout << "Entering state: " << static_cast<int>(s) << std::endl;
+}
+
+void CEventProvider::OnDisconnect()
+{
+	GoToState(EState::Disconnected);
 }

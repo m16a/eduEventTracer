@@ -11,6 +11,7 @@ struct ISocketListener
 {
 	virtual void OnMsg(TBuff& buff) = 0;
 	virtual void OnNewListener() = 0;
+	virtual void OnDisconnect() = 0;
 };
 
 class ISocket

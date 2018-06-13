@@ -135,6 +135,10 @@ void CLinuxSocket::Send(TBuff buff)
 //poll socket
 void CLinuxSocket::UpdateClient()
 {
+
+	if (!m_sock)
+		return;
+
 	int max_sd = 0;
 	//clear the socket set 
 	FD_ZERO(&m_readfds);  
@@ -148,33 +152,35 @@ void CLinuxSocket::UpdateClient()
 
 	if ((activity < 0) && (errno!=EINTR))  
 	{  
-			printf("\n Select error \n");  
+			printf("Select error:%d\n", errno);  
 	}  
 			
   struct sockaddr_in address;  
 	int addrlen = sizeof(address);
 
 	TBuff buffer;
+	buffer.resize(1024);
 	if (FD_ISSET(m_sock, &m_readfds))  
 	{  
 		ssize_t valread = 0;
-		if ((valread = read(m_sock, buffer.data(), 1024)) == 0)  
+		if ((valread = read(m_sock, buffer.data(), buffer.size())) == 0)  
 		{  
-				/*
-				//Somebody disconnected , get his details and print 
-				getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
-				printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
-						
-				//Close the socket and mark as 0 in list for reuse 
-				close(m_sock);  
-				*/
+			//Somebody disconnected , get his details and print 
+			getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
+			printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+					
+			//Close the socket and mark as 0 in list for reuse 
+			close(m_sock);  
+
+			if (m_listener)
+				m_listener->OnDisconnect();
 		}  
 		else if (valread > 0)
 		{  
-				buffer.resize(valread);
+			buffer.resize(valread);
 
-				if (m_listener)
-					m_listener->OnMsg(buffer);
+			if (m_listener)
+				m_listener->OnMsg(buffer);
 		}  
 		else
 		{
@@ -265,16 +271,6 @@ void CLinuxSocket::UpdateServer()
 			
 			if (m_listener)
 				m_listener->OnNewListener();
-
-			//send new connection greeting message 
-			/*
-			if( send(new_socket, message, strlen(message), 0) != strlen(message) )  
-			{  
-					printf("Greating m");  
-			}  
-					
-			puts("Welcome message sent successfully");  
-			*/
 					
 			//add new socket to array of sockets 
 			for (int i = 0; i < kMaxClients; i++)  

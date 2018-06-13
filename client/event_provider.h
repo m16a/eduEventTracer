@@ -3,7 +3,7 @@
 #include "client.h"
 
 
-class CEventProvider
+class CEventProvider : public CClient
 {
 	enum class EState
 	{
@@ -11,19 +11,19 @@ class CEventProvider
 		Idle,
 		Capturing
 	};
+
 public:
 	CEventProvider();
 	~CEventProvider();
 
 	void PostEvent(void*);
-	void Update();
+	virtual void Update() override;
 
 
 private:
 	void GoToState(EState s);
+	virtual void OnDisconnect() override;
 
 private:
-
-	CClient m_cl;
 	EState m_state{EState::Disconnected};
 };

@@ -1,5 +1,4 @@
 #include "endpoint.h"
-#include <iostream> 
 
 CEndPoint::CEndPoint(int port)
 {
