@@ -19,6 +19,7 @@ public:
 	void PostEvent(void*);
 	virtual void Update() override;
 
+	bool OnStartCapture(SEmptyArg&);
 
 private:
 	void GoToState(EState s);

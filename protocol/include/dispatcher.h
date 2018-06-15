@@ -10,11 +10,10 @@ class CDispatcher
 {
 	using THndlr = std::function<bool(TBuff&)>;
 public:
-	template<class argType>
-	void Bind(EMsgType type, bool(*callback)(argType))
+	template<class TCaller, class argType>
+	void Bind(EMsgType type, TCaller* ownr, bool (TCaller::*callback)(argType&))
 	{
-		argType a;
-		auto lambda = [callback](TBuff& buffer)
+		auto lambda = [ownr, callback](TBuff& buffer)
 		{
 			Ser ser;
 			ser.buffer = buffer;//TODO:michaelsh:extra copy
@@ -22,7 +21,7 @@ public:
 			argType strct;
 			strct.Serialize(ser);
 
-			return callback(strct);
+			return (ownr->*callback)(strct);
 		};
 			
 		m_hndlrs[type] = lambda;

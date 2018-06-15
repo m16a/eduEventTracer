@@ -13,6 +13,7 @@ class CEndPoint : public ISocketListener
 	public:
 	CEndPoint(int port);
 	~CEndPoint();
+
 	template <class TArg>
 	void PostEvent(EMsgType t, TArg&& data)
 	{
@@ -26,10 +27,10 @@ class CEndPoint : public ISocketListener
 		m_pSock->Send(ser.buffer);
 	}
 
-	template<class argType>
-	void Bind(EMsgType type, bool(*callback)(argType))
+	template<class TCaller, class argType>
+	void Bind(EMsgType type, TCaller* ownr, bool(TCaller::*callback)(argType&))
 	{
-		m_dispatcher.Bind(type, callback);
+		m_dispatcher.Bind(type, ownr, callback);
 	}
 
 	bool ConnectSync(const char* ip, int port);
@@ -38,12 +39,12 @@ class CEndPoint : public ISocketListener
 	void Listen();
 	virtual void Update();
 
-	private:
+	protected:
 	virtual void OnMsg(TBuff& buff) override;
 	virtual void OnNewListener() override {};
 	virtual void OnDisconnect() override {};
 
-	private:
+	protected:
 	
 	std::unique_ptr<ISocket> m_pSock;	
 	CDispatcher m_dispatcher;	

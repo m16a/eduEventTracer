@@ -3,7 +3,7 @@
 
 CEventProvider::CEventProvider()
 {
-
+	CEndPoint::Bind(EMsgType::StartCapture, this, &CEventProvider::OnStartCapture);
 }
 
 CEventProvider::~CEventProvider()
@@ -48,4 +48,11 @@ void CEventProvider::GoToState(EState s)
 void CEventProvider::OnDisconnect()
 {
 	GoToState(EState::Disconnected);
+}
+
+//callbacks
+bool CEventProvider::OnStartCapture(SEmptyArg&)
+{
+	std::cout << "received msg" << std::endl;
+	return true;
 }
