@@ -173,7 +173,7 @@ void CLinuxSocket::UpdateClient()
 			close(m_sock);  
 
 			if (m_listener)
-				m_listener->OnDisconnect();
+				m_listener->OnHostDisconnect();
 		}  
 		else if (valread > 0)
 		{  
@@ -307,6 +307,9 @@ void CLinuxSocket::UpdateServer()
 							//Close the socket and mark as 0 in list for reuse 
 							close( sd );  
 							m_client_sockets[i] = 0;  
+							m_listener->OnListenerDisonnected();
+							continue;
+
 					}  
 					//Echo back the message that came in 
 					else

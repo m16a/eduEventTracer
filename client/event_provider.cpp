@@ -45,7 +45,7 @@ void CEventProvider::GoToState(EState s)
 	std::cout << "Entering state: " << static_cast<int>(s) << std::endl;
 }
 
-void CEventProvider::OnDisconnect()
+void CEventProvider::OnHostDisconnect()
 {
 	GoToState(EState::Disconnected);
 }

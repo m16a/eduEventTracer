@@ -1,6 +1,8 @@
 #include "event_collector.h"
 #include <iostream>
 
+#include <unistd.h>
+
 
 CEventCollector::CEventCollector()
 {
@@ -23,6 +25,7 @@ void CEventCollector::StopCapture()
 
 void CEventCollector::Update()
 {
+	sleep(1);
 	CServer::Update();
 
 	switch (m_state)
@@ -39,13 +42,19 @@ void CEventCollector::Update()
 
 }
 
-void CEventCollector::OnNewListener()
-{
-	GoToState(EState::ListenerExist);
-}
 
 void CEventCollector::GoToState(EState s)
 {
 	m_state = s;
 	std::cout << "Entering state: " << static_cast<int>(s) << std::endl;
+}
+
+void CEventCollector::OnNewListener()
+{
+	GoToState(EState::ListenerExist);
+}
+
+void CEventCollector::OnListenerDisonnected()
+{
+	GoToState(EState::Listening);
 }

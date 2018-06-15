@@ -23,7 +23,7 @@ public:
 
 private:
 	void GoToState(EState s);
-	virtual void OnDisconnect() override;
+	virtual void OnHostDisconnect() override;
 
 private:
 	EState m_state{EState::Disconnected};

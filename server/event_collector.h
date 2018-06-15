@@ -22,7 +22,7 @@ class CEventCollector : public CServer
 		void* GetData() const {};
 
 		virtual void OnNewListener() override;
-
+		virtual void OnListenerDisonnected() override;
 
 	private:
 		void GoToState(EState s);

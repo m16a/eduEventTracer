@@ -10,8 +10,13 @@
 struct ISocketListener
 {
 	virtual void OnMsg(TBuff& buff) = 0;
+
+	//server specific
 	virtual void OnNewListener() = 0;
-	virtual void OnDisconnect() = 0;
+	virtual void OnListenerDisonnected() = 0;
+
+	//client specific
+	virtual void OnHostDisconnect() = 0;
 };
 
 class ISocket

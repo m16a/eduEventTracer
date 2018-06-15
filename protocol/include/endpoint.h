@@ -42,7 +42,8 @@ class CEndPoint : public ISocketListener
 	protected:
 	virtual void OnMsg(TBuff& buff) override;
 	virtual void OnNewListener() override {};
-	virtual void OnDisconnect() override {};
+	virtual void OnHostDisconnect() override {};
+	virtual void OnListenerDisonnected() override {};
 
 	protected:
 	
