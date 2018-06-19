@@ -1,5 +1,6 @@
 #include "event_provider.h"
 #include <iostream>
+#include <unistd.h>
 
 CEventProvider::CEventProvider()
 {
@@ -12,14 +13,9 @@ CEventProvider::~CEventProvider()
 
 }
 
-void CEventProvider::PostEvent(void*)
-{
-
-}
-
 void CEventProvider::Update()
 {
-
+	sleep(1);
 	switch(m_state)
 	{
 		case EState::Disconnected:
@@ -31,6 +27,9 @@ void CEventProvider::Update()
 		case EState::Idle:
 			break;
 		case EState::Capturing:
+			SSampleIntArg a;
+			a.val = 42;
+			PostEvent(EMsgType::SampleEventInt, a);
 			break;
 	}
 
@@ -54,5 +53,6 @@ void CEventProvider::OnHostDisconnect()
 bool CEventProvider::OnStartCapture(SEmptyArg&)
 {
 	std::cout << "received msg" << std::endl;
+	GoToState(EState::Capturing);
 	return true;
 }

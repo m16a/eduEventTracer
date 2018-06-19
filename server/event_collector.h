@@ -24,6 +24,10 @@ class CEventCollector : public CServer
 		virtual void OnNewListener() override;
 		virtual void OnListenerDisonnected() override;
 
+
+		//callbacks
+		bool OnSampleEventInt(SSampleIntArg& arg);
+
 	private:
 		void GoToState(EState s);
 

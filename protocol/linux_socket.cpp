@@ -146,6 +146,7 @@ void CLinuxSocket::UpdateClient()
 
 	//add master socket to set 
 	FD_SET(m_sock, &m_readfds);  
+	FD_SET(m_sock, &m_writefds);  
 	max_sd = m_sock;  
 			
 	int activity = select(max_sd+1, &m_readfds, &m_writefds, NULL , NULL);  
@@ -233,8 +234,8 @@ void CLinuxSocket::UpdateServer()
 			//if valid socket descriptor then add to read list 
 			if(sd > 0)  
 			{
-					FD_SET(sd , &m_readfds);  
-					FD_SET(sd , &m_writefds);  
+					FD_SET(sd, &m_readfds);  
+					FD_SET(sd, &m_writefds);  
 			}
 					
 			//highest file descriptor number, need it for the select function 
@@ -295,6 +296,7 @@ void CLinuxSocket::UpdateServer()
 			{  
 					//Check if it was for closing , and also read the 
 					//incoming message 
+					printf("somthing to read\n");
 					TBuff buffer;
 					buffer.resize(1024); //1K
 					size_t valread = 0;
@@ -318,8 +320,11 @@ void CLinuxSocket::UpdateServer()
 							//of the data read 
 							buffer.resize(valread);
 
+							printf("somthing recived %\n", valread);
+
 							if (m_listener)
 								m_listener->OnMsg(buffer);
+
 							//send(sd , buffer , strlen(buffer) , 0 );  
 					}  
 			}  

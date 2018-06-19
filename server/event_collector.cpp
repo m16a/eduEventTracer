@@ -6,6 +6,7 @@
 
 CEventCollector::CEventCollector()
 {
+	CEndPoint::Bind(EMsgType::SampleEventInt, this, &CEventCollector::OnSampleEventInt);
 }
 
 CEventCollector::~CEventCollector()
@@ -57,4 +58,10 @@ void CEventCollector::OnNewListener()
 void CEventCollector::OnListenerDisonnected()
 {
 	GoToState(EState::Listening);
+}
+
+bool CEventCollector::OnSampleEventInt(SSampleIntArg& arg)
+{
+	std::cout << "Recived sample: " << arg.val << std::endl;
+	return true;
 }
