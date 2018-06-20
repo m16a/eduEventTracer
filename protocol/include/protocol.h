@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ser.h"
+#include "buffer.h"
 #include <string.h>
 
 enum EMsgType
@@ -31,7 +31,7 @@ struct SSampleIntArg
 		}
 		else
 		{
-			ser.buffer.resize(1);
+			ser.buffer.resize(4);
 			memcpy(ser.buffer.data(), &val, 4);
 		}
 	}

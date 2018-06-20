@@ -196,6 +196,9 @@ void CLinuxSocket::UpdateClient()
 		{
 			TBuff& msg = m_outMsgs.front();
 
+			printf("msg sending, size:%d \n", msg.size());
+			Dump(msg);
+
 			ssize_t size = send(m_sock, msg.data(), msg.size(), 0);
 
 			if (size <= 0)
@@ -320,7 +323,8 @@ void CLinuxSocket::UpdateServer()
 							//of the data read 
 							buffer.resize(valread);
 
-							printf("somthing recived %\n", valread);
+							printf("somthing recived, size:%d\n", valread);
+							Dump(buffer);
 
 							if (m_listener)
 								m_listener->OnMsg(buffer);
@@ -334,6 +338,9 @@ void CLinuxSocket::UpdateServer()
 				while (!m_outMsgs.empty())
 				{
 					TBuff& msg = m_outMsgs.front();
+
+					printf("msg sending, size:%d \n", msg.size());
+					Dump(msg);
 
 					ssize_t size = send(sd, msg.data(), msg.size(), 0);
 
