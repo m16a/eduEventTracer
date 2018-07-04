@@ -12,3 +12,4 @@ CTestTestfile.cmake
 server/sv_run
 client/cl_run
 *.txt
+*.o
