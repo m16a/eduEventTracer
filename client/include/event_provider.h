@@ -17,6 +17,7 @@ public:
 	~CEventProvider();
 
 	virtual void Update() override;
+	virtual bool CanPostEvents();
 
 	bool OnStartCapture(SEmptyArg&);
 	bool OnStopCapture(SEmptyArg&);

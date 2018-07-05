@@ -16,7 +16,6 @@ CEventProvider::~CEventProvider()
 
 void CEventProvider::Update()
 {
-	sleep(1);
 	switch(m_state)
 	{
 		case EState::Disconnected:
@@ -28,9 +27,6 @@ void CEventProvider::Update()
 		case EState::Idle:
 			break;
 		case EState::Capturing:
-			SSampleIntArg a;
-			a.val = 42;
-			PostEvent(EMsgType::SampleEventInt, a);
 			break;
 	}
 
@@ -61,4 +57,9 @@ bool CEventProvider::OnStopCapture(SEmptyArg&)
 {
 	GoToState(EState::Idle);
 	return true;
+}
+
+bool CEventProvider::CanPostEvents()
+{
+	return m_state == EState::Capturing;
 }

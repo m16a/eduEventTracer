@@ -28,7 +28,6 @@ void CEventCollector::StopCapture()
 
 void CEventCollector::Update()
 {
-	//sleep(1);
 	CServer::Update();
 
 	switch (m_state)
@@ -39,9 +38,7 @@ void CEventCollector::Update()
 			break;
 		case EState::Capturing:
 			break;
-			
 	}
-
 }
 
 

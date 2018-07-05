@@ -17,6 +17,9 @@ class CEndPoint : public ISocketListener
 	template <class TArg>
 	void PostEvent(EMsgType t, TArg&& data)
 	{
+		if (!CanPostEvents())
+			return;
+
 		Ser ser;	
 		ser.isReading = false;
 		data.Serialize(ser);
@@ -38,6 +41,8 @@ class CEndPoint : public ISocketListener
 	//TODO:set port
 	void Listen();
 	virtual void Update();
+
+	virtual bool CanPostEvents() {return true;};
 
 	protected:
 	virtual void OnMsg(TBuff& buff) override;

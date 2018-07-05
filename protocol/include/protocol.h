@@ -8,6 +8,7 @@ enum EMsgType
 	StartCapture,
 	StopCapture,
 	SampleEventInt,
+	TimeInterval,
 	MsgCnt
 };
 
@@ -37,3 +38,8 @@ struct SSampleIntArg
 	}
 };
 
+struct STimeIntervalArg
+{
+	int startTime;
+	int finishTime;
+};
