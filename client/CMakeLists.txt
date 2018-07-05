@@ -5,8 +5,9 @@ set (CMAKE_CXX_STANDARD 14)
 
 file(GLOB SOURCES "*.cpp")
 
-add_executable(cl_run ${SOURCES})
+add_library(client ${SOURCES})
 
 find_library(PROTOCOL_LINK_LIB Protocol ${CMAKE_SOURCE_DIR}/protocol/)
-include_directories(${CMAKE_SOURCE_DIR}/protocol/include/)
-target_link_libraries(cl_run ${PROTOCOL_LINK_LIB})
+include_directories(${CMAKE_SOURCE_DIR}/protocol/include/ include)
+
+target_link_libraries(client ${PROTOCOL_LINK_LIB})

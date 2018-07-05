@@ -1,11 +1,7 @@
 #include "event_provider.h"
-
-
-
-int main(int argc, char const* argv[])
+int main()
 {
 	CEventProvider ep;
-	
 	while (true)	
 	{
 		ep.Update();	
