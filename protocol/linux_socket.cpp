@@ -6,7 +6,9 @@
 
 #include <sys/socket.h>
 #include <errno.h>
-#include <unistd.h>   //close 
+#include <unistd.h>
+#include <iostream>
+
 
 static bool IsListeningSocket(int sock)
 {
@@ -15,7 +17,7 @@ static bool IsListeningSocket(int sock)
 	socklen_t len = sizeof(val);
 	if (getsockopt(sock, SOL_SOCKET, SO_ACCEPTCONN, &val, &len) == -1)
 	{
-			printf("fd %d is not a socket\n", sock);
+			std::cout << "fd " << sock << " is not a socket\n";
 	}
 	else if (val)
 	{
@@ -31,12 +33,12 @@ CLinuxSocket::CLinuxSocket(int port)
 
 	if (m_sock <= 0)
 	{
-		printf("Socket creation error \n");
+		std::cout << "Socket creation error" << std::endl;
 		exit(1);
 	}
 	else
 	{
-		printf("Socket was created: %d\n", m_sock);
+		std::cout << "Socket was created: " <<  m_sock << std::endl;
 	}
 
   memset(&m_address, '0', sizeof(m_address));
@@ -53,26 +55,26 @@ bool CLinuxSocket::ConnectSync(const char* ip, int port)
 {
 	if (!m_sock)
 	{
-		printf("\n Socket is not created \n");
+		std::cout << "Socket is not created" << std::endl;
 		exit(1);
 	}
 
 	if (!ip)
 	{
-		printf("\n Provide IP address to connect \n");
+		std::cout << "Provide IP address to connect" << std::endl;
 		exit(1);
 	}
 
 	if (inet_pton(AF_INET, ip, &m_address.sin_addr) <= 0)
 	{
-		printf("\n Invalid address: %s \n", ip);
+		std::cout << "Invalid address: " << ip << std::endl;
 		exit(1);
 	}
 
 	int res = connect(m_sock, (struct sockaddr*)&m_address, sizeof(m_address));
 	if (res < 0)
 	{
-		printf("\n Socket connection err %d\n", errno);
+		std::cout << "Socket connection err: " << errno << std::endl;
 	}
 	return res >= 0; 
 }
@@ -82,7 +84,7 @@ void CLinuxSocket::Listen()
 {
 	if (!m_sock)
 	{
-		printf("\n Socket is not created \n");
+		std::cout << "Socket is not created" << std::endl;
 		exit(1);
 	}
 	
@@ -91,8 +93,8 @@ void CLinuxSocket::Listen()
 	int opt = 1;
 	if(setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0)  
 	{  
-			printf("\n Setsockopt error \n");  
-			exit(1);  
+		std::cout << "Setsockopt error" << std::endl;  
+		exit(1);  
 	}  
 
 	//TODO: what is it???
@@ -100,16 +102,16 @@ void CLinuxSocket::Listen()
 
 	if (bind(m_sock, (struct sockaddr*)&m_address, sizeof(m_address)) < 0)
 	{
-		printf("Bind err: %d \n", errno);
+		std::cout << "Bind err: " << errno << std::endl;
 		exit(1);
 	}
 
 	if (listen(m_sock, kMaxClients) < 0)
 	{
-		printf("\n Listen failed \n");
+		std::cout << "Listen failed" << std::endl;
 		exit(1);
 	}
-	printf("Start listening\n");
+	std::cout << "Start listening" << std::endl;
 }
 
 void CLinuxSocket::Update()
@@ -153,7 +155,7 @@ void CLinuxSocket::UpdateClient()
 
 	if ((activity < 0) && (errno!=EINTR))  
 	{  
-			printf("Select error:%d\n", errno);  
+		std::cout << "Select error: " <<  errno << std::endl;  
 	}  
 			
   struct sockaddr_in address;  
@@ -168,7 +170,7 @@ void CLinuxSocket::UpdateClient()
 		{  
 			//Somebody disconnected , get his details and print 
 			getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
-			printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+			std::cout << "Host disconnected , ip: " << inet_ntoa(address.sin_addr) << ", port: " << ntohs(address.sin_port) << std::endl;  
 					
 			//Close the socket and mark as 0 in list for reuse 
 			close(m_sock);  
@@ -185,7 +187,7 @@ void CLinuxSocket::UpdateClient()
 		}  
 		else
 		{
-			printf("read error: %d valread: %d\n", errno, valread);
+			std::cout << "read error: " << errno << ", valread: " <<  valread << std::endl;
 		}
 	}  
 			
@@ -196,7 +198,7 @@ void CLinuxSocket::UpdateClient()
 		{
 			TBuff& msg = m_outMsgs.front();
 
-			printf("msg sending, size:%d \n", msg.size());
+			std::cout << "msg sending. size: " << msg.size() << std::endl;
 			Dump(msg);
 
 			ssize_t size = send(m_sock, msg.data(), msg.size(), 0);
@@ -204,7 +206,7 @@ void CLinuxSocket::UpdateClient()
 			if (size <= 0)
 			{
 				getpeername(m_sock, (struct sockaddr*)&address , (socklen_t*)&addrlen);  
-				printf("Can't send msg to  ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+				std::cout << "Can't send msg to ip: " << inet_ntoa(address.sin_addr) << ", port: " << ntohs(address.sin_port) << std::endl;  
 			}
 			else
 			{
@@ -252,7 +254,7 @@ void CLinuxSocket::UpdateServer()
 
 	if ((activity < 0) && (errno!=EINTR))  
 	{  
-			printf("\n Select error \n");  
+		std::cout << "Select error" << std::endl;  
 	}  
 			
 	//If something happened on the master socket , 
@@ -265,13 +267,12 @@ void CLinuxSocket::UpdateServer()
 			if ((new_socket = accept(m_sock, 
 							(struct sockaddr *)&address, (socklen_t*)&addrlen))<0)  
 			{  
-					printf("Accept error:%d\n", errno);  
+				std::cout << "Accept error: " <<  errno << std::endl;  
 					//exit(1);  
 			}  
 			
 			//inform user of socket number - used in send and receive commands 
-			printf("New connection , socket fd is %d , ip is : %s , port : %d\n",
-					new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+			std::cout << "New connection , socket fd is " << new_socket << ", ip is: " << inet_ntoa(address.sin_addr) << ", port:" << ntohs(address.sin_port) << std::endl;  
 			
 			if (m_listener)
 				m_listener->OnNewListener();
@@ -283,7 +284,7 @@ void CLinuxSocket::UpdateServer()
 					if( m_client_sockets[i] == 0 )  
 					{  
 							m_client_sockets[i] = new_socket;  
-							printf("Adding to list of sockets as %d\n" , i);  
+							std::cout << "Adding to list of sockets as " << i << std::endl; 
 									
 							break;  
 					}  
@@ -299,7 +300,7 @@ void CLinuxSocket::UpdateServer()
 			{  
 					//Check if it was for closing , and also read the 
 					//incoming message 
-					printf("somthing to read\n");
+					std::cout << "somthing to read" << std::endl;
 					TBuff buffer;
 					buffer.resize(1024); //1K
 					size_t valread = 0;
@@ -307,7 +308,7 @@ void CLinuxSocket::UpdateServer()
 					{  
 							//Somebody disconnected , get his details and print 
 							getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);  
-							printf("Host disconnected , ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+							std::cout << "Host disconnected , ip: " << inet_ntoa(address.sin_addr) << ", port: " << ntohs(address.sin_port) << std::endl;  
 									
 							//Close the socket and mark as 0 in list for reuse 
 							close( sd );  
@@ -316,20 +317,15 @@ void CLinuxSocket::UpdateServer()
 							continue;
 
 					}  
-					//Echo back the message that came in 
 					else
 					{  
-							//set the string terminating NULL byte on the end 
-							//of the data read 
 							buffer.resize(valread);
 
-							printf("somthing recived, size:%d\n", valread);
+							std::cout << "somthing was recived, size: " << valread << std::endl;
 							Dump(buffer);
 
 							if (m_listener)
 								m_listener->OnMsg(buffer);
-
-							//send(sd , buffer , strlen(buffer) , 0 );  
 					}  
 			}  
 
@@ -339,7 +335,7 @@ void CLinuxSocket::UpdateServer()
 				{
 					TBuff& msg = m_outMsgs.front();
 
-					printf("msg sending, size:%d \n", msg.size());
+					std::cout << "msg sending, size: " << msg.size() << std::endl;
 					Dump(msg);
 
 					ssize_t size = send(sd, msg.data(), msg.size(), 0);
@@ -347,7 +343,7 @@ void CLinuxSocket::UpdateServer()
 					if (size <= 0)
 					{
 						getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);  
-						printf("Can't send msg to  ip: %s , port: %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+						std::cout << "Can't send msg to ip: " << inet_ntoa(address.sin_addr) << ", port: " << ntohs(address.sin_port) << std::endl;  
 					}
 					else
 					{
