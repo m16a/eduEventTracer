@@ -25,7 +25,7 @@ static void glfw_error_callback(int error, const char* description)
 
 
 
-void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::string& log)
+void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::stringstream& logBuffer)
 {
     static bool show_demo_window = true;
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -103,6 +103,14 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::string& 
 					ImGui::Text("Non capturing");
 				}
 
+				static ImGuiTextBuffer buffer;
+
+				buffer.appendf(logBuffer.str().c_str());
+				ImGui::BeginChild("Log");
+				ImGui::TextUnformatted(buffer.begin(), buffer.end());
+				ImGui::SetScrollHere(1.0f);
+				ImGui::EndChild();
+
 				ImGui::End();
 		}
 
@@ -176,19 +184,19 @@ int main(int, char**)
 
 
 
-		std::stringstream logBuffer;
-		std::streambuf* old = std::cout.rdbuf(logBuffer.rdbuf());
-		std::string text = logBuffer.str(); 
 
     // Main loop
 		CEventCollector	ec;
     while (!glfwWindowShouldClose(window))
     {
+			std::stringstream logBuffer;
+			std::streambuf* old = std::cout.rdbuf(logBuffer.rdbuf());
+
 			ec.Update();
-			UpdateUI(window, ec, text);
+			UpdateUI(window, ec, logBuffer);
+			std::cout.rdbuf(old);
     }
 
-		std::cout.rdbuf(old);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
