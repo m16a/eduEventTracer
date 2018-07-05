@@ -16,17 +16,19 @@ CEventCollector::~CEventCollector()
 
 void CEventCollector::StartCapture()
 {
-
+	PostEvent(EMsgType::StartCapture, SEmptyArg());
+	GoToState(EState::Capturing);
 }
 
 void CEventCollector::StopCapture()
 {
-
+	PostEvent(EMsgType::StopCapture, SEmptyArg());
+	GoToState(EState::ListenerExist);
 }
 
 void CEventCollector::Update()
 {
-	sleep(1);
+	//sleep(1);
 	CServer::Update();
 
 	switch (m_state)
@@ -34,7 +36,6 @@ void CEventCollector::Update()
 		case EState::Listening:
 			break;
 		case EState::ListenerExist:
-			PostEvent(EMsgType::StartCapture, SEmptyArg());
 			break;
 		case EState::Capturing:
 			break;

@@ -5,6 +5,7 @@
 CEventProvider::CEventProvider()
 {
 	CEndPoint::Bind(EMsgType::StartCapture, this, &CEventProvider::OnStartCapture);
+	CEndPoint::Bind(EMsgType::StopCapture, this, &CEventProvider::OnStopCapture);
 }
 
 CEventProvider::~CEventProvider()
@@ -52,7 +53,12 @@ void CEventProvider::OnHostDisconnect()
 //callbacks
 bool CEventProvider::OnStartCapture(SEmptyArg&)
 {
-	std::cout << "received msg" << std::endl;
 	GoToState(EState::Capturing);
+	return true;
+}
+
+bool CEventProvider::OnStopCapture(SEmptyArg&)
+{
+	GoToState(EState::Idle);
 	return true;
 }

@@ -27,8 +27,14 @@ target_include_directories(sv_ui PUBLIC ${GLFW3_INCLUDE_DIRS})
 
 find_package(OpenGL)
 
+find_library(SERVER_LINK_LIB server ${CMAKE_SOURCE_DIR}/server/lib/)
+include_directories(${CMAKE_SOURCE_DIR}/server/lib/include/)
+include_directories(${CMAKE_SOURCE_DIR}/protocol/include/)
 
-target_link_libraries(sv_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} dl)
+find_library(PROTOCOL_LINK_LIB Protocol ${CMAKE_SOURCE_DIR}/protocol/)
+
+
+target_link_libraries(sv_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} ${SERVER_LINK_LIB} ${PROTOCOL_LINK_LIB} dl)
 
 #findnk_libraries(testapp ${SDL2_LIBRARIES})
 #include_directories(${CMAKE_SOURCE_DIR}/server/)

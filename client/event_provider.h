@@ -19,6 +19,7 @@ public:
 	virtual void Update() override;
 
 	bool OnStartCapture(SEmptyArg&);
+	bool OnStopCapture(SEmptyArg&);
 
 private:
 	void GoToState(EState s);
