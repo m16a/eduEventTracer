@@ -15,6 +15,7 @@ int main()
 		int ran = rand() % 300 + 100;
 		t.tv_nsec = ran * 1000000L;
 		nanosleep(&t, &empty);
+
 		ep.Update();	
 
 		SSampleIntArg a;

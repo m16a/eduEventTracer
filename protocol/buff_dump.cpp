@@ -1,5 +1,6 @@
 #include "buffer.h"
 #include <stdio.h>
+#include <iostream>
 
 void Dump(TBuff& buff)
 {
@@ -7,10 +8,12 @@ void Dump(TBuff& buff)
 	{
 		char c = buff[i];
 
-		printf("%02x ", buff[i]);
+		char tmpStr[10];
+		snprintf(tmpStr, sizeof(buff), "%02x ", c);
+		std::cout << tmpStr;
 
 		if (i % 20 == 0 && i > 0)
-			printf("\n");
+			std::cout << std::endl;
 	}
-		printf("\n");
+	std::cout << std::endl;
 }
