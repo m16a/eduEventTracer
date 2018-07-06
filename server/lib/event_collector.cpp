@@ -7,6 +7,7 @@
 CEventCollector::CEventCollector()
 {
 	CEndPoint::Bind(EMsgType::SampleEventInt, this, &CEventCollector::OnSampleEventInt);
+	CEndPoint::Bind(EMsgType::TimeInterval, this, &CEventCollector::OnTimeIntervalEvent);
 }
 
 CEventCollector::~CEventCollector()
@@ -61,5 +62,11 @@ void CEventCollector::OnListenerDisonnected()
 bool CEventCollector::OnSampleEventInt(SSampleIntArg& arg)
 {
 	std::cout << "Recived sample: " << arg.val << std::endl;
+	return true;
+}
+
+bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg)
+{
+	std::cout << "TI: " << arg.endTime << " - " << arg.startTime << " = " << arg.endTime - arg.startTime << std::endl;
 	return true;
 }

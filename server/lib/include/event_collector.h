@@ -27,6 +27,7 @@ class CEventCollector : public CServer
 
 		//callbacks
 		bool OnSampleEventInt(SSampleIntArg& arg);
+		bool OnTimeIntervalEvent(STimeIntervalArg& arg);
 
 	private:
 		void GoToState(EState s);

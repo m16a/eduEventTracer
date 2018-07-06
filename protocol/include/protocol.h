@@ -41,5 +41,22 @@ struct SSampleIntArg
 struct STimeIntervalArg
 {
 	int startTime;
-	int finishTime;
+	int endTime;
+
+	void Serialize(Ser& ser)
+	{
+		if (ser.isReading)
+		{
+			int* pVal = reinterpret_cast<int*>(ser.buffer.data());
+			startTime = *pVal;
+			pVal += 1;
+			endTime = *pVal;
+		}
+		else
+		{
+			ser.buffer.resize(sizeof(int) * 2);
+			memcpy(ser.buffer.data(), &startTime, 4);
+			memcpy(ser.buffer.data() + 4, &endTime, 4);
+		}
+	}
 };
