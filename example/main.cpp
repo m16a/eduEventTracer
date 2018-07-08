@@ -5,12 +5,20 @@
 #include <unistd.h>
 #include <chrono>
 
-void FakePayload()
+void RandomSleep()
 {
 	struct timespec t, empty;
 	t.tv_sec = 0; 
 	int ran = rand() % 300 + 100;
 	t.tv_nsec = ran * 1000000L;
+	nanosleep(&t, &empty);
+}
+
+void Sleep10ms()
+{
+	struct timespec t, empty;
+	t.tv_sec = 0; 
+	t.tv_nsec = 10 * 1000000L;
 	nanosleep(&t, &empty);
 }
 
@@ -21,14 +29,14 @@ int main()
 	while (true)	
 	{
 		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
-
 		int startMs = std::chrono::duration_cast<std::chrono::milliseconds>(start.time_since_epoch()).count();
-		FakePayload();
+
+		//fake payload
+		RandomSleep();
 
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		int endMs = std::chrono::duration_cast<std::chrono::milliseconds>(end.time_since_epoch()).count();
 		
-		//int milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 		ep.Update();	
 
 		STimeIntervalArg a;
@@ -36,6 +44,8 @@ int main()
 		a.endTime = endMs;
 
 		ep.PostEvent(EMsgType::TimeInterval, a);
+
+		Sleep10ms();
 	}
 
 	return 0;

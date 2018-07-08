@@ -29,9 +29,12 @@ class CEventCollector : public CServer
 		bool OnSampleEventInt(SSampleIntArg& arg);
 		bool OnTimeIntervalEvent(STimeIntervalArg& arg);
 
+		const std::vector<STimeIntervalArg>& GetIntervals() const;
+
 	private:
 		void GoToState(EState s);
 
 	private:
 		EState m_state {EState::Listening};
+		std::vector<STimeIntervalArg> m_intervals;
 };

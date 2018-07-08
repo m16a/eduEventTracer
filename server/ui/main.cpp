@@ -23,7 +23,58 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 
+void DrawCout(std::stringstream& logBuffer)
+{
+		static ImGuiTextBuffer buffer;
+    ImGui::Separator();
 
+		buffer.appendf(logBuffer.str().c_str());
+		ImGui::BeginChild("Log");
+		ImGui::TextUnformatted(buffer.begin(), buffer.end());
+		ImGui::SetScrollHere(1.0f);
+		ImGui::EndChild();
+}
+
+void DrawIntervals(CEventCollector& eventCollector)
+{
+		const std::vector<STimeIntervalArg>& intervals = eventCollector.GetIntervals();
+
+		static float scale = 1.0f;
+		ImGui::DragFloat("Scale", &scale, 0.01f, 0.01f, 2.0f, "%.2f");
+
+		ImGui::BeginChild("scrolling", ImVec2(0, ImGui::GetFrameHeightWithSpacing()*7 + 30), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+		if (!intervals.empty())
+		{
+			float width = 0.0f;
+			if (intervals.size() > 1)
+				width = (intervals.back().endTime - intervals.front().startTime) * scale;
+
+			ImGui::BeginChild("scrolling2", ImVec2(width, ImGui::GetFrameHeightWithSpacing()*6), false);
+
+			const int epoch = intervals[0].startTime;
+			for (const auto& interval : intervals)
+			{
+				ImDrawList* draw_list = ImGui::GetWindowDrawList();
+				
+        const ImVec2 p = ImGui::GetCursorScreenPos();
+				static ImVec4 col = ImVec4(1.0f,1.0f,0.4f,1.0f);
+				const ImU32 col32 = ImColor(col);
+
+				const float x1 = p.x + (interval.startTime - epoch) * scale;
+				const float y1 = p.y + 30.0f;
+
+				const float x2 = p.x + (interval.endTime - epoch) * scale;
+				const float y2 = p.y + 50.0f;
+
+				draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+			}
+			ImGui::EndChild();
+		}
+
+		
+    ImGui::EndChild();
+}
 
 void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::stringstream& logBuffer)
 {
@@ -42,38 +93,6 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::stringst
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		/*
-		// 1. Show a simple window.
-		// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-		{
-				static float f = 0.0f;
-				static int counter = 0;
-				ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
-				ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-				ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-				ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
-				ImGui::Checkbox("Another Window", &show_another_window);
-
-				if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-						counter++;
-				ImGui::SameLine();
-				ImGui::Text("counter = %d", counter);
-
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		}
-
-		// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-		if (show_another_window)
-		{
-				ImGui::Begin("Another Window", &show_another_window);
-				ImGui::Text("Hello from another window!");
-				if (ImGui::Button("Close Me"))
-						show_another_window = false;
-				ImGui::End();
-		}
-		*/
-
 		{
 				ImGui::Begin("Window");
 				static bool bIsCapturing = false;
@@ -90,7 +109,6 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::stringst
 						eventCollector.StartCapture();
 					else
 						eventCollector.StopCapture();
-
 				}
 
 
@@ -103,13 +121,8 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::stringst
 					ImGui::Text("Non capturing");
 				}
 
-				static ImGuiTextBuffer buffer;
-
-				buffer.appendf(logBuffer.str().c_str());
-				ImGui::BeginChild("Log");
-				ImGui::TextUnformatted(buffer.begin(), buffer.end());
-				ImGui::SetScrollHere(1.0f);
-				ImGui::EndChild();
+				DrawIntervals(eventCollector);
+				DrawCout(logBuffer);
 
 				ImGui::End();
 		}

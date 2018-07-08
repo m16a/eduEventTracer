@@ -1,40 +1,11 @@
-[] General Sketch
-[] Plan
-	Test program											1d
-		Single thread
-		Mulltiple threads, look at c++11
-	
-	Create simple tcp client-server app with core messages flow
-		client event producer draft
-		server class draft
-		client always tries to connect to server
-		start/stop capturing
-		client -> server event tracing
-
-
-	Linked library
-		API
-		serialize, protobuf???
-		Write data to specific place
-
-	--postpoend--
-		Share pointer with profiler
-		Interprocess lock
-		Multiple instances
-
-	Profiler
-
-
-	--postponed
-		Interprocess lock
-		ReadProcessMemory
-		deserialize
-		capture to RAM
-		store on disk
-		imgui UI
-			timelaps view
-		measure performance, estimate the size of copiable data
-	
-	Windows port
-[] Breakdown
+[]	add scope to project
+[]	add platform header and separate linux impl
+[]	async connect
+[]	handle situation with message sticking on read
+[]	more sophisitcated serializator
+[]	MT for evenet collector
+[]	MT for event provider
+[]	advanced time interval drawing + UX
+[]	investigate asio
+[]	exlude binaries from git
 
