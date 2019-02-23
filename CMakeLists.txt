@@ -3,7 +3,4 @@ project(eduEventTracer)
 
 set(CMAKE_BUILD_TYPE  Debug)
 
-add_subdirectory(protocol)
-add_subdirectory(server)
-add_subdirectory(client)
-add_subdirectory(example)
+add_subdirectory(src)
