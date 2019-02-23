@@ -41,3 +41,9 @@ target_link_libraries(sv_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} ${SERVER_LINK
 #message("found lib"  ${SERVER_LINK_LIB})
 
 #target_link_libraries(sv_run ${SERVER_LINK_LIB})
+
+#formating
+add_custom_command(TARGET sv_ui
+		PRE_BUILD
+		COMMAND ${CMAKE_SOURCE_DIR}/src/format.sh
+		COMMENT "Formating...")

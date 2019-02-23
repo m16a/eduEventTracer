@@ -18,3 +18,10 @@ message("found lib "  ${SERVER_LINK_LIB})
 target_link_libraries(run ${SERVER_LINK_LIB})
 target_link_libraries(run ${PROTOCOL_LINK_LIB})
 
+
+#formating
+add_custom_command(TARGET run
+        PRE_BUILD
+        COMMAND ${CMAKE_SOURCE_DIR}/src/format.sh
+        COMMENT "Formating...")
+

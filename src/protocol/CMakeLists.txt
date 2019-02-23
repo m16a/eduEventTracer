@@ -8,3 +8,9 @@ file(GLOB SOURCES "*.cpp")
 
 add_library(Protocol ${SOURCES})
 
+
+#formating
+add_custom_command(TARGET Protocol
+        PRE_BUILD
+        COMMAND ${CMAKE_SOURCE_DIR}/src/format.sh
+        COMMENT "Formating...")

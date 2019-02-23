@@ -15,3 +15,9 @@ include_directories(${CMAKE_SOURCE_DIR}/src/protocol/include/)
 
 target_link_libraries(test_app ${CLIENT_LINK_LIB} ${PROTOCOL_LINK_LIB})
 
+
+#formating
+add_custom_command(TARGET test_app
+        PRE_BUILD
+        COMMAND ${CMAKE_SOURCE_DIR}/src/format.sh
+        COMMENT "Formating...")
