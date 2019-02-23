@@ -34,7 +34,7 @@ include_directories(${CMAKE_SOURCE_DIR}/protocol/include/)
 find_library(PROTOCOL_LINK_LIB Protocol ${CMAKE_SOURCE_DIR}/protocol/)
 
 
-target_link_libraries(sv_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} ${SERVER_LINK_LIB} ${PROTOCOL_LINK_LIB} dl)
+target_link_libraries(sv_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} ${SERVER_LINK_LIB} ${PROTOCOL_LINK_LIB} dl pthread)
 
 #findnk_libraries(testapp ${SDL2_LIBRARIES})
 #include_directories(${CMAKE_SOURCE_DIR}/server/)

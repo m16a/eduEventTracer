@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -94,37 +95,37 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector, std::stringst
 		ImGui::NewFrame();
 
 		{
-				ImGui::Begin("Window");
-				static bool bIsCapturing = false;
+            ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove);
+            static bool bIsCapturing = false;
 
-				bool prevIsCapturing = bIsCapturing;
-				if (ImGui::Button("Button"))
-				{
-					bIsCapturing = !bIsCapturing;
-				}
+            bool prevIsCapturing = bIsCapturing;
+            if (ImGui::Button("Button"))
+            {
+                bIsCapturing = !bIsCapturing;
+            }
 
-				if (prevIsCapturing != bIsCapturing)
-				{
-					if (bIsCapturing)
-						eventCollector.StartCapture();
-					else
-						eventCollector.StopCapture();
-				}
+            if (prevIsCapturing != bIsCapturing)
+            {
+                if (bIsCapturing)
+                    eventCollector.StartCapture();
+                else
+                    eventCollector.StopCapture();
+            }
 
 
-				if (bIsCapturing)
-				{
-					ImGui::Text("Capturing");
-				}
-				else
-				{
-					ImGui::Text("Non capturing");
-				}
+            if (bIsCapturing)
+            {
+                ImGui::Text("Capturing");
+            }
+            else
+            {
+                ImGui::Text("Non capturing");
+            }
 
-				DrawIntervals(eventCollector);
-				DrawCout(logBuffer);
+            DrawIntervals(eventCollector);
+            DrawCout(logBuffer);
 
-				ImGui::End();
+            ImGui::End();
 		}
 
 
@@ -199,17 +200,20 @@ int main(int, char**)
 
 
     // Main loop
-		CEventCollector	ec;
+    CEventCollector	ec;
+
+	std::thread t([&ec]{ while(true){ec.Update();}});
+	t.detach();
+
     while (!glfwWindowShouldClose(window))
     {
-			std::stringstream logBuffer;
-			std::streambuf* old = std::cout.rdbuf(logBuffer.rdbuf());
+        std::stringstream logBuffer;
+        std::streambuf* old = std::cout.rdbuf(logBuffer.rdbuf());
 
-			ec.Update();
-			UpdateUI(window, ec, logBuffer);
-			std::cout.rdbuf(old);
+        //ec.Update();
+        UpdateUI(window, ec, logBuffer);
+        std::cout.rdbuf(old);
     }
-
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

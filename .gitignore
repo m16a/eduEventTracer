@@ -12,3 +12,6 @@ CTestTestfile.cmake
 server/sv_run
 client/cl_run
 *.o
+.idea/*
+*.xml
+*.cbp
