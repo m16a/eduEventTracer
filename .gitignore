@@ -13,3 +13,7 @@ CTestTestfile.cmake
 .idea/*
 *.xml
 *.cbp
+
+test_app
+run
+sv_ui
