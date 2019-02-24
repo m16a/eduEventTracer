@@ -34,6 +34,10 @@ struct STimeIntervalArg {
   int startTime;
   int endTime;
 
+  STimeIntervalArg() {}
+  STimeIntervalArg(int _startTime, int _endTime)
+      : startTime(_startTime), endTime(_endTime) {}
+
   void Serialize(Ser& ser) {
     if (ser.isReading) {
       int* pVal = reinterpret_cast<int*>(ser.buffer.data());

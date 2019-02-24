@@ -24,6 +24,8 @@ class CEventCollector : public CServer {
 
   const std::vector<STimeIntervalArg>& GetIntervals() const;
 
+  void DebugGenerateSamples();
+
  private:
   void GoToState(EState s);
 

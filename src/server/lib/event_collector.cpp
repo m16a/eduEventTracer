@@ -61,3 +61,9 @@ bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
 const std::vector<STimeIntervalArg>& CEventCollector::GetIntervals() const {
   return m_intervals;
 }
+
+void CEventCollector::DebugGenerateSamples() {
+  for (int i = 0; i < 1000; ++i) {
+    m_intervals.emplace_back(STimeIntervalArg(i * 10, i * 10 + 5));
+  }
+}

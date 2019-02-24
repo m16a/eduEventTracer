@@ -217,6 +217,8 @@ int main(int, char**) {
   // Main loop
   CEventCollector ec;
 
+  ec.DebugGenerateSamples();
+
   std::thread t([&ec] {
     while (true) {
       ec.Update();
