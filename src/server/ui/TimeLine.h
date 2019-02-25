@@ -5,10 +5,13 @@
 #ifndef EDUEVENTTRACER_TIMELINE_H
 #define EDUEVENTTRACER_TIMELINE_H
 
+#include <imgui.h>
+
 struct MouseListener {
   virtual void OnMouseDown() = 0;
   virtual void OnMouseUp() = 0;
   virtual void OnMouseClicked() = 0;
+  virtual void OnMouseWheel(float value) = 0;
 
   virtual void OnMouseMoved(float dx, float dy) = 0;
 };
@@ -18,7 +21,9 @@ class CEventCollector;
 struct MouseHandler {
   void Update(MouseListener& listener);
 
-  bool bIsClickInWindow;
+  bool bIsClickInWindow{false};
+  bool bIsDragged{false};
+  ImVec2 prevPos;
 };
 
 class TimeLine : public MouseListener {
@@ -32,11 +37,13 @@ class TimeLine : public MouseListener {
   void OnMouseMoved(float dx, float dy) override;
   void OnMouseUp() override;
   void OnMouseClicked() override;
+  void OnMouseWheel(float value) override;
 
-  int begin;
-  int end;
-  int viewBegin;
-  int viewEnd;
+  int m_begin;
+  int m_end;
+  float m_viewBegin;
+  float m_viewEnd;
+  float m_scale{1.0f};
 };
 
 #endif  // EDUEVENTTRACER_TIMELINE_H

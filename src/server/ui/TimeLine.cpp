@@ -10,6 +10,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 
 void MouseIO() {
@@ -48,20 +50,44 @@ virtual void OnMouseMoved(float dx, float dy)  = 0;
 virtual void OnMouseClicked() = 0;
  */
 
+bool IsEqual(ImVec2& a, ImVec2& b, float prec = 10e-5f) {
+  return !(abs(a.x - b.x) > prec || abs(a.y - b.y) > prec);
+}
+
 void MouseHandler::Update(MouseListener& listener) {
-  if (ImGui::IsWindowHovered()) {
+  ImGuiIO& io = ImGui::GetIO();
+  if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows)) {
     if (!bIsClickInWindow && ImGui::IsMouseClicked(0)) {
       bIsClickInWindow = true;
       listener.OnMouseDown();
     }
 
     if (bIsClickInWindow) {
+      if (!IsEqual(io.MousePos, io.MouseClickedPos[0])) {
+        bIsDragged = true;
+      }
+    }
+
+    if (bIsDragged) {
+      if (!IsEqual(prevPos, io.MousePos)) {
+        ImVec2 zero;
+        if (!IsEqual(prevPos, zero))
+          listener.OnMouseMoved(prevPos.x - io.MousePos.x,
+                                prevPos.y - io.MousePos.y);
+        prevPos = io.MousePos;
+      }
+    }
+
+    if (io.MouseWheel) {
+      listener.OnMouseWheel(io.MouseWheel);
     }
   }
 
   if (bIsClickInWindow && ImGui::IsMouseReleased(0)) {
     listener.OnMouseUp();
     bIsClickInWindow = false;
+    bIsDragged = false;
+    prevPos.x = prevPos.y = 0.0f;
   }
 }
 
@@ -72,8 +98,7 @@ void TimeLine::Render(CEventCollector& eventCollector) {
   ImGui::Begin("Window2", nullptr, ImGuiWindowFlags_NoMove);
   // ImGui::Begin("Window2");
 
-  static float scale = 1.0f;
-  ImGui::DragFloat("Scale", &scale, 0.01f, 0.01f, 2.0f, "%.2f");
+  ImGui::DragFloat("Scale", &m_scale, 0.01f, 0.01f, 2.0f, "%.2f");
 
   ImGui::BeginChild("scrolling",
                     ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 20 + 30),
@@ -82,29 +107,45 @@ void TimeLine::Render(CEventCollector& eventCollector) {
   m_mouseHandler.Update(*this);
 
   if (!intervals.empty()) {
-    float width = 0.0f;
-    if (intervals.size() > 1)
-      width = (intervals.back().endTime - intervals.front().startTime) * scale;
+    float width = (intervals.back().endTime - intervals.front().startTime);
+
+    const float winWidth = ImGui::GetWindowWidth();
+
+    const float coef = winWidth / width;
 
     ImGui::BeginChild("scrolling2",
-                      ImVec2(width, ImGui::GetFrameHeightWithSpacing() * 6),
-                      false);
+                      ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 6), false);
 
-    const int epoch = intervals[0].startTime;
+    m_begin = intervals.front().startTime;
+    m_end = intervals.back().endTime;
+
+    static bool bOnce = false;
+
+    // TODO:rework
+    if (!bOnce) {
+      bOnce = true;
+      m_viewBegin = m_begin;
+      m_viewEnd = m_end;
+    }
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
     for (const auto& interval : intervals) {
-      ImDrawList* draw_list = ImGui::GetWindowDrawList();
+      if (interval.endTime > m_viewBegin || interval.startTime < m_viewEnd) {
+        const ImVec2 p = ImGui::GetCursorScreenPos();
+        static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
+        const ImU32 col32 = ImColor(col);
 
-      const ImVec2 p = ImGui::GetCursorScreenPos();
-      static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-      const ImU32 col32 = ImColor(col);
+        const float x1 =
+            p.x + (interval.startTime - m_viewBegin) * coef * m_scale;
+        const float y1 = p.y + 30.0f;
 
-      const float x1 = p.x + (interval.startTime - epoch) * scale;
-      const float y1 = p.y + 30.0f;
+        const float x2 =
+            p.x + (interval.endTime - m_viewBegin) * coef * m_scale;
+        const float y2 = p.y + 50.0f;
 
-      const float x2 = p.x + (interval.endTime - epoch) * scale;
-      const float y2 = p.y + 50.0f;
-
-      draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+        draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+      }
     }
     ImGui::EndChild();
   }
@@ -116,9 +157,45 @@ void TimeLine::Render(CEventCollector& eventCollector) {
 void TimeLine::OnMouseDown() { std::cout << "OnMouseDown" << std::endl; }
 
 void TimeLine::OnMouseMoved(float dx, float dy) {
-  std::cout << "OnMouseMoved: " << dx << " " << dy << std::endl;
+  ImGuiIO& io = ImGui::GetIO();
+
+  float width = m_end - m_begin;
+  const float winWidth = ImGui::GetWindowWidth();
+  const float coef = winWidth / width;
+
+  float offset = dx / coef / m_scale;
+
+  if (offset < 0) {
+    if (m_viewBegin + offset < m_begin) offset = 0.0f;
+  } else if (offset > 0) {
+    if (m_viewEnd + offset > m_end) offset = 0.0f;
+  }
+
+  m_viewBegin += offset;
+  m_viewEnd += offset;
+  std::cout << "OnMouseMoved: " << dx << " " << offset << " " << m_viewBegin
+            << " " << m_viewEnd << std::endl;
 }
 
 void TimeLine::OnMouseUp() { std::cout << "OnMouseUp" << std::endl; }
 
 void TimeLine::OnMouseClicked() { std::cout << "OnMouseClicked" << std::endl; }
+
+void TimeLine::OnMouseWheel(float value) {
+  float old = m_scale;
+  m_scale = std::max(1.0f, m_scale + value);
+
+  float currWidth = m_viewEnd - m_viewBegin;
+
+  float width = m_end - m_begin;
+  float newWidth = width / m_scale;
+
+  float sign = (m_scale / old > 1.0f) ? 1.0f : -1.0f;
+
+  m_viewBegin = m_viewBegin + sign * fabs(currWidth - newWidth) / 2.0f;
+  m_viewEnd = m_viewEnd - sign * fabs(currWidth - newWidth) / 2.0f;
+
+  assert(m_viewBegin < m_viewEnd);
+
+  std::cout << "wheel: " << m_viewBegin << " " << m_viewEnd << std::endl;
+}
