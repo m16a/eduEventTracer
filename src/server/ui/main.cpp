@@ -8,6 +8,8 @@
 // standard header to access modern OpenGL functions easily. Alternatives are
 // GLEW, Glad, etc.)
 
+#include "App.h"
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -19,6 +21,7 @@
 //#include <glew.h>
 #include <GLFW/glfw3.h>
 
+#include <unistd.h>
 #include <iostream>
 #include <sstream>
 #include <thread>
@@ -38,71 +41,13 @@ void DrawCout(std::stringstream& logBuffer) {
   ImGui::EndChild();
 }
 
-void DrawIntervals(CEventCollector& eventCollector) {
-  const std::vector<STimeIntervalArg>& intervals =
-      eventCollector.GetIntervals();
-
-  static float scale = 1.0f;
-  ImGui::DragFloat("Scale", &scale, 0.01f, 0.01f, 2.0f, "%.2f");
-
-  ImGui::BeginChild("scrolling",
-                    ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 7 + 30),
-                    true, ImGuiWindowFlags_HorizontalScrollbar);
-
-  if (!intervals.empty()) {
-    float width = 0.0f;
-    if (intervals.size() > 1)
-      width = (intervals.back().endTime - intervals.front().startTime) * scale;
-
-    ImGui::BeginChild("scrolling2",
-                      ImVec2(width, ImGui::GetFrameHeightWithSpacing() * 6),
-                      false);
-
-    const int epoch = intervals[0].startTime;
-    for (const auto& interval : intervals) {
-      ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-      const ImVec2 p = ImGui::GetCursorScreenPos();
-      static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-      const ImU32 col32 = ImColor(col);
-
-      const float x1 = p.x + (interval.startTime - epoch) * scale;
-      const float y1 = p.y + 30.0f;
-
-      const float x2 = p.x + (interval.endTime - epoch) * scale;
-      const float y2 = p.y + 50.0f;
-
-      draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
-    }
-    ImGui::EndChild();
-  }
-
-  ImGui::EndChild();
-}
-
 void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
               std::stringstream& logBuffer) {
   static bool show_demo_window = true;
-  static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-  // Poll and handle events (inputs, window resize, etc.)
-  // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell
-  // if dear imgui wants to use your inputs.
-  // - When io.WantCaptureMouse is true, do not dispatch mouse input data to
-  // your main application.
-  // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data
-  // to your main application.
-  // Generally you may always pass all inputs to dear imgui, and hide them from
-  // your application based on those two flags.
-  glfwPollEvents();
-
-  // Start the ImGui frame
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
-  ImGui::NewFrame();
 
   {
     ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove);
+    // ImGui::Begin("Window");
     static bool bIsCapturing = false;
 
     bool prevIsCapturing = bIsCapturing;
@@ -123,7 +68,6 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
       ImGui::Text("Non capturing");
     }
 
-    DrawIntervals(eventCollector);
     DrawCout(logBuffer);
 
     ImGui::End();
@@ -140,19 +84,6 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
                                   // the demo initial state a bit more friendly!
     ImGui::ShowDemoWindow(&show_demo_window);
   }
-
-  // Rendering
-  ImGui::Render();
-  int display_w, display_h;
-  glfwMakeContextCurrent(window);
-  glfwGetFramebufferSize(window, &display_w, &display_h);
-  glViewport(0, 0, display_w, display_h);
-  glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-  glClear(GL_COLOR_BUFFER_BIT);
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-  glfwMakeContextCurrent(window);
-  glfwSwapBuffers(window);
 }
 
 int main(int, char**) {
@@ -166,7 +97,7 @@ int main(int, char**) {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
   GLFWwindow* window =
-      glfwCreateWindow(1280, 720, "eduEventtracer", NULL, NULL);
+      glfwCreateWindow(1600, 1000, "eduEventtracer", NULL, NULL);
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);  // Enable vsync
   gl3wInit();
@@ -216,8 +147,9 @@ int main(int, char**) {
 
   // Main loop
   CEventCollector ec;
-
   ec.DebugGenerateSamples();
+
+  App app;
 
   std::thread t([&ec] {
     while (true) {
@@ -231,8 +163,48 @@ int main(int, char**) {
     std::streambuf* old = std::cout.rdbuf(logBuffer.rdbuf());
 
     // ec.Update();
+
+    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // Poll and handle events (inputs, window resize, etc.)
+    // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to
+    // tell
+    // if dear imgui wants to use your inputs.
+    // - When io.WantCaptureMouse is true, do not dispatch mouse input data to
+    // your main application.
+    // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input
+    // data
+    // to your main application.
+    // Generally you may always pass all inputs to dear imgui, and hide them
+    // from
+    // your application based on those two flags.
+    glfwPollEvents();
+
+    // Start the ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    app.Update(ec);
+
     UpdateUI(window, ec, logBuffer);
+
+    // Rendering
+    ImGui::Render();
+    int display_w, display_h;
+    glfwMakeContextCurrent(window);
+    glfwGetFramebufferSize(window, &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    glfwMakeContextCurrent(window);
+    glfwSwapBuffers(window);
     std::cout.rdbuf(old);
+
+    // TODO:support win
+    usleep(10000);
   }
 
   // Cleanup
