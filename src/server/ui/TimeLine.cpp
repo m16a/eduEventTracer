@@ -98,11 +98,12 @@ void TimeLine::Render(CEventCollector& eventCollector) {
   ImGui::Begin("Window2", nullptr, ImGuiWindowFlags_NoMove);
   // ImGui::Begin("Window2");
 
+  const float rootWinHeight = ImGui::GetWindowHeight();
   ImGui::DragFloat("Scale", &m_scale, 0.01f, 0.01f, 2.0f, "%.2f");
 
   ImGui::BeginChild("scrolling",
-                    ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 20 + 30),
-                    true, ImGuiWindowFlags_HorizontalScrollbar);
+                    // ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 20 + 30),
+                    ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
 
   m_mouseHandler.Update(*this);
 
@@ -113,8 +114,10 @@ void TimeLine::Render(CEventCollector& eventCollector) {
 
     const float coef = winWidth / width;
 
-    ImGui::BeginChild("scrolling2",
-                      ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 6), false);
+    ImGui::BeginChild(
+        "scrolling2",
+        // ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 20 + 30),
+        ImVec2(0, 0), false);
 
     m_begin = intervals.front().startTime;
     m_end = intervals.back().endTime;
@@ -146,6 +149,7 @@ void TimeLine::Render(CEventCollector& eventCollector) {
 
         draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
       }
+      RenderMarks();
     }
     ImGui::EndChild();
   }
@@ -198,4 +202,31 @@ void TimeLine::OnMouseWheel(float value) {
   assert(m_viewBegin < m_viewEnd);
 
   std::cout << "wheel: " << m_viewBegin << " " << m_viewEnd << std::endl;
+}
+
+void TimeLine::RenderMarks() {
+  const int kMarksCount = 6;
+
+  ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+  const float winWidth = ImGui::GetWindowWidth();
+  const float winHeight = ImGui::GetWindowHeight();
+  const ImVec2 p = ImGui::GetCursorScreenPos();
+
+  static ImVec4 col = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+  const ImU32 col32 = ImColor(col);
+
+  char buff[50];
+  for (int i = 0; i < kMarksCount; ++i) {
+    float value =
+        m_viewBegin + (m_viewEnd - m_viewBegin) * (i + 1) / (kMarksCount + 1);
+
+    const float x = p.x + winWidth * (i + 1) / (kMarksCount + 1);
+    const float y1 = p.y + winHeight - 20.0f;
+    const float y2 = p.y + winHeight;
+    draw_list->AddLine(ImVec2(x, y1), ImVec2(x, y2), col32);
+
+    snprintf(buff, sizeof(buff), "%.2f ms", value);
+    draw_list->AddText(ImVec2(x + 4.0f, y1 + 5.0f), col32, buff);
+  }
 }

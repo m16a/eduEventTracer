@@ -33,6 +33,7 @@ class TimeLine : public MouseListener {
   MouseHandler m_mouseHandler;
 
  private:
+  void RenderMarks();
   void OnMouseDown() override;
   void OnMouseMoved(float dx, float dy) override;
   void OnMouseUp() override;
