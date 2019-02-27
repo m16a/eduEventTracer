@@ -21,9 +21,9 @@ void Sleep10ms() {
 }
 
 int main() {
-  CEventProvider ep;
   srand(time(NULL));
   while (true) {
+    MainFrame();
     std::chrono::high_resolution_clock::time_point start =
         std::chrono::high_resolution_clock::now();
     int startMs = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -39,13 +39,11 @@ int main() {
                     end.time_since_epoch())
                     .count();
 
-    ep.Update();
-
     STimeIntervalArg a;
     a.startTime = startMs;
     a.endTime = endMs;
 
-    ep.StoreEvent(a);
+    ProfileEvent(a);
 
     Sleep10ms();
   }

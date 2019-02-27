@@ -10,7 +10,7 @@ add_library(server ${SOURCES})
 find_library(PROTOCOL_LINK_LIB Protocol ${CMAKE_SOURCE_DIR}/src/protocol/)
 include_directories(${CMAKE_SOURCE_DIR}/src/protocol/include/ include)
 
-target_link_libraries(server ${PROTOCOL_LINK_LIB})
+target_link_libraries(server ${PROTOCOL_LINK_LIB} pthread)
 
 #formating
 add_custom_command(TARGET server

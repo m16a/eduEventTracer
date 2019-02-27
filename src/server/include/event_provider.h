@@ -4,8 +4,11 @@
 
 struct STimeIntervalArg;
 
+void MainFrame();
+void ProfileEvent(const STimeIntervalArg& event);
+
 class CEventProvider : public CServer {
-  enum class EState { Disconnected, Idle, Capturing };
+  enum class EState { Listening, Idle, Capturing };
 
  public:
   CEventProvider();
@@ -22,9 +25,10 @@ class CEventProvider : public CServer {
  private:
   void GoToState(EState s);
   virtual void OnHostDisconnect() override;
+  virtual void OnNewListener() override;
   void SendCollectedData();
 
  private:
   std::vector<STimeIntervalArg> m_storedEvents;
-  EState m_state{EState::Disconnected};
+  EState m_state{EState::Listening};
 };

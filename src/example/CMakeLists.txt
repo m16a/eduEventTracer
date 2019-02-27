@@ -13,7 +13,7 @@ find_library(SERVER_LINK_LIB server ${CMAKE_SOURCE_DIR}/src/server/)
 include_directories(${CMAKE_SOURCE_DIR}/src/server/include/)
 include_directories(${CMAKE_SOURCE_DIR}/src/protocol/include/)
 
-target_link_libraries(test_app ${SERVER_LINK_LIB} ${PROTOCOL_LINK_LIB})
+target_link_libraries(test_app ${SERVER_LINK_LIB} ${PROTOCOL_LINK_LIB} pthread)
 
 
 #formating

@@ -48,6 +48,17 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
   {
     ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove);
     // ImGui::Begin("Window");
+
+    if (ImGui::Button("Button")) {
+      if (!eventCollector.IsConnected()) eventCollector.Connect();
+    }
+
+    if (eventCollector.IsConnected()) {
+      ImGui::Text("Connected");
+    } else {
+      ImGui::Text("Disconnected");
+    }
+
     static bool bIsCapturing = false;
 
     bool prevIsCapturing = bIsCapturing;

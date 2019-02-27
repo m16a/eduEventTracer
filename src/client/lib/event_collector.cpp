@@ -14,6 +14,9 @@ CEventCollector::~CEventCollector() {
   // TODO:unsubscribe from msgs
 }
 
+void CEventCollector::Connect() { GoToState(EState::Connecting); }
+bool CEventCollector::IsConnected() { return m_state != EState::Disconnected; }
+
 void CEventCollector::StartCapture() {
   PostEvent(EMsgType::StartCapture, SEmptyArg());
   GoToState(EState::Capturing);
@@ -21,16 +24,19 @@ void CEventCollector::StartCapture() {
 
 void CEventCollector::StopCapture() {
   PostEvent(EMsgType::StopCapture, SEmptyArg());
-  GoToState(EState::ListenerExist);
+  GoToState(EState::Connected);
 }
 
 void CEventCollector::Update() {
   CClient::Update();
 
   switch (m_state) {
-    case EState::Listening:
+    case EState::Disconnected:
       break;
-    case EState::ListenerExist:
+    case EState::Connecting:
+      if (ConnectSync("127.0.0.1", 60000)) GoToState(EState::Connected);
+      break;
+    case EState::Connected:
       break;
     case EState::Capturing:
       break;
@@ -42,9 +48,9 @@ void CEventCollector::GoToState(EState s) {
   std::cout << "Entering state: " << static_cast<int>(s) << std::endl;
 }
 
-void CEventCollector::OnNewListener() { GoToState(EState::ListenerExist); }
-
-void CEventCollector::OnListenerDisonnected() { GoToState(EState::Listening); }
+void CEventCollector::OnListenerDisonnected() {
+  GoToState(EState::Disconnected);
+}
 
 bool CEventCollector::OnSampleEventInt(SSampleIntArg& arg) {
   std::cout << "Recived sample: " << arg.val << std::endl;
