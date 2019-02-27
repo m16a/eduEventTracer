@@ -40,9 +40,23 @@ bool CEventProvider::OnStartCapture(SEmptyArg&) {
   return true;
 }
 
+void CEventProvider::SendCollectedData() {
+  std::cout << "Send starting..." << std::endl;
+
+  for (auto& e : m_storedEvents) PostEvent(EMsgType::TimeInterval, e);
+
+  std::cout << "Send completed" << std::endl;
+}
+
 bool CEventProvider::OnStopCapture(SEmptyArg&) {
+  SendCollectedData();
+  m_storedEvents.clear();
   GoToState(EState::Idle);
   return true;
 }
 
 bool CEventProvider::CanPostEvents() { return m_state == EState::Capturing; }
+
+void CEventProvider::StoreEvent(const STimeIntervalArg& timeIntervalEvent) {
+  m_storedEvents.push_back(timeIntervalEvent);
+}

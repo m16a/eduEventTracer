@@ -147,7 +147,7 @@ int main(int, char**) {
 
   // Main loop
   CEventCollector ec;
-  ec.DebugGenerateSamples();
+  // ec.DebugGenerateSamples();
 
   App app;
 

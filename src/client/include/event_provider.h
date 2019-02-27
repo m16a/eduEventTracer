@@ -2,6 +2,8 @@
 
 #include "client.h"
 
+struct STimeIntervalArg;
+
 class CEventProvider : public CClient {
   enum class EState { Disconnected, Idle, Capturing };
 
@@ -15,10 +17,14 @@ class CEventProvider : public CClient {
   bool OnStartCapture(SEmptyArg&);
   bool OnStopCapture(SEmptyArg&);
 
+  void StoreEvent(const STimeIntervalArg& timeIntervalEvent);
+
  private:
   void GoToState(EState s);
   virtual void OnHostDisconnect() override;
+  void SendCollectedData();
 
  private:
+  std::vector<STimeIntervalArg> m_storedEvents;
   EState m_state{EState::Disconnected};
 };

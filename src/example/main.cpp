@@ -45,7 +45,7 @@ int main() {
     a.startTime = startMs;
     a.endTime = endMs;
 
-    ep.PostEvent(EMsgType::TimeInterval, a);
+    ep.StoreEvent(a);
 
     Sleep10ms();
   }
