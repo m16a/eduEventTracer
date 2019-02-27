@@ -2,7 +2,7 @@
 
 #include "endpoint.h"
 
-class CClient : public CEndPoint {
+class CServer : public CEndPoint {
  public:
-  CClient();
+  CServer();
 };

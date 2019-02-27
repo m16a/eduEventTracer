@@ -1,10 +1,10 @@
 #pragma once
 
-#include "client.h"
+#include "server.h"
 
 struct STimeIntervalArg;
 
-class CEventProvider : public CClient {
+class CEventProvider : public CServer {
   enum class EState { Disconnected, Idle, Capturing };
 
  public:

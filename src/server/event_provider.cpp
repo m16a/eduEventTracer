@@ -24,7 +24,7 @@ void CEventProvider::Update() {
       break;
   }
 
-  if (m_state != EState::Disconnected) CClient::Update();
+  if (m_state != EState::Disconnected) CServer::Update();
 }
 
 void CEventProvider::GoToState(EState s) {

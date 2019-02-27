@@ -1,7 +1,7 @@
 #pragma once
 #include "endpoint.h"
 
-class CServer : public CEndPoint {
+class CClient : public CEndPoint {
  public:
-  CServer();
+  CClient();
 };

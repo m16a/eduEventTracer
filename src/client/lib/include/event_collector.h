@@ -1,8 +1,8 @@
 #pragma once
 
-#include "server.h"
+#include "client.h"
 
-class CEventCollector : public CServer {
+class CEventCollector : public CClient {
   enum class EState { Listening, ListenerExist, Capturing };
 
  public:

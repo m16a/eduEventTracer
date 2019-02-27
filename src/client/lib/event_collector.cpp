@@ -25,7 +25,7 @@ void CEventCollector::StopCapture() {
 }
 
 void CEventCollector::Update() {
-  CServer::Update();
+  CClient::Update();
 
   switch (m_state) {
     case EState::Listening:
