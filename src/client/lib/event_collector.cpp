@@ -28,7 +28,8 @@ void CEventCollector::StopCapture() {
 }
 
 void CEventCollector::Update() {
-  CClient::Update();
+  if (m_state != EState::Disconnected && m_state != EState::Connecting)
+    CClient::Update();
 
   switch (m_state) {
     case EState::Disconnected:

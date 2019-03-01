@@ -49,7 +49,7 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
     ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove);
     // ImGui::Begin("Window");
 
-    if (ImGui::Button("Button")) {
+    if (ImGui::Button("Connect")) {
       if (!eventCollector.IsConnected()) eventCollector.Connect();
     }
 
@@ -62,7 +62,13 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
     static bool bIsCapturing = false;
 
     bool prevIsCapturing = bIsCapturing;
-    if (ImGui::Button("Button")) {
+
+    if (bIsCapturing) {
+      if (ImGui::Button("Stop Capture")) {
+        bIsCapturing = !bIsCapturing;
+      }
+
+    } else if (ImGui::Button("Capture")) {
       bIsCapturing = !bIsCapturing;
     }
 
@@ -71,12 +77,6 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
         eventCollector.StartCapture();
       else
         eventCollector.StopCapture();
-    }
-
-    if (bIsCapturing) {
-      ImGui::Text("Capturing");
-    } else {
-      ImGui::Text("Non capturing");
     }
 
     DrawCout(logBuffer);
