@@ -61,7 +61,13 @@ bool CEventCollector::OnSampleEventInt(SSampleIntArg& arg) {
 bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
   std::cout << "TI: " << arg.endTime << " - " << arg.startTime << " = "
             << arg.endTime - arg.startTime << std::endl;
+
+  if (m_intervals.empty()) m_startEpoch = arg.startTime;
+
+  arg.startTime -= m_startEpoch;
+  arg.endTime -= m_startEpoch;
   m_intervals.emplace_back(arg);
+
   return true;
 }
 

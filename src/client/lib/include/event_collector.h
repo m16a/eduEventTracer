@@ -34,4 +34,5 @@ class CEventCollector : public CClient {
  private:
   EState m_state{EState::Disconnected};
   std::vector<STimeIntervalArg> m_intervals;
+  int m_startEpoch{0};  // TODO:rework on receiving all events as batch
 };
