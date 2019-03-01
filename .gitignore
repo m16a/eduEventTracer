@@ -16,4 +16,4 @@ CTestTestfile.cmake
 
 test_app
 run
-sv_ui
+client_ui
