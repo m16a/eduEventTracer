@@ -8,6 +8,8 @@ CEventCollector::CEventCollector() {
                   &CEventCollector::OnSampleEventInt);
   CEndPoint::Bind(EMsgType::TimeInterval, this,
                   &CEventCollector::OnTimeIntervalEvent);
+  CEndPoint::Bind(EMsgType::CapuredSizeFeedback, this,
+                  &CEventCollector::OnCapturedSizeFeedback);
 }
 
 CEventCollector::~CEventCollector() {
@@ -73,6 +75,10 @@ bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
 
 const std::vector<STimeIntervalArg>& CEventCollector::GetIntervals() const {
   return m_intervals;
+}
+
+bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedbakc& arg) {
+  m_capturedSize += arg.size;
 }
 
 void CEventCollector::DebugGenerateSamples() {

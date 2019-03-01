@@ -1,6 +1,7 @@
 #pragma once
 
 #include "server.h"
+#include "timer.h"
 
 struct STimeIntervalArg;
 
@@ -24,11 +25,18 @@ class CEventProvider : public CServer {
 
  private:
   void GoToState(EState s);
+  void OnStateEntered(EState s);
+  void OnStateLeaved(EState s);
+
   virtual void OnHostDisconnect() override;
   virtual void OnNewListener() override;
   void SendCollectedData();
 
  private:
   std::vector<STimeIntervalArg> m_storedEvents;
+
+  Timer m_FeedbakTimer;
+  const int m_kCaptureSizeFeedbackPeriodSec{1};
+
   EState m_state{EState::Listening};
 };

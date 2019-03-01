@@ -79,6 +79,10 @@ void UpdateUI(GLFWwindow* window, CEventCollector& eventCollector,
         eventCollector.StopCapture();
     }
 
+    ImGui::SameLine(100.0f);
+    ImGui::Text("Captured: %.2f MB",
+                eventCollector.GetCapturedSize() / 1000000.f);
+
     DrawCout(logBuffer);
 
     ImGui::End();

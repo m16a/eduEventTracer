@@ -48,6 +48,19 @@ void CEventProvider::Update() {
     case EState::Idle:
       break;
     case EState::Capturing:
+
+      if (m_FeedbakTimer.elapsedSeconds() > m_kCaptureSizeFeedbackPeriodSec) {
+        if (!m_storedEvents.empty()) {
+          size_t capturedBytes =
+              m_storedEvents.size() * sizeof(m_storedEvents[0]);
+
+          SCatpuredSizeFeedbakc e;
+          e.size = capturedBytes;
+          PostEvent(EMsgType::CapuredSizeFeedback, e);
+        }
+
+        m_FeedbakTimer.start();  // requeue timer
+      }
       break;
   }
 
@@ -55,8 +68,18 @@ void CEventProvider::Update() {
 }
 
 void CEventProvider::GoToState(EState s) {
+  OnStateLeaved(m_state);
   m_state = s;
+  OnStateEntered(m_state);
   std::cout << "Entering state: " << static_cast<int>(s) << std::endl;
+}
+
+void CEventProvider::OnStateLeaved(EState s) {
+  if (s == EState::Capturing) m_FeedbakTimer.stop();
+}
+
+void CEventProvider::OnStateEntered(EState s) {
+  if (s == EState::Capturing) m_FeedbakTimer.start();
 }
 
 void CEventProvider::OnNewListener() { GoToState(EState::Idle); }

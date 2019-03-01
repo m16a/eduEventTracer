@@ -8,6 +8,7 @@ enum EMsgType {
   StopCapture,
   SampleEventInt,
   TimeInterval,
+  CapuredSizeFeedback,
   MsgCnt
 };
 
@@ -48,6 +49,20 @@ struct STimeIntervalArg {
       ser.buffer.resize(sizeof(int) * 2);
       memcpy(ser.buffer.data(), &startTime, 4);
       memcpy(ser.buffer.data() + 4, &endTime, 4);
+    }
+  }
+};
+
+struct SCatpuredSizeFeedbakc {
+  size_t size;
+
+  void Serialize(Ser& ser) {
+    if (ser.isReading) {
+      int* pVal = reinterpret_cast<int*>(ser.buffer.data());
+      size = *pVal;
+    } else {
+      ser.buffer.resize(4);
+      memcpy(ser.buffer.data(), &size, 4);
     }
   }
 };
