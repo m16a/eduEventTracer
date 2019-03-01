@@ -53,7 +53,7 @@ struct STimeIntervalArg {
   }
 };
 
-struct SCatpuredSizeFeedbakc {
+struct SCatpuredSizeFeedback {
   size_t size;
 
   void Serialize(Ser& ser) {

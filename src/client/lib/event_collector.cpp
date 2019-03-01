@@ -77,7 +77,7 @@ const std::vector<STimeIntervalArg>& CEventCollector::GetIntervals() const {
   return m_intervals;
 }
 
-bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedbakc& arg) {
+bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg) {
   m_capturedSize += arg.size;
 }
 

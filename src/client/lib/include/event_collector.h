@@ -23,7 +23,7 @@ class CEventCollector : public CClient {
   // callbacks
   bool OnSampleEventInt(SSampleIntArg& arg);
   bool OnTimeIntervalEvent(STimeIntervalArg& arg);
-  bool OnCapturedSizeFeedback(SCatpuredSizeFeedbakc& arg);
+  bool OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg);
 
   const std::vector<STimeIntervalArg>& GetIntervals() const;
 

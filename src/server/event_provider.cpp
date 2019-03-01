@@ -54,7 +54,7 @@ void CEventProvider::Update() {
           size_t capturedBytes =
               m_storedEvents.size() * sizeof(m_storedEvents[0]);
 
-          SCatpuredSizeFeedbakc e;
+          SCatpuredSizeFeedback e;
           e.size = capturedBytes;
           PostEvent(EMsgType::CapuredSizeFeedback, e);
         }
