@@ -3,10 +3,9 @@
 #include "server.h"
 #include "timer.h"
 
-struct STimeIntervalArg;
-
 void MainFrame();
 void ProfileEvent(const STimeIntervalArg& event);
+void ProfileEvent(const STracingInterval& event);
 
 class CEventProvider : public CServer {
   enum class EState { Listening, Idle, Capturing };
@@ -22,6 +21,7 @@ class CEventProvider : public CServer {
   bool OnStopCapture(SEmptyArg&);
 
   void StoreEvent(const STimeIntervalArg& timeIntervalEvent);
+  void StoreEvent(const STracingInterval& timeIntervalEvent);
 
  private:
   void GoToState(EState s);
@@ -34,9 +34,14 @@ class CEventProvider : public CServer {
 
  private:
   std::vector<STimeIntervalArg> m_storedEvents;
+  std::vector<STracingInterval> m_storedEvents2;
 
   Timer m_FeedbakTimer;
   const int m_kCaptureSizeFeedbackPeriodSec{1};
 
   EState m_state{EState::Listening};
 };
+
+#define TRACE(module, category)
+#define TRACE_MAIN_FRAME()
+#define TRACE_THREAD(name)

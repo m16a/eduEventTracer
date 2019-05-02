@@ -11,7 +11,7 @@ set(SOURCES main.cpp
 	${CMAKE_SOURCE_DIR}/3rd/imgui-master/imgui_demo.cpp
 	${CMAKE_SOURCE_DIR}/3rd/imgui-master/imgui_draw.cpp
 	${CMAKE_SOURCE_DIR}/3rd/imgui-master/examples/libs/gl3w/GL/gl3w.c
-		TimeLine.cpp TimeLine.h App.cpp App.h Timer.h)
+		TimeLine.cpp TimeLine.h App.cpp App.h)
 
 add_executable(client_ui ${SOURCES})
 
@@ -27,14 +27,10 @@ target_include_directories(client_ui PUBLIC ${GLFW3_INCLUDE_DIRS})
 
 find_package(OpenGL)
 
-find_library(CLIENT_LINK_LIB server ${CMAKE_SOURCE_DIR}/src/client/lib/)
 include_directories(${CMAKE_SOURCE_DIR}/src/client/lib/include/)
 include_directories(${CMAKE_SOURCE_DIR}/src/protocol/include/)
 
-find_library(PROTOCOL_LINK_LIB Protocol ${CMAKE_SOURCE_DIR}/src/protocol/)
-
-
-target_link_libraries(client_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} ${CLIENT_LINK_LIB} ${PROTOCOL_LINK_LIB} dl pthread)
+target_link_libraries(client_ui ${GLFW3_LIBRARIES} ${OPENGL_LIBRARIES} Protocol client dl pthread)
 
 #findnk_libraries(testapp ${SDL2_LIBRARIES})
 #include_directories(${CMAKE_SOURCE_DIR}/server/)

@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package Tracer;
+
+message  STracingInterval{
+	required int32 tid = 1;
+	required int32 startTime= 2;
+	required int32 endTime = 3;
+	
+	required string name = 4;
+	required string category = 5;
+	required int32 module = 6;
+}
+
+/*
+struct STracingInterval
+{
+	int tid;
+
+  int startTime;
+  int endTime;
+
+	std::string name;
+	std::string category;
+	int module;
+};
+*/
+

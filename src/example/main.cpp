@@ -43,7 +43,15 @@ int main() {
     a.startTime = startMs;
     a.endTime = endMs;
 
-    ProfileEvent(a);
+    STracingInterval a2;
+    a2.startTime = startMs;
+    a2.endTime = endMs;
+    a2.tid = 100;
+    a2.name = "NameFoo";
+    a2.category = "CategoryBar";
+    a2.module = 42;
+
+    ProfileEvent(a2);
 
     Sleep10ms();
   }

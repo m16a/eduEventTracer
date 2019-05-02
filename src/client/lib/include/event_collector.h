@@ -24,8 +24,10 @@ class CEventCollector : public CClient {
   bool OnSampleEventInt(SSampleIntArg& arg);
   bool OnTimeIntervalEvent(STimeIntervalArg& arg);
   bool OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg);
+  bool OnTracingIntervalEvent(STracingInterval& arg);
 
   const std::vector<STimeIntervalArg>& GetIntervals() const;
+  const std::vector<STracingInterval>& GetIntervals2() const;
 
   void DebugGenerateSamples();
 
@@ -37,6 +39,7 @@ class CEventCollector : public CClient {
  private:
   EState m_state{EState::Disconnected};
   std::vector<STimeIntervalArg> m_intervals;
+  std::vector<STracingInterval> m_intervals2;
   int m_startEpoch{0};  // TODO:rework on receiving all events as batch
   size_t m_capturedSize{0};
 };

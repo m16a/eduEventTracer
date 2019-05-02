@@ -10,6 +10,8 @@ CEventCollector::CEventCollector() {
                   &CEventCollector::OnTimeIntervalEvent);
   CEndPoint::Bind(EMsgType::CapuredSizeFeedback, this,
                   &CEventCollector::OnCapturedSizeFeedback);
+  CEndPoint::Bind(EMsgType::TracingInterval, this,
+                  &CEventCollector::OnTracingIntervalEvent);
 }
 
 CEventCollector::~CEventCollector() {
@@ -73,8 +75,25 @@ bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
   return true;
 }
 
+bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
+  std::cout << arg.name << " TI: " << arg.endTime << " - " << arg.startTime
+            << " = " << arg.endTime - arg.startTime << std::endl;
+
+  if (m_intervals2.empty()) m_startEpoch = arg.startTime;
+
+  arg.startTime -= m_startEpoch;
+  arg.endTime -= m_startEpoch;
+  m_intervals2.emplace_back(arg);
+
+  return true;
+}
+
 const std::vector<STimeIntervalArg>& CEventCollector::GetIntervals() const {
   return m_intervals;
+}
+
+const std::vector<STracingInterval>& CEventCollector::GetIntervals2() const {
+  return m_intervals2;
 }
 
 bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg) {

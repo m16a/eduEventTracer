@@ -32,6 +32,12 @@ void ProfileEvent(const STimeIntervalArg& event) {
   }
 }
 
+void ProfileEvent(const STracingInterval& event) {
+  if (gpEventProvider) {
+    gpEventProvider->StoreEvent(event);
+  }
+}
+
 CEventProvider::CEventProvider() {
   CEndPoint::Bind(EMsgType::StartCapture, this,
                   &CEventProvider::OnStartCapture);
@@ -111,4 +117,8 @@ bool CEventProvider::CanPostEvents() { return m_state == EState::Capturing; }
 
 void CEventProvider::StoreEvent(const STimeIntervalArg& timeIntervalEvent) {
   if (m_state == EState::Capturing) m_storedEvents.push_back(timeIntervalEvent);
+}
+
+void CEventProvider::StoreEvent(const STracingInterval& event) {
+  if (m_state == EState::Capturing) m_storedEvents2.push_back(event);
 }
