@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string.h>
+#include "MessageHub.h"
 #include "buffer.h"
 #include "protocol.pb.h"
 
@@ -77,18 +78,22 @@ struct STracingInterval {
   int startTime;
   int endTime;
 
-  const char* name;
-  const char* category;
+  std::string name;
+  std::string category;
   int module;
 
   void Serialize(Ser& ser) {
     if (ser.isReading) {
-      /*
-int* pVal = reinterpret_cast<int*>(ser.buffer.data());
-startTime = *pVal;
-pVal += 1;
-endTime = *pVal;
-      */
+      Tracer::STracingInterval interval;
+      interval.ParseFromArray(ser.buffer.data(), ser.buffer.size());
+
+      tid = interval.tid();
+      startTime = interval.starttime();
+      endTime = interval.endtime();
+
+      name = interval.name();
+      category = interval.category();
+      module = interval.module();
     } else {
       Tracer::STracingInterval interval;
       interval.set_tid(tid);
@@ -99,7 +104,9 @@ endTime = *pVal;
       interval.set_category(category);
       interval.set_module(module);
 
-			interval.SerializeToOstream
+      size_t size = interval.ByteSizeLong();
+      ser.buffer.resize(size);
+      interval.SerializeToArray(ser.buffer.data(), size);
 
       /*
 ser.buffer.resize(sizeof(int) * 2);
@@ -120,6 +127,8 @@ struct STracingMainFrame {
 struct STracingLegend {
   std::vector<std::pair<int, const char*>> threadNames;
 };
+
+void InitProtocol();
 
 /////////////////////
 /*
