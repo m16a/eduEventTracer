@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 CEventCollector::CEventCollector() {
+  InitProtocol();
   CEndPoint::Bind(EMsgType::SampleEventInt, this,
                   &CEventCollector::OnSampleEventInt);
   CEndPoint::Bind(EMsgType::TimeInterval, this,
@@ -79,11 +80,12 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
   std::cout << arg.name << " TI: " << arg.endTime << " - " << arg.startTime
             << " = " << arg.endTime - arg.startTime << std::endl;
 
-  if (m_intervals2.empty()) m_startEpoch = arg.startTime;
+  if (GetMessageHub().Get<STracingInterval>().messages.empty())
+    m_startEpoch = arg.startTime;
 
   arg.startTime -= m_startEpoch;
   arg.endTime -= m_startEpoch;
-  m_intervals2.emplace_back(arg);
+  GetMessageHub().Get<STracingInterval>().messages.emplace_back(arg);
 
   return true;
 }
@@ -93,7 +95,7 @@ const std::vector<STimeIntervalArg>& CEventCollector::GetIntervals() const {
 }
 
 const std::vector<STracingInterval>& CEventCollector::GetIntervals2() const {
-  return m_intervals2;
+  return GetMessageHub().Get<STracingInterval>().messages;
 }
 
 bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg) {

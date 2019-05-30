@@ -39,6 +39,7 @@ void ProfileEvent(const STracingInterval& event) {
 }
 
 CEventProvider::CEventProvider() {
+  InitProtocol();
   CEndPoint::Bind(EMsgType::StartCapture, this,
                   &CEventProvider::OnStartCapture);
   CEndPoint::Bind(EMsgType::StopCapture, this, &CEventProvider::OnStopCapture);
@@ -53,21 +54,17 @@ void CEventProvider::Update() {
       break;
     case EState::Idle:
       break;
-    case EState::Capturing:
-
+    case EState::Capturing: {
       if (m_FeedbakTimer.elapsedSeconds() > m_kCaptureSizeFeedbackPeriodSec) {
-        if (!m_storedEvents.empty()) {
-          size_t capturedBytes =
-              m_storedEvents.size() * sizeof(m_storedEvents[0]);
+        size_t capturedBytes = GetMessageHub().Size();
 
-          SCatpuredSizeFeedback e;
-          e.size = capturedBytes;
-          PostEvent(EMsgType::CapuredSizeFeedback, e);
-        }
-
-        m_FeedbakTimer.start();  // requeue timer
+        SCatpuredSizeFeedback e;
+        e.size = capturedBytes;
+        PostEvent(EMsgType::CapuredSizeFeedback, e);
       }
-      break;
+
+      m_FeedbakTimer.start();  // requeue timer
+    } break;
   }
 
   CServer::Update();
@@ -101,14 +98,15 @@ bool CEventProvider::OnStartCapture(SEmptyArg&) {
 void CEventProvider::SendCollectedData() {
   std::cout << "Send starting..." << std::endl;
 
-  for (auto& e : m_storedEvents) PostEvent(EMsgType::TimeInterval, e);
+  for (auto& e : GetMessageHub().Get<STracingInterval>().messages)
+    PostEvent(EMsgType::TracingInterval, e);
 
   std::cout << "Send completed" << std::endl;
 }
 
 bool CEventProvider::OnStopCapture(SEmptyArg&) {
   SendCollectedData();
-  m_storedEvents.clear();
+  GetMessageHub().Clear();
   GoToState(EState::Idle);
   return true;
 }
@@ -116,9 +114,12 @@ bool CEventProvider::OnStopCapture(SEmptyArg&) {
 bool CEventProvider::CanPostEvents() { return m_state == EState::Capturing; }
 
 void CEventProvider::StoreEvent(const STimeIntervalArg& timeIntervalEvent) {
-  if (m_state == EState::Capturing) m_storedEvents.push_back(timeIntervalEvent);
+  if (m_state == EState::Capturing)
+    GetMessageHub().Get<STimeIntervalArg>().messages.push_back(
+        timeIntervalEvent);
 }
 
 void CEventProvider::StoreEvent(const STracingInterval& event) {
-  if (m_state == EState::Capturing) m_storedEvents2.push_back(event);
+  if (m_state == EState::Capturing)
+    GetMessageHub().Get<STracingInterval>().messages.push_back(event);
 }

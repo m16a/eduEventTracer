@@ -6,12 +6,22 @@
 
 struct MessageContainerBase {
   virtual void SendOverNetwork() = 0;
+  virtual void Clear() = 0;
+  virtual size_t Size() = 0;
 };
 
 // TODO: add perthread storing
 template <typename T>
 struct MessageContainer : public MessageContainerBase {
   void SendOverNetwork() override {}
+  void Clear() override { messages.clear(); }
+  size_t Size() override {
+    size_t res = 0;
+
+    if (!messages.empty()) res = messages.size() * sizeof(messages[0]);
+
+    return res;
+  }
   std::vector<T> messages;
 };
 
@@ -28,7 +38,10 @@ class MessageHub {
   }
 
   template <typename T>
-  T& Get();
+  MessageContainer<T>& Get();
+
+  void Clear();
+  size_t Size();
 
  private:
   std::vector<std::unique_ptr<MessageContainerBase>> m_messageContainers;
@@ -50,12 +63,12 @@ void MessageHub::RegisterMessage() {
 }
 
 template <typename T>
-T& MessageHub::Get() {
+MessageContainer<T>& MessageHub::Get() {
   int id = GetTypeId<T>();
   assert(id < m_messageContainers.size());
   MessageContainerBase* p = m_messageContainers[id].get();
 
-  return *(static_cast<T*>(p));
+  return *(static_cast<MessageContainer<T>*>(p));
 }
 
 MessageHub& GetMessageHub();

@@ -56,8 +56,8 @@ void MouseHandler::Update(MouseListener& listener) {
 }
 
 void TimeLine::Render(CEventCollector& eventCollector) {
-  const std::vector<STimeIntervalArg>& intervals =
-      eventCollector.GetIntervals();
+  const std::vector<STracingInterval>& intervals =
+      eventCollector.GetIntervals2();
 
   ImGui::Begin("Window2", nullptr, ImGuiWindowFlags_NoMove);
   // ImGui::Begin("Window2");
