@@ -5,12 +5,27 @@
 #include "buffer.h"
 #include "protocol.pb.h"
 
+int GenerateMessageId();
+
+template <typename T>
+int GetMessageId() {
+  static int id = GenerateMessageId();
+  return id;
+}
+
+template <typename T>
+void RegisterServiceMessage() {
+  GetMessageId<T>();
+}
+
 enum EMsgType {
+  // internal
   StartCapture,
   StopCapture,
+  CapuredSizeFeedback,
+  // user
   SampleEventInt,
   TimeInterval,
-  CapuredSizeFeedback,
   TracingInterval,
   MsgCnt
 };
@@ -20,6 +35,10 @@ struct SEmptyArg {
 };
 
 bool Serialize(Ser& ser);
+
+struct ServiceStartCapture {};
+
+struct ServiceStopCapture {};
 
 struct SSampleIntArg {
   int val;
@@ -107,12 +126,6 @@ struct STracingInterval {
       size_t size = interval.ByteSizeLong();
       ser.buffer.resize(size);
       interval.SerializeToArray(ser.buffer.data(), size);
-
-      /*
-ser.buffer.resize(sizeof(int) * 2);
-memcpy(ser.buffer.data(), &startTime, 4);
-memcpy(ser.buffer.data() + 4, &endTime, 4);
-      */
     }
   }
 };
