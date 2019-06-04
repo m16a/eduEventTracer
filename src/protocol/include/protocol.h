@@ -18,27 +18,15 @@ void RegisterServiceMessage() {
   GetMessageId<T>();
 }
 
-enum EMsgType {
-  // internal
-  StartCapture,
-  StopCapture,
-  CapuredSizeFeedback,
-  // user
-  SampleEventInt,
-  TimeInterval,
-  TracingInterval,
-  MsgCnt
-};
+bool Serialize(Ser& ser);
 
-struct SEmptyArg {
+struct ServiceStartCapture {
   void Serialize(Ser& ser) {}
 };
 
-bool Serialize(Ser& ser);
-
-struct ServiceStartCapture {};
-
-struct ServiceStopCapture {};
+struct ServiceStopCapture {
+  void Serialize(Ser& ser) {}
+};
 
 struct SSampleIntArg {
   int val;

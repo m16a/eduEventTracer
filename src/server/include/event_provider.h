@@ -17,8 +17,8 @@ class CEventProvider : public CServer {
   virtual void Update() override;
   virtual bool CanPostEvents();
 
-  bool OnStartCapture(SEmptyArg&);
-  bool OnStopCapture(SEmptyArg&);
+  bool OnStartCapture(ServiceStartCapture&);
+  bool OnStopCapture(ServiceStopCapture&);
 
   void StoreEvent(const STimeIntervalArg& timeIntervalEvent);
   void StoreEvent(const STracingInterval& timeIntervalEvent);

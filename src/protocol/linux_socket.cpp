@@ -147,7 +147,10 @@ void CLinuxSocket::UpdateClient() {
     } else if (valread > 0) {
       buffer.resize(valread);
 
-      if (m_listener) m_listener->OnMsg(buffer);
+      if (m_listener) {
+        m_listener->OnMsg(buffer);
+        std::cout << "something was received\n";
+      }
     } else {
       std::cout << "read error: " << errno << ", valread: " << valread
                 << std::endl;

@@ -5,12 +5,16 @@
 #include "defines.h"
 #include "protocol.h"
 
+// TODO:delete
+#include <iostream>
+
+const constexpr int MaxMessageTypeCount = 100;
 class CDispatcher {
   using THndlr = std::function<bool(TBuff&)>;
 
  public:
   template <class TCaller, class argType>
-  void Bind(EMsgType type, TCaller* ownr, bool (TCaller::*callback)(argType&)) {
+  void Bind(TCaller* ownr, bool (TCaller::*callback)(argType&)) {
     auto lambda = [ownr, callback](TBuff& buffer) {
       Ser ser;
       ser.buffer = buffer;  // TODO:michaelsh:extra copy
@@ -21,11 +25,13 @@ class CDispatcher {
       return (ownr->*callback)(strct);
     };
 
-    m_hndlrs[type] = lambda;
+    int index = GetMessageId<argType>();
+    std::cout << "binded: " << index << std::endl;
+    m_hndlrs[index] = lambda;
   }
 
-  void OnMsg(EMsgType type, TBuff& buffer);
+  void OnMsg(int index, TBuff& buffer);
 
  private:
-  std::array<THndlr, EMsgType::MsgCnt> m_hndlrs;
+  std::array<THndlr, MaxMessageTypeCount> m_hndlrs;
 };

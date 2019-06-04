@@ -16,14 +16,13 @@ void CEndPoint::Listen() { m_pSock->Listen(); }
 void CEndPoint::Update() { m_pSock->Update(); }
 
 void CEndPoint::OnMsg(TBuff& buff) {
-  EMsgType type;
-
   if (buff.empty()) {
     std::cout << "received empty msg" << std::endl;
     return;
   }
 
-  type = static_cast<EMsgType>(buff[0]);
+  int type = static_cast<int>(buff[0]);
   buff.erase(buff.begin());  // TODO: memory shifting
+  std::cout << "recived msg: " << type << std::endl;
   m_dispatcher.OnMsg(type, buff);
 }

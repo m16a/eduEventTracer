@@ -5,14 +5,10 @@
 
 CEventCollector::CEventCollector() {
   InitProtocol();
-  CEndPoint::Bind(EMsgType::SampleEventInt, this,
-                  &CEventCollector::OnSampleEventInt);
-  CEndPoint::Bind(EMsgType::TimeInterval, this,
-                  &CEventCollector::OnTimeIntervalEvent);
-  CEndPoint::Bind(EMsgType::CapuredSizeFeedback, this,
-                  &CEventCollector::OnCapturedSizeFeedback);
-  CEndPoint::Bind(EMsgType::TracingInterval, this,
-                  &CEventCollector::OnTracingIntervalEvent);
+  CEndPoint::Bind(this, &CEventCollector::OnSampleEventInt);
+  CEndPoint::Bind(this, &CEventCollector::OnTimeIntervalEvent);
+  CEndPoint::Bind(this, &CEventCollector::OnCapturedSizeFeedback);
+  CEndPoint::Bind(this, &CEventCollector::OnTracingIntervalEvent);
 }
 
 CEventCollector::~CEventCollector() {
@@ -23,12 +19,12 @@ void CEventCollector::Connect() { GoToState(EState::Connecting); }
 bool CEventCollector::IsConnected() { return m_state != EState::Disconnected; }
 
 void CEventCollector::StartCapture() {
-  PostEvent(EMsgType::StartCapture, SEmptyArg());
+  PostEvent(ServiceStartCapture());
   GoToState(EState::Capturing);
 }
 
 void CEventCollector::StopCapture() {
-  PostEvent(EMsgType::StopCapture, SEmptyArg());
+  PostEvent(ServiceStopCapture());
   GoToState(EState::Connected);
 }
 

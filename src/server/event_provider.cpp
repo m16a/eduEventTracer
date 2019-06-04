@@ -40,9 +40,8 @@ void ProfileEvent(const STracingInterval& event) {
 
 CEventProvider::CEventProvider() {
   InitProtocol();
-  CEndPoint::Bind(EMsgType::StartCapture, this,
-                  &CEventProvider::OnStartCapture);
-  CEndPoint::Bind(EMsgType::StopCapture, this, &CEventProvider::OnStopCapture);
+  CEndPoint::Bind(this, &CEventProvider::OnStartCapture);
+  CEndPoint::Bind(this, &CEventProvider::OnStopCapture);
 }
 
 CEventProvider::~CEventProvider() {}
@@ -60,7 +59,7 @@ void CEventProvider::Update() {
 
         SCatpuredSizeFeedback e;
         e.size = capturedBytes;
-        PostEvent(EMsgType::CapuredSizeFeedback, e);
+        PostEvent(e);
       }
 
       m_FeedbakTimer.start();  // requeue timer
@@ -90,7 +89,7 @@ void CEventProvider::OnNewListener() { GoToState(EState::Idle); }
 void CEventProvider::OnHostDisconnect() { GoToState(EState::Listening); }
 
 // callbacks
-bool CEventProvider::OnStartCapture(SEmptyArg&) {
+bool CEventProvider::OnStartCapture(ServiceStartCapture&) {
   GoToState(EState::Capturing);
   return true;
 }
@@ -98,13 +97,12 @@ bool CEventProvider::OnStartCapture(SEmptyArg&) {
 void CEventProvider::SendCollectedData() {
   std::cout << "Send starting..." << std::endl;
 
-  for (auto& e : GetMessageHub().Get<STracingInterval>().messages)
-    PostEvent(EMsgType::TracingInterval, e);
+  for (auto& e : GetMessageHub().Get<STracingInterval>().messages) PostEvent(e);
 
   std::cout << "Send completed" << std::endl;
 }
 
-bool CEventProvider::OnStopCapture(SEmptyArg&) {
+bool CEventProvider::OnStopCapture(ServiceStopCapture&) {
   SendCollectedData();
   GetMessageHub().Clear();
   GoToState(EState::Idle);
