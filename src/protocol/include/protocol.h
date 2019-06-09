@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string.h>
-#include "MessageHub.h"
 #include "buffer.h"
 #include "protocol.pb.h"
 
@@ -123,6 +122,8 @@ struct STracingMainFrame {
 
   int startTime;
   int endTime;
+
+  void Serialize(Ser& ser) {}
 };
 
 struct STracingLegend {

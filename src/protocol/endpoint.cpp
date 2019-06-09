@@ -1,4 +1,5 @@
 #include "endpoint.h"
+#include "MessageHub.h"
 
 CEndPoint::CEndPoint(int port) {
   m_pSock = std::make_unique<CLinuxSocket>(port);
@@ -24,5 +25,6 @@ void CEndPoint::OnMsg(TBuff& buff) {
   int type = static_cast<int>(buff[0]);
   buff.erase(buff.begin());  // TODO: memory shifting
   std::cout << "recived msg: " << type << std::endl;
-  m_dispatcher.OnMsg(type, buff);
+
+  GetMessageHub().m_dispatcher.OnMsg(type, buff);
 }

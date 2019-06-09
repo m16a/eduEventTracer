@@ -1,7 +1,9 @@
 #include "event_provider.h"
+
 #include <unistd.h>
 #include <iostream>
 #include <thread>
+#include "MessageHub.h"
 
 std::unique_ptr<CEventProvider> gpEventProvider;
 
@@ -40,8 +42,8 @@ void ProfileEvent(const STracingInterval& event) {
 
 CEventProvider::CEventProvider() {
   InitProtocol();
-  CEndPoint::Bind(this, &CEventProvider::OnStartCapture);
-  CEndPoint::Bind(this, &CEventProvider::OnStopCapture);
+  GetMessageHub().Bind(this, &CEventProvider::OnStartCapture);
+  GetMessageHub().Bind(this, &CEventProvider::OnStopCapture);
 }
 
 CEventProvider::~CEventProvider() {}
@@ -99,8 +101,9 @@ void CEventProvider::SendCollectedData() {
 
   // assert(0 && "TODO: implement sending");
   // TODO:michaelsh: implement all sending
-  //for (auto& e : GetMessageHub().Get<STracingInterval>().GetTmp()) PostEvent(e);
-	GetMessageHub().SendOverNetwork(*this);
+  // for (auto& e : GetMessageHub().Get<STracingInterval>().GetTmp())
+  // PostEvent(e);
+  GetMessageHub().SendOverNetwork(*this);
 
   std::cout << "Send completed" << std::endl;
 }

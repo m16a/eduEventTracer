@@ -1,4 +1,5 @@
 #include "protocol.h"
+#include "MessageHub.h"
 
 bool Serialize(Ser& ser) { return true; }
 

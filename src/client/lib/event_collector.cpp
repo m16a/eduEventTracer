@@ -1,14 +1,16 @@
 #include "event_collector.h"
-#include <iostream>
 
 #include <unistd.h>
+#include <iostream>
+#include "MessageHub.h"
 
 CEventCollector::CEventCollector() {
   InitProtocol();
-  CEndPoint::Bind(this, &CEventCollector::OnSampleEventInt);
-  CEndPoint::Bind(this, &CEventCollector::OnTimeIntervalEvent);
-  CEndPoint::Bind(this, &CEventCollector::OnCapturedSizeFeedback);
-  CEndPoint::Bind(this, &CEventCollector::OnTracingIntervalEvent);
+
+  GetMessageHub().Bind(this, &CEventCollector::OnSampleEventInt);
+  GetMessageHub().Bind(this, &CEventCollector::OnTimeIntervalEvent);
+  GetMessageHub().Bind(this, &CEventCollector::OnCapturedSizeFeedback);
+  GetMessageHub().Bind(this, &CEventCollector::OnTracingIntervalEvent);
 }
 
 CEventCollector::~CEventCollector() {
