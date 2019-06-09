@@ -22,7 +22,7 @@ class CEndPoint : public ISocketListener {
     data.Serialize(ser);
     int id = GetMessageId<typename std::remove_reference<TArg>::type>();
     ser.buffer.insert(ser.buffer.begin(),
-                      static_cast<int>(id));  // TODO:avoid mem shifting
+                      static_cast<int>(id));  // TODO:michaelsh:avoid mem shifting
 
     std::cout << "posting msg:" << static_cast<int>(id) << std::endl;
 
@@ -36,7 +36,7 @@ class CEndPoint : public ISocketListener {
 
   bool ConnectSync(const char* ip, int port);
 
-  // TODO:set port
+  // TODO:michaelsh:set port
   void Listen();
   virtual void Update();
 

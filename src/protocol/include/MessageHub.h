@@ -1,28 +1,71 @@
 #pragma once
 
+#include <map>
 #include <memory>
+#include <mutex>
+#include <thread>
+#include <utility>
 #include <vector>
 #include "assert.h"
+#include "endpoint.h"
 
 struct MessageContainerBase {
-  virtual void SendOverNetwork() = 0;
+  virtual void SendOverNetwork(CEndPoint& endpoint) = 0;
   virtual void Clear() = 0;
   virtual size_t Size() = 0;
 };
 
-// TODO: add perthread storing
 template <typename T>
 struct MessageContainer : public MessageContainerBase {
-  void SendOverNetwork() override {}
-  void Clear() override { messages.clear(); }
+  using TMessages = std::vector<T>;
+  using TMessagesPerThreadMap = std::map<std::thread::id, TMessages>;
+
+  void SendOverNetwork(CEndPoint& endpoint) override {
+    if (!messagesPerThread.empty()) {
+      std::lock_guard<std::mutex> lock(mut);
+      for (auto& messages : messagesPerThread) 
+				for (auto& msg : messages)
+					endpoint.PostEvent(msg);
+    }
+	}
+
+  TMessages& GetTmp() { return messagesPerThread.begin()->second; }
+
+  void Clear() override {
+    std::lock_guard<std::mutex> lock(mut);
+    messagesPerThread.clear();
+  }
+
   size_t Size() override {
     size_t res = 0;
 
-    if (!messages.empty()) res = messages.size() * sizeof(messages[0]);
+    if (!messagesPerThread.empty()) {
+      std::lock_guard<std::mutex> lock(mut);
+      for (auto& con : messagesPerThread) res += con.second.size() * sizeof(T);
+    }
 
     return res;
   }
-  std::vector<T> messages;
+
+  void AddMessage(const T& message) {
+    std::thread::id tid = std::this_thread::get_id();
+
+    typename TMessagesPerThreadMap::iterator it;
+    {
+      std::lock_guard<std::mutex> lock(mut);
+      it = messagesPerThread.find(tid);
+
+      if (it == messagesPerThread.end())
+        it = messagesPerThread.insert(std::make_pair(tid, std::vector<T>()))
+                 .first;
+    }
+
+    it->second.emplace_back(message);
+  }
+
+ private:
+  TMessagesPerThreadMap messagesPerThread;
+  std::mutex mut;
 };
 
 class MessageHub {
@@ -33,8 +76,8 @@ class MessageHub {
   template <typename T>
   void RegisterMessage();
 
-  void SendOverNetwork() {
-    for (auto& c : m_messageContainers) c->SendOverNetwork();
+  void SendOverNetwork(CEndPoint& endpoint) {
+    for (auto& c : m_messageContainers) c->SendOverNetwork(endpoint);
   }
 
   template <typename T>

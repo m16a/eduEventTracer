@@ -4,6 +4,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <chrono>
+#include <thread>
 
 void RandomSleep() {
   struct timespec t, empty;
@@ -20,8 +21,31 @@ void Sleep10ms() {
   nanosleep(&t, &empty);
 }
 
+void WorkerThread() {}
+
+void PhysThread() {
+  while (true) {
+    RandomSleep();
+  }
+}
+
+void RenderThread() {
+  while (true) {
+    RandomSleep();
+  }
+}
+
+void StartThreads() {
+  std::thread rend(RenderThread);
+  rend.detach();
+
+  std::thread phys(PhysThread);
+  phys.detach();
+}
+
 int main() {
   srand(time(NULL));
+  StartThreads();
   while (true) {
     MainFrame();
     std::chrono::high_resolution_clock::time_point start =

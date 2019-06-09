@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include "client.h"
 
 class CEventCollector : public CClient {
@@ -40,6 +41,8 @@ class CEventCollector : public CClient {
   EState m_state{EState::Disconnected};
   std::vector<STimeIntervalArg> m_intervals;
   std::vector<STracingInterval> m_intervals2;
-  int m_startEpoch{0};  // TODO:rework on receiving all events as batch
+  int m_startEpoch{std::numeric_limits<int>::max()};  // TODO:rework on
+                                                      // receiving all events as
+                                                      // batch
   size_t m_capturedSize{0};
 };

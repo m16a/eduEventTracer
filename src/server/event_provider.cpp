@@ -97,7 +97,10 @@ bool CEventProvider::OnStartCapture(ServiceStartCapture&) {
 void CEventProvider::SendCollectedData() {
   std::cout << "Send starting..." << std::endl;
 
-  for (auto& e : GetMessageHub().Get<STracingInterval>().messages) PostEvent(e);
+  // assert(0 && "TODO: implement sending");
+  // TODO:michaelsh: implement all sending
+  //for (auto& e : GetMessageHub().Get<STracingInterval>().GetTmp()) PostEvent(e);
+	GetMessageHub().SendOverNetwork(*this);
 
   std::cout << "Send completed" << std::endl;
 }
@@ -113,11 +116,10 @@ bool CEventProvider::CanPostEvents() { return m_state == EState::Capturing; }
 
 void CEventProvider::StoreEvent(const STimeIntervalArg& timeIntervalEvent) {
   if (m_state == EState::Capturing)
-    GetMessageHub().Get<STimeIntervalArg>().messages.push_back(
-        timeIntervalEvent);
+    GetMessageHub().Get<STimeIntervalArg>().AddMessage(timeIntervalEvent);
 }
 
 void CEventProvider::StoreEvent(const STracingInterval& event) {
   if (m_state == EState::Capturing)
-    GetMessageHub().Get<STracingInterval>().messages.push_back(event);
+    GetMessageHub().Get<STracingInterval>().AddMessage(event);
 }
