@@ -63,19 +63,15 @@ int main() {
                     end.time_since_epoch())
                     .count();
 
-    STimeIntervalArg a;
+    STracingInterval a;
     a.startTime = startMs;
     a.endTime = endMs;
+    a.tid = 100;
+    a.name = "NameFoo";
+    a.category = "CategoryBar";
+    a.module = 42;
 
-    STracingInterval a2;
-    a2.startTime = startMs;
-    a2.endTime = endMs;
-    a2.tid = 100;
-    a2.name = "NameFoo";
-    a2.category = "CategoryBar";
-    a2.module = 42;
-
-    ProfileEvent(a2);
+    ProfileEvent(a);
 
     Sleep10ms();
   }

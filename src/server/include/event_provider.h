@@ -41,7 +41,3 @@ class CEventProvider : public CServer {
 
   EState m_state{EState::Listening};
 };
-
-#define TRACE(module, category)
-#define TRACE_MAIN_FRAME()
-#define TRACE_THREAD(name)

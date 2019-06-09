@@ -1,5 +1,8 @@
 #include "protocol.h"
 #include "MessageHub.h"
+#include "event_provider.h"
+
+#include <chrono>
 
 bool Serialize(Ser& ser) { return true; }
 
@@ -27,4 +30,25 @@ void InitProtocol() {
   RegisterMessage<STracingInterval>();
   RegisterMessage<STracingMainFrame>();
   RegisterMessage<STimeIntervalArg>();
+}
+
+STracingMainFrameGuard::STracingMainFrameGuard(){
+	msg.startTime = GetTimeNowMs();
+	msg.tid = gettid();
+}
+
+STracingMainFrameGuard::~STracingMainFrameGuard(){
+	msg.endTime = GetTimeNowMs();
+
+	ProfileEvent(msg);
+}
+
+int GetTimeNowMs()
+{
+    std::chrono::high_resolution_clock::time_point start =
+        std::chrono::high_resolution_clock::now();
+    int resultMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                      start.time_since_epoch())
+                      .count();
+		return resultMs;
 }

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "buffer.h"
 #include "protocol.pb.h"
+#include <sys/types.h>
 
 int GenerateMessageId();
 
@@ -116,7 +117,6 @@ struct STracingInterval {
     }
   }
 };
-
 struct STracingMainFrame {
   int tid;
 
@@ -125,6 +125,17 @@ struct STracingMainFrame {
 
   void Serialize(Ser& ser) {}
 };
+
+int GetTimeNowMs();
+
+class STracingMainFrameGuard{
+	STracingMainFrameGuard();
+	~STracingMainFrameGuard();
+};
+
+#define TRACE(module, category)
+#define TRACE_MAIN_FRAME() STracingMainFrameGuard tmp
+#define TRACE_THREAD(name)
 
 struct STracingLegend {
   std::vector<std::pair<int, const char*>> threadNames;
