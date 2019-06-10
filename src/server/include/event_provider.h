@@ -1,11 +1,13 @@
 #pragma once
 
+#include "MessageHub.h"
 #include "server.h"
 #include "timer.h"
 
 void MainFrame();
 void ProfileEvent(const STimeIntervalArg& event);
 void ProfileEvent(const STracingInterval& event);
+void ProfileEvent(const STracingMainFrame& event);
 
 class CEventProvider : public CServer {
   enum class EState { Listening, Idle, Capturing };
@@ -20,8 +22,11 @@ class CEventProvider : public CServer {
   bool OnStartCapture(ServiceStartCapture&);
   bool OnStopCapture(ServiceStopCapture&);
 
-  void StoreEvent(const STimeIntervalArg& timeIntervalEvent);
-  void StoreEvent(const STracingInterval& timeIntervalEvent);
+  template <typename T>
+  void StoreEvent(const T& event) {
+    if (m_state == EState::Capturing)
+      GetMessageHub().Get<T>().AddMessage(event);
+  }
 
  private:
   void GoToState(EState s);
@@ -41,3 +46,16 @@ class CEventProvider : public CServer {
 
   EState m_state{EState::Listening};
 };
+
+CEventProvider& GetEventProvider();
+
+class STracingMainFrameGuard {
+  STracingMainFrameGuard();
+  ~STracingMainFrameGuard();
+
+  STracingMainFrame msg;
+};
+
+#define TRACE(module, category)
+#define TRACE_MAIN_FRAME() STracingMainFrameGuard tmp
+#define TRACE_THREAD(name)

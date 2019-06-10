@@ -13,6 +13,7 @@
 #include "buffer.h"
 #include "defines.h"
 #include "protocol.h"
+#include "utills.h"
 
 // TODO:michaelsh: delete
 #include <iostream>
@@ -26,7 +27,7 @@ struct MessageContainerBase {
 template <typename T>
 struct MessageContainer : public MessageContainerBase {
   using TMessages = std::vector<T>;
-  using TMessagesPerThreadMap = std::map<std::thread::id, TMessages>;
+  using TMessagesPerThreadMap = std::map<int, TMessages>;
 
   void SendOverNetwork(CEndPoint& endpoint) override {
     if (!messagesPerThread.empty()) {
@@ -54,8 +55,8 @@ struct MessageContainer : public MessageContainerBase {
     return res;
   }
 
-  void AddMessage(const T& message) {
-    std::thread::id tid = std::this_thread::get_id();
+  void AddMessage(const T& message, int tid = -1) {
+    if (tid == -1) tid = GetTid();
 
     typename TMessagesPerThreadMap::iterator it;
     {

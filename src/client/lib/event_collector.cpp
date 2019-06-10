@@ -82,7 +82,7 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
 
   arg.startTime -= m_startEpoch;
   arg.endTime -= m_startEpoch;
-  GetMessageHub().Get<STracingInterval>().AddMessage(arg);
+  GetMessageHub().Get<STracingInterval>().AddMessage(arg, arg.tid);
 
   return true;
 }

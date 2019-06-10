@@ -1,11 +1,14 @@
 #include "event_provider.h"
+#include "utills.h"
 
 #include <unistd.h>
 #include <iostream>
 #include <thread>
-#include "MessageHub.h"
 
+// TODO:michaelsh: change to shared ptr
 std::unique_ptr<CEventProvider> gpEventProvider;
+
+CEventProvider& GetEventProvider() { return *gpEventProvider.get(); }
 
 void Sleep500ms() {
   struct timespec t, empty;
@@ -18,25 +21,14 @@ void MainFrame() {
   if (!gpEventProvider) {
     gpEventProvider = std::make_unique<CEventProvider>();
 
-    std::thread t([&gpEventProvider] {
+    CEventProvider& tmp = GetEventProvider();
+    std::thread t([&tmp] {
       while (true) {
         gpEventProvider->Update();
         Sleep500ms();
       }
     });
     t.detach();
-  }
-}
-
-void ProfileEvent(const STimeIntervalArg& event) {
-  if (gpEventProvider) {
-    gpEventProvider->StoreEvent(event);
-  }
-}
-
-void ProfileEvent(const STracingInterval& event) {
-  if (gpEventProvider) {
-    gpEventProvider->StoreEvent(event);
   }
 }
 
@@ -117,12 +109,21 @@ bool CEventProvider::OnStopCapture(ServiceStopCapture&) {
 
 bool CEventProvider::CanPostEvents() { return m_state == EState::Capturing; }
 
-void CEventProvider::StoreEvent(const STimeIntervalArg& timeIntervalEvent) {
-  if (m_state == EState::Capturing)
-    GetMessageHub().Get<STimeIntervalArg>().AddMessage(timeIntervalEvent);
+STracingMainFrameGuard::STracingMainFrameGuard() {
+  msg.startTime = GetTimeNowMs();
+  msg.tid = GetTid();
 }
 
-void CEventProvider::StoreEvent(const STracingInterval& event) {
-  if (m_state == EState::Capturing)
-    GetMessageHub().Get<STracingInterval>().AddMessage(event);
+STracingMainFrameGuard::~STracingMainFrameGuard() {
+  msg.endTime = GetTimeNowMs();
+
+  ProfileEvent(msg);
+}
+
+void ProfileEvent(const STracingInterval& event) {
+  GetEventProvider().StoreEvent(event);
+}
+
+void ProfileEvent(const STracingMainFrame& event) {
+  GetEventProvider().StoreEvent(event);
 }
