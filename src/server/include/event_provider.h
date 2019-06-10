@@ -49,13 +49,20 @@ class CEventProvider : public CServer {
 
 CEventProvider& GetEventProvider();
 
-class STracingMainFrameGuard {
+struct STracingMainFrameGuard {
   STracingMainFrameGuard();
   ~STracingMainFrameGuard();
 
   STracingMainFrame msg;
 };
 
-#define TRACE(module, category)
+struct STracingIntervalGuard {
+  STracingIntervalGuard();
+  ~STracingIntervalGuard();
+
+  STracingInterval msg;
+};
+
+#define TRACE(module, category) STracingIntervalGuard tmp
 #define TRACE_MAIN_FRAME() STracingMainFrameGuard tmp
 #define TRACE_THREAD(name)

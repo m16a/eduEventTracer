@@ -26,6 +26,7 @@ class CEventCollector : public CClient {
   bool OnTimeIntervalEvent(STimeIntervalArg& arg);
   bool OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg);
   bool OnTracingIntervalEvent(STracingInterval& arg);
+  bool OnTracingMainFrameEvent(STracingMainFrame& arg);
 
   const std::vector<STimeIntervalArg>& GetIntervals() const;
   const std::vector<STracingInterval>& GetIntervals2() const;

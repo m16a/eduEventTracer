@@ -25,12 +25,14 @@ void WorkerThread() {}
 
 void PhysThread() {
   while (true) {
+    TRACE("", "");
     RandomSleep();
   }
 }
 
 void RenderThread() {
   while (true) {
+    TRACE("", "");
     RandomSleep();
   }
 }
@@ -47,31 +49,12 @@ int main() {
   srand(time(NULL));
   StartThreads();
   while (true) {
-    MainFrame();
-    std::chrono::high_resolution_clock::time_point start =
-        std::chrono::high_resolution_clock::now();
-    int startMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      start.time_since_epoch())
-                      .count();
-
-    // fake payload
-    RandomSleep();
-
-    std::chrono::high_resolution_clock::time_point end =
-        std::chrono::high_resolution_clock::now();
-    int endMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    end.time_since_epoch())
-                    .count();
-
-    STracingInterval a;
-    a.startTime = startMs;
-    a.endTime = endMs;
-    a.tid = 100;
-    a.name = "NameFoo";
-    a.category = "CategoryBar";
-    a.module = 42;
-
-    ProfileEvent(a);
+    {
+      TRACE_MAIN_FRAME();
+      MainFrame();
+      // fake payload
+      RandomSleep();
+    }
 
     Sleep10ms();
   }

@@ -123,7 +123,21 @@ struct STracingMainFrame {
   int startTime;
   int endTime;
 
-  void Serialize(Ser& ser) {}
+  void Serialize(Ser& ser) {
+    if (ser.isReading) {
+      int* pVal = reinterpret_cast<int*>(ser.buffer.data());
+      startTime = *pVal;
+      pVal += 1;
+      endTime = *pVal;
+      pVal += 1;
+      tid = *pVal;
+    } else {
+      ser.buffer.resize(sizeof(int) * 3);
+      memcpy(ser.buffer.data(), &startTime, 4);
+      memcpy(ser.buffer.data() + 4, &endTime, 4);
+      memcpy(ser.buffer.data() + 8, &tid, 4);
+    }
+  }
 };
 
 int GetTimeNowMs();

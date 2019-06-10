@@ -11,6 +11,7 @@ CEventCollector::CEventCollector() {
   GetMessageHub().Bind(this, &CEventCollector::OnTimeIntervalEvent);
   GetMessageHub().Bind(this, &CEventCollector::OnCapturedSizeFeedback);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingIntervalEvent);
+  GetMessageHub().Bind(this, &CEventCollector::OnTracingMainFrameEvent);
 }
 
 CEventCollector::~CEventCollector() {
@@ -83,6 +84,16 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
   arg.startTime -= m_startEpoch;
   arg.endTime -= m_startEpoch;
   GetMessageHub().Get<STracingInterval>().AddMessage(arg, arg.tid);
+
+  return true;
+}
+
+bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
+  if (arg.startTime < m_startEpoch) m_startEpoch = arg.startTime;
+
+  arg.startTime -= m_startEpoch;
+  arg.endTime -= m_startEpoch;
+  GetMessageHub().Get<STracingMainFrame>().AddMessage(arg, arg.tid);
 
   return true;
 }
