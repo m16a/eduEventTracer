@@ -14,6 +14,7 @@ void InitServiceMessages() {
   RegisterServiceMessage<ServiceStartCapture>();
   RegisterServiceMessage<ServiceStopCapture>();
   RegisterServiceMessage<SCatpuredSizeFeedback>();
+  RegisterServiceMessage<ServiceTransferComplete>();
 }
 
 template <typename T>

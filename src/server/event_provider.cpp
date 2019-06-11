@@ -91,12 +91,9 @@ bool CEventProvider::OnStartCapture(ServiceStartCapture&) {
 void CEventProvider::SendCollectedData() {
   std::cout << "Send starting..." << std::endl;
 
-  // assert(0 && "TODO: implement sending");
-  // TODO:michaelsh: implement all sending
-  // for (auto& e : GetMessageHub().Get<STracingInterval>().GetTmp())
-  // PostEvent(e);
   GetMessageHub().SendOverNetwork(*this);
 
+  PostEvent(ServiceTransferComplete());
   std::cout << "Send completed" << std::endl;
 }
 

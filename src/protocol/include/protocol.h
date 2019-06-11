@@ -28,6 +28,10 @@ struct ServiceStopCapture {
   void Serialize(Ser& ser) {}
 };
 
+struct ServiceTransferComplete {
+  void Serialize(Ser& ser) {}
+};
+
 struct RenderContext {
   int viewBegin;
   int viewEnd;
@@ -35,6 +39,7 @@ struct RenderContext {
 
 struct ITimedEvent {
   virtual void Render(RenderContext&) = 0;
+  int tid;
 };
 
 struct STimePoint : public ITimedEvent {
@@ -89,8 +94,6 @@ struct SCatpuredSizeFeedback {
 // ----------------------- Tracing ------------------------
 
 struct STracingInterval : public STimeInterval {
-  int tid;
-
   int startTime;
   int endTime;
 
@@ -127,8 +130,6 @@ struct STracingInterval : public STimeInterval {
   }
 };
 struct STracingMainFrame : public STimeInterval {
-  int tid;
-
   int start;
   int end;
 

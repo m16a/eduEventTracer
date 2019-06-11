@@ -4,6 +4,9 @@
 #include <iostream>
 #include "MessageHub.h"
 
+const char* stateNames[] = {"Disconnected", "Connecting", "Connected",
+                            "Capturing",    "Transfer",   "Processing",
+                            "Analyze"};
 CEventCollector::CEventCollector() {
   InitProtocol();
 
@@ -11,6 +14,8 @@ CEventCollector::CEventCollector() {
   GetMessageHub().Bind(this, &CEventCollector::OnCapturedSizeFeedback);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingIntervalEvent);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingMainFrameEvent);
+
+  GetMessageHub().Bind(this, &CEventCollector::OnTransferComplete);
 }
 
 CEventCollector::~CEventCollector() {
@@ -27,7 +32,7 @@ void CEventCollector::StartCapture() {
 
 void CEventCollector::StopCapture() {
   PostEvent(ServiceStopCapture());
-  GoToState(EState::Connected);
+  GoToState(EState::Transfer);
 }
 
 void CEventCollector::Update() {
@@ -49,11 +54,18 @@ void CEventCollector::Update() {
 
 void CEventCollector::GoToState(EState s) {
   m_state = s;
-  std::cout << "Entering state: " << static_cast<int>(s) << std::endl;
+  std::cout << "Entering state: " << stateNames[static_cast<int>(s)]
+            << std::endl;
 }
 
 void CEventCollector::OnListenerDisonnected() {
   GoToState(EState::Disconnected);
+}
+
+bool CEventCollector::OnTransferComplete(ServiceTransferComplete& arg) {
+  GoToState(EState::Processing);
+  std::cout << "Transfer complete\n";
+  ;
 }
 
 bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
@@ -81,6 +93,8 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
 
   return true;
 }
+
+void CEventCollector::ProcessIncommingData() {}
 
 bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
   if (arg.begin < m_startEpoch) m_startEpoch = arg.begin;

@@ -9,6 +9,7 @@ class CEventCollector : public CClient {
     Connecting,
     Connected,
     Capturing,
+    Transfer,
     Processing,
     Analyze
   };
@@ -33,6 +34,7 @@ class CEventCollector : public CClient {
   bool OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg);
   bool OnTracingIntervalEvent(STracingInterval& arg);
   bool OnTracingMainFrameEvent(STracingMainFrame& arg);
+  bool OnTransferComplete(ServiceTransferComplete& arg);
 
   const std::vector<STimeIntervalArg>& GetIntervals() const;
   const std::vector<STracingInterval>& GetIntervals2() const;
@@ -40,6 +42,8 @@ class CEventCollector : public CClient {
   void DebugGenerateSamples();
 
   size_t GetCapturedSize() const { return m_capturedSize; }
+
+  void ProcessIncommingData();
 
  private:
   void GoToState(EState s);
