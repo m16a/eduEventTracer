@@ -25,7 +25,6 @@ void RegisterMessage() {
 void InitProtocol() {
   InitServiceMessages();
 
-  RegisterMessage<SSampleIntArg>();
   RegisterMessage<STracingInterval>();
   RegisterMessage<STracingMainFrame>();
   RegisterMessage<STimeIntervalArg>();

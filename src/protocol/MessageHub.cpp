@@ -16,5 +16,5 @@ void MessageHub::Clear() {
 
 size_t MessageHub::Size() {
   size_t total = 0;
-  for (auto& c : m_messageContainers) total += c->Size();
+  for (auto& c : m_messageContainers) total += c->SizeInBytes();
 }

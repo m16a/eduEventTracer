@@ -18,10 +18,13 @@
 // TODO:michaelsh: delete
 #include <iostream>
 
+struct ITimedEvent;
+
 struct MessageContainerBase {
   virtual void SendOverNetwork(CEndPoint& endpoint) = 0;
   virtual void Clear() = 0;
-  virtual size_t Size() = 0;
+  virtual size_t SizeInBytes() = 0;
+  virtual void GetAllNodes(std::vector<ITimedEvent*>& outNodes) = 0;
 };
 
 template <typename T>
@@ -44,7 +47,7 @@ struct MessageContainer : public MessageContainerBase {
     messagesPerThread.clear();
   }
 
-  size_t Size() override {
+  size_t SizeInBytes() override {
     size_t res = 0;
 
     if (!messagesPerThread.empty()) {
@@ -69,6 +72,11 @@ struct MessageContainer : public MessageContainerBase {
     }
 
     it->second.emplace_back(message);
+  }
+
+  void GetAllNodes(std::vector<ITimedEvent*>& outNodes) override {
+    for (auto& con : messagesPerThread)
+      for (auto& msg : con.second) outNodes.push_back(&msg);
   }
 
  private:
@@ -128,6 +136,14 @@ class MessageHub {
   }
 
   CDispatcher m_dispatcher;
+
+  void GetAllNodes(std::vector<ITimedEvent*>& outNodes) {
+    std::vector<ITimedEvent*> nodes;
+    for (auto& c : m_messageContainers) {
+      c->GetAllNodes(nodes);
+      outNodes.insert(outNodes.end(), nodes.begin(), nodes.end());
+    }
+  }
 
  private:
   std::vector<std::unique_ptr<MessageContainerBase>> m_messageContainers;

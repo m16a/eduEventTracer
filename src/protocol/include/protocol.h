@@ -28,20 +28,29 @@ struct ServiceStopCapture {
   void Serialize(Ser& ser) {}
 };
 
-struct SSampleIntArg {
-  int val;
-  void Serialize(Ser& ser) {
-    if (ser.isReading) {
-      int* pVal = reinterpret_cast<int*>(ser.buffer.data());
-      val = *pVal;
-    } else {
-      ser.buffer.resize(4);
-      memcpy(ser.buffer.data(), &val, 4);
-    }
-  }
+struct RenderContext {
+  int viewBegin;
+  int viewEnd;
 };
 
-struct STimeIntervalArg {
+struct ITimedEvent {
+  virtual void Render(RenderContext&) = 0;
+};
+
+struct STimePoint : public ITimedEvent {
+  int time;
+
+  void Render(RenderContext&) override {}
+};
+
+struct STimeInterval : public ITimedEvent {
+  int begin;
+  int end;
+
+  void Render(RenderContext&) override {}
+};
+
+struct STimeIntervalArg : public STimeInterval {
   int startTime;
   int endTime;
 
@@ -79,7 +88,7 @@ struct SCatpuredSizeFeedback {
 
 // ----------------------- Tracing ------------------------
 
-struct STracingInterval {
+struct STracingInterval : public STimeInterval {
   int tid;
 
   int startTime;
@@ -95,8 +104,8 @@ struct STracingInterval {
       interval.ParseFromArray(ser.buffer.data(), ser.buffer.size());
 
       tid = interval.tid();
-      startTime = interval.starttime();
-      endTime = interval.endtime();
+      begin = interval.starttime();
+      end = interval.endtime();
 
       name = interval.name();
       category = interval.category();
@@ -104,8 +113,8 @@ struct STracingInterval {
     } else {
       Tracer::STracingInterval interval;
       interval.set_tid(tid);
-      interval.set_starttime(startTime);
-      interval.set_endtime(endTime);
+      interval.set_starttime(begin);
+      interval.set_endtime(end);
 
       interval.set_name(name);
       interval.set_category(category);
@@ -117,24 +126,24 @@ struct STracingInterval {
     }
   }
 };
-struct STracingMainFrame {
+struct STracingMainFrame : public STimeInterval {
   int tid;
 
-  int startTime;
-  int endTime;
+  int start;
+  int end;
 
   void Serialize(Ser& ser) {
     if (ser.isReading) {
       int* pVal = reinterpret_cast<int*>(ser.buffer.data());
-      startTime = *pVal;
+      start = *pVal;
       pVal += 1;
-      endTime = *pVal;
+      end = *pVal;
       pVal += 1;
       tid = *pVal;
     } else {
       ser.buffer.resize(sizeof(int) * 3);
-      memcpy(ser.buffer.data(), &startTime, 4);
-      memcpy(ser.buffer.data() + 4, &endTime, 4);
+      memcpy(ser.buffer.data(), &start, 4);
+      memcpy(ser.buffer.data() + 4, &end, 4);
       memcpy(ser.buffer.data() + 8, &tid, 4);
     }
   }
@@ -147,29 +156,3 @@ struct STracingLegend {
 };
 
 void InitProtocol();
-
-/////////////////////
-/*
-
-plugin
-
-
-        struct add message
-        draw self
-
-        f.e.
-                context switches
-                I/O
-                network
-                tracing
-                        spans. events. categories, show per thread
-
-
-
-
-
-
-
-
-
-*/

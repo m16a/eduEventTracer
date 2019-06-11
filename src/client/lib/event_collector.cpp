@@ -7,7 +7,6 @@
 CEventCollector::CEventCollector() {
   InitProtocol();
 
-  GetMessageHub().Bind(this, &CEventCollector::OnSampleEventInt);
   GetMessageHub().Bind(this, &CEventCollector::OnTimeIntervalEvent);
   GetMessageHub().Bind(this, &CEventCollector::OnCapturedSizeFeedback);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingIntervalEvent);
@@ -57,11 +56,6 @@ void CEventCollector::OnListenerDisonnected() {
   GoToState(EState::Disconnected);
 }
 
-bool CEventCollector::OnSampleEventInt(SSampleIntArg& arg) {
-  std::cout << "Recived sample: " << arg.val << std::endl;
-  return true;
-}
-
 bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
   std::cout << "TI: " << arg.endTime << " - " << arg.startTime << " = "
             << arg.endTime - arg.startTime << std::endl;
@@ -89,10 +83,10 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
 }
 
 bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
-  if (arg.startTime < m_startEpoch) m_startEpoch = arg.startTime;
+  if (arg.begin < m_startEpoch) m_startEpoch = arg.begin;
 
-  arg.startTime -= m_startEpoch;
-  arg.endTime -= m_startEpoch;
+  arg.begin -= m_startEpoch;
+  arg.end -= m_startEpoch;
   GetMessageHub().Get<STracingMainFrame>().AddMessage(arg, arg.tid);
 
   return true;

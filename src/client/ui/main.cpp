@@ -34,7 +34,7 @@ void DrawCout(std::stringstream& logBuffer) {
   static ImGuiTextBuffer buffer;
   ImGui::Separator();
 
-  buffer.appendf(logBuffer.str().c_str());
+  buffer.appendf("%s", logBuffer.str().c_str());
   ImGui::BeginChild("Log");
   ImGui::TextUnformatted(buffer.begin(), buffer.end());
   ImGui::SetScrollHere(1.0f);

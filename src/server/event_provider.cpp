@@ -110,12 +110,12 @@ bool CEventProvider::OnStopCapture(ServiceStopCapture&) {
 bool CEventProvider::CanPostEvents() { return m_state == EState::Capturing; }
 
 STracingMainFrameGuard::STracingMainFrameGuard() {
-  msg.startTime = GetTimeNowMs();
+  msg.begin = GetTimeNowMs();
   msg.tid = GetTid();
 }
 
 STracingMainFrameGuard::~STracingMainFrameGuard() {
-  msg.endTime = GetTimeNowMs();
+  msg.end = GetTimeNowMs();
 
   ProfileEvent(msg);
 }
@@ -129,11 +129,11 @@ void ProfileEvent(const STracingMainFrame& event) {
 }
 
 STracingIntervalGuard::STracingIntervalGuard() {
-  msg.startTime = GetTimeNowMs();
+  msg.begin = GetTimeNowMs();
   msg.tid = GetTid();
 }
 
 STracingIntervalGuard::~STracingIntervalGuard() {
-  msg.endTime = GetTimeNowMs();
+  msg.end = GetTimeNowMs();
   ProfileEvent(msg);
 }

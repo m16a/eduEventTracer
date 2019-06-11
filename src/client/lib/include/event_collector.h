@@ -4,7 +4,14 @@
 #include "client.h"
 
 class CEventCollector : public CClient {
-  enum class EState { Disconnected, Connecting, Connected, Capturing };
+  enum class EState {
+    Disconnected,
+    Connecting,
+    Connected,
+    Capturing,
+    Processing,
+    Analyze
+  };
 
  public:
   CEventCollector();
@@ -22,7 +29,6 @@ class CEventCollector : public CClient {
   virtual void OnListenerDisonnected() override;
 
   // callbacks
-  bool OnSampleEventInt(SSampleIntArg& arg);
   bool OnTimeIntervalEvent(STimeIntervalArg& arg);
   bool OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg);
   bool OnTracingIntervalEvent(STracingInterval& arg);

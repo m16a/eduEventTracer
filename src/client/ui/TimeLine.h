@@ -1,11 +1,7 @@
-//
-// Created by m16a on 24.02.19.
-//
-
-#ifndef EDUEVENTTRACER_TIMELINE_H
-#define EDUEVENTTRACER_TIMELINE_H
+#pragma once
 
 #include <imgui.h>
+#include "struct_draw.h"
 
 struct MouseListener {
   virtual void OnMouseDown() = 0;
@@ -46,5 +42,3 @@ class TimeLine : public MouseListener {
   float m_viewEnd;
   float m_scale{1.0f};
 };
-
-#endif  // EDUEVENTTRACER_TIMELINE_H
