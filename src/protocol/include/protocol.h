@@ -32,10 +32,7 @@ struct ServiceTransferComplete {
   void Serialize(Ser& ser) {}
 };
 
-struct RenderContext {
-  int viewBegin;
-  int viewEnd;
-};
+struct RenderContext;
 
 struct ITimedEvent {
   virtual void Render(RenderContext&) = 0;
@@ -52,7 +49,7 @@ struct STimeInterval : public ITimedEvent {
   int begin;
   int end;
 
-  void Render(RenderContext&) override {}
+  void Render(RenderContext&) override;
 };
 
 struct STimeIntervalArg : public STimeInterval {

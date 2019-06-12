@@ -24,7 +24,7 @@ struct MouseHandler {
 
 class TimeLine : public MouseListener {
  public:
-  void Render(CEventCollector& eventCollector);
+  void Render(CEventCollector& eventCollector, ThreadsRender& thrdsRend);
 
   MouseHandler m_mouseHandler;
 

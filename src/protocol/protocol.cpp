@@ -39,3 +39,5 @@ int GetTimeNowMs() {
                      .count();
   return resultMs;
 }
+
+void STimeInterval::Render(RenderContext&) {}

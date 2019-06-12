@@ -166,6 +166,8 @@ int main(int, char**) {
 
   App app;
 
+  ec.m_delegate = &app;
+
   std::thread t([&ec] {
     while (true) {
       ec.Update();
@@ -221,6 +223,8 @@ int main(int, char**) {
     // TODO:support win
     usleep(10000);
   }
+
+  ec.m_delegate = nullptr;
 
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();

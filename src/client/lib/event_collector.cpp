@@ -65,7 +65,8 @@ void CEventCollector::OnListenerDisonnected() {
 bool CEventCollector::OnTransferComplete(ServiceTransferComplete& arg) {
   GoToState(EState::Processing);
   std::cout << "Transfer complete\n";
-  ;
+  ProcessIncommingData();
+  GoToState(EState::Analyze);
 }
 
 bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
@@ -94,7 +95,9 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
   return true;
 }
 
-void CEventCollector::ProcessIncommingData() {}
+void CEventCollector::ProcessIncommingData() {
+  if (m_delegate) m_delegate->OnRecivedData();
+}
 
 bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
   if (arg.begin < m_startEpoch) m_startEpoch = arg.begin;

@@ -55,40 +55,35 @@ void MouseHandler::Update(MouseListener& listener) {
   }
 }
 
-void TimeLine::Render(CEventCollector& eventCollector) {
-  const std::vector<STracingInterval>& intervals =
-      eventCollector.GetIntervals2();
-
+void TimeLine::Render(CEventCollector& eventCollector,
+                      ThreadsRender& thrdsRend) {
   ImGui::Begin("Window2", nullptr, ImGuiWindowFlags_NoMove);
   // ImGui::Begin("Window2");
 
   const float rootWinHeight = ImGui::GetWindowHeight();
   ImGui::DragFloat("Scale", &m_scale, 0.01f, 0.01f, 2.0f, "%.2f");
 
-  ImGui::BeginChild("scrolling",
-                    // ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 20 + 30),
-                    ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+  ImGui::BeginChild("scrolling", ImVec2(0, 0), true,
+                    ImGuiWindowFlags_HorizontalScrollbar);
 
   m_mouseHandler.Update(*this);
 
-  if (!intervals.empty()) {
-    float width = (intervals.back().endTime - intervals.front().startTime);
+  {
+    float width =
+        0.0f;  //(intervals.back().endTime - intervals.front().startTime);
 
     const float winWidth = ImGui::GetWindowWidth();
 
     const float coef = winWidth / width;
 
-    ImGui::BeginChild(
-        "scrolling2",
-        // ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 20 + 30),
-        ImVec2(0, 0), false);
+    ImGui::BeginChild("scrolling2", ImVec2(0, 0), false);
 
-    m_begin = intervals.front().startTime;
-    m_end = intervals.back().endTime;
+    m_begin = 0.0f;  // intervals.front().startTime;
+    m_end = 0.0f;    // intervals.back().endTime;
 
     static bool bOnce = false;
 
-    // TODO:rework
+    // TODO:michaelsh: rework
     if (!bOnce) {
       bOnce = true;
       m_viewBegin = m_begin;
@@ -97,24 +92,29 @@ void TimeLine::Render(CEventCollector& eventCollector) {
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    for (const auto& interval : intervals) {
-      if (interval.endTime > m_viewBegin || interval.startTime < m_viewEnd) {
-        const ImVec2 p = ImGui::GetCursorScreenPos();
-        static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-        const ImU32 col32 = ImColor(col);
+    RenderContext ctx;
+    thrdsRend.Render(ctx);
 
-        const float x1 =
-            p.x + (interval.startTime - m_viewBegin) * coef * m_scale;
-        const float y1 = p.y + 30.0f;
+    /*
+for (const auto& interval : intervals) {
+if (interval.endTime > m_viewBegin || interval.startTime < m_viewEnd) {
+const ImVec2 p = ImGui::GetCursorScreenPos();
+static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
+const ImU32 col32 = ImColor(col);
 
-        const float x2 =
-            p.x + (interval.endTime - m_viewBegin) * coef * m_scale;
-        const float y2 = p.y + 50.0f;
+const float x1 =
+p.x + (interval.startTime - m_viewBegin) * coef * m_scale;
+const float y1 = p.y + 30.0f;
 
-        draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
-      }
-      RenderMarks();
-    }
+const float x2 =
+p.x + (interval.endTime - m_viewBegin) * coef * m_scale;
+const float y2 = p.y + 50.0f;
+
+draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+}
+}
+    */
+    RenderMarks();
     ImGui::EndChild();
   }
 

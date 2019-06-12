@@ -3,6 +3,10 @@
 #include <limits>
 #include "client.h"
 
+struct IEventCollectorListener {
+  virtual void OnRecivedData() = 0;
+};
+
 class CEventCollector : public CClient {
   enum class EState {
     Disconnected,
@@ -44,6 +48,8 @@ class CEventCollector : public CClient {
   size_t GetCapturedSize() const { return m_capturedSize; }
 
   void ProcessIncommingData();
+
+  IEventCollectorListener* m_delegate;
 
  private:
   void GoToState(EState s);
