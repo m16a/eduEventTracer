@@ -10,6 +10,8 @@ struct RenderContext {
   int viewBeginTime;
   int viewEndTime;
   float scale;
+  float topY;
+  int currentDepth;
 };
 
 enum class EEncompasRes { Yes, No, Error };
@@ -84,12 +86,31 @@ struct INode {
     }
     return bSuccess;
   }
+
+  int GetDepth() {
+    int res = 0;
+    GetDepthInternal(this, res);
+    return res;
+  }
+
+  static void GetDepthInternal(const INode* node, int& currDepth) {
+    if (node->children.empty()) return;
+
+    currDepth++;
+
+    for (int i = 0; i < node->children.size(); ++i) {
+      int tmp = currDepth;
+      GetDepthInternal(node->children[i].get(), tmp);
+      currDepth = std::max(currDepth, tmp);
+    }
+  }
 };
 
 struct ThreadView {
-  int name;
-  int topY;
-  int bottomY;
+  int m_name;
+  int m_topY;
+  int m_bottomY;
+  int m_depth;
 
   std::unique_ptr<INode> m_pRoot{nullptr};
 
@@ -104,44 +125,31 @@ struct ThreadView {
   };
   void Render(RenderContext& ctx);
   void Render(INode* node, RenderContext& ctx);
+
+  void InitData();
 };
 
 struct ThreadsLayout {
-  std::vector<ThreadView> treadViews;
+  std::vector<int> tidOrder;
 };
 
 struct ThreadsRender {
+  struct Settings {
+    static constexpr float SpanHeight = 20.0f;
+    static constexpr float OffsetBetweenThreadsY = 30.0f;
+  };
   void Render(RenderContext& ctx);
 
   ThreadsLayout m_layout;
 
   std::map<int, ThreadView> m_threads;
   void InsertTimedEvent(ITimedEvent* e){};
-  void InitFromMessageHub(MessageHub& messageHub) {
-    std::vector<ITimedEvent*> tmpNodes;
-    messageHub.GetAllNodes(tmpNodes);
-
-    int total = 0;
-    for (auto& n : tmpNodes) {
-      int tid = n->tid;
-      auto it = m_threads.find(tid);
-      if (it == m_threads.end())
-        it = m_threads.insert(std::make_pair(tid, ThreadView())).first;
-
-      it->second.Insert(n);
-
-      STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(n);
-      if (pTInterval) {
-        if (pTInterval->begin < minTime) minTime = pTInterval->begin;
-        if (pTInterval->end > maxTime) maxTime = pTInterval->end;
-      }
-
-      total++;
-    }
-    count = total;
-  }
+  void InitFromMessageHub(MessageHub& messageHub);
 
   int minTime{std::numeric_limits<int>::max()};
   int maxTime{0};
   int count{0};
+
+ private:
+  void InitLayout();
 };
