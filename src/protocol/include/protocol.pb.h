@@ -124,19 +124,19 @@ class STracingInterval
   ::google::protobuf::int32 tid() const;
   void set_tid(::google::protobuf::int32 value);
 
-  // required int32 startTime = 2;
-  bool has_starttime() const;
-  void clear_starttime();
-  static const int kStartTimeFieldNumber = 2;
-  ::google::protobuf::int32 starttime() const;
-  void set_starttime(::google::protobuf::int32 value);
+  // required int32 begin = 2;
+  bool has_begin() const;
+  void clear_begin();
+  static const int kBeginFieldNumber = 2;
+  ::google::protobuf::int32 begin() const;
+  void set_begin(::google::protobuf::int32 value);
 
-  // required int32 endTime = 3;
-  bool has_endtime() const;
-  void clear_endtime();
-  static const int kEndTimeFieldNumber = 3;
-  ::google::protobuf::int32 endtime() const;
-  void set_endtime(::google::protobuf::int32 value);
+  // required int32 end = 3;
+  bool has_end() const;
+  void clear_end();
+  static const int kEndFieldNumber = 3;
+  ::google::protobuf::int32 end() const;
+  void set_end(::google::protobuf::int32 value);
 
   // required string name = 4;
   bool has_name() const;
@@ -173,10 +173,10 @@ class STracingInterval
  private:
   inline void set_has_tid();
   inline void clear_has_tid();
-  inline void set_has_starttime();
-  inline void clear_has_starttime();
-  inline void set_has_endtime();
-  inline void clear_has_endtime();
+  inline void set_has_begin();
+  inline void clear_has_begin();
+  inline void set_has_end();
+  inline void clear_has_end();
   inline void set_has_name();
   inline void clear_has_name();
   inline void set_has_category();
@@ -193,8 +193,8 @@ class STracingInterval
   ::google::protobuf::internal::ArenaStringPtr name_;
   ::google::protobuf::internal::ArenaStringPtr category_;
   ::google::protobuf::int32 tid_;
-  ::google::protobuf::int32 starttime_;
-  ::google::protobuf::int32 endtime_;
+  ::google::protobuf::int32 begin_;
+  ::google::protobuf::int32 end_;
   ::google::protobuf::int32 module_;
   friend void protobuf_InitDefaults_include_2fprotocol_2eproto_impl();
   friend void protobuf_AddDesc_include_2fprotocol_2eproto_impl();
@@ -233,52 +233,46 @@ inline void STracingInterval::set_tid(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.tid)
 }
 
-// required int32 startTime = 2;
-inline bool STracingInterval::has_starttime() const {
+// required int32 begin = 2;
+inline bool STracingInterval::has_begin() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void STracingInterval::set_has_starttime() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void STracingInterval::clear_has_starttime() {
+inline void STracingInterval::set_has_begin() { _has_bits_[0] |= 0x00000002u; }
+inline void STracingInterval::clear_has_begin() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void STracingInterval::clear_starttime() {
-  starttime_ = 0;
-  clear_has_starttime();
+inline void STracingInterval::clear_begin() {
+  begin_ = 0;
+  clear_has_begin();
 }
-inline ::google::protobuf::int32 STracingInterval::starttime() const {
-  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.startTime)
-  return starttime_;
+inline ::google::protobuf::int32 STracingInterval::begin() const {
+  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.begin)
+  return begin_;
 }
-inline void STracingInterval::set_starttime(::google::protobuf::int32 value) {
-  set_has_starttime();
-  starttime_ = value;
-  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.startTime)
+inline void STracingInterval::set_begin(::google::protobuf::int32 value) {
+  set_has_begin();
+  begin_ = value;
+  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.begin)
 }
 
-// required int32 endTime = 3;
-inline bool STracingInterval::has_endtime() const {
+// required int32 end = 3;
+inline bool STracingInterval::has_end() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void STracingInterval::set_has_endtime() {
-  _has_bits_[0] |= 0x00000004u;
+inline void STracingInterval::set_has_end() { _has_bits_[0] |= 0x00000004u; }
+inline void STracingInterval::clear_has_end() { _has_bits_[0] &= ~0x00000004u; }
+inline void STracingInterval::clear_end() {
+  end_ = 0;
+  clear_has_end();
 }
-inline void STracingInterval::clear_has_endtime() {
-  _has_bits_[0] &= ~0x00000004u;
+inline ::google::protobuf::int32 STracingInterval::end() const {
+  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.end)
+  return end_;
 }
-inline void STracingInterval::clear_endtime() {
-  endtime_ = 0;
-  clear_has_endtime();
-}
-inline ::google::protobuf::int32 STracingInterval::endtime() const {
-  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.endTime)
-  return endtime_;
-}
-inline void STracingInterval::set_endtime(::google::protobuf::int32 value) {
-  set_has_endtime();
-  endtime_ = value;
-  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.endTime)
+inline void STracingInterval::set_end(::google::protobuf::int32 value) {
+  set_has_end();
+  end_ = value;
+  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.end)
 }
 
 // required string name = 4;

@@ -91,9 +91,6 @@ struct SCatpuredSizeFeedback {
 // ----------------------- Tracing ------------------------
 
 struct STracingInterval : public STimeInterval {
-  int startTime;
-  int endTime;
-
   std::string name;
   std::string category;
   int module;
@@ -104,8 +101,8 @@ struct STracingInterval : public STimeInterval {
       interval.ParseFromArray(ser.buffer.data(), ser.buffer.size());
 
       tid = interval.tid();
-      begin = interval.starttime();
-      end = interval.endtime();
+      begin = interval.begin();
+      end = interval.end();
 
       name = interval.name();
       category = interval.category();
@@ -113,8 +110,8 @@ struct STracingInterval : public STimeInterval {
     } else {
       Tracer::STracingInterval interval;
       interval.set_tid(tid);
-      interval.set_starttime(begin);
-      interval.set_endtime(end);
+      interval.set_begin(begin);
+      interval.set_end(end);
 
       interval.set_name(name);
       interval.set_category(category);
@@ -127,20 +124,17 @@ struct STracingInterval : public STimeInterval {
   }
 };
 struct STracingMainFrame : public STimeInterval {
-  int start;
-  int end;
-
   void Serialize(Ser& ser) {
     if (ser.isReading) {
       int* pVal = reinterpret_cast<int*>(ser.buffer.data());
-      start = *pVal;
+      begin = *pVal;
       pVal += 1;
       end = *pVal;
       pVal += 1;
       tid = *pVal;
     } else {
       ser.buffer.resize(sizeof(int) * 3);
-      memcpy(ser.buffer.data(), &start, 4);
+      memcpy(ser.buffer.data(), &begin, 4);
       memcpy(ser.buffer.data() + 4, &end, 4);
       memcpy(ser.buffer.data() + 8, &tid, 4);
     }

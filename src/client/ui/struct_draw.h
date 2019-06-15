@@ -3,6 +3,7 @@
 #include "MessageHub.h"
 #include "protocol.h"
 
+#include <limits>
 #include <map>
 
 struct RenderContext {
@@ -110,7 +111,7 @@ struct ThreadsLayout {
 };
 
 struct ThreadsRender {
-  void Render(RenderContext&) {}
+  void Render(RenderContext& ctx);
 
   ThreadsLayout m_layout;
 
@@ -120,6 +121,7 @@ struct ThreadsRender {
     std::vector<ITimedEvent*> tmpNodes;
     messageHub.GetAllNodes(tmpNodes);
 
+    int total = 0;
     for (auto& n : tmpNodes) {
       int tid = n->tid;
       auto it = m_threads.find(tid);
@@ -127,6 +129,19 @@ struct ThreadsRender {
         it = m_threads.insert(std::make_pair(tid, ThreadView())).first;
 
       it->second.Insert(n);
+
+      STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(n);
+      if (pTInterval) {
+        if (pTInterval->begin < minTime) minTime = pTInterval->begin;
+        if (pTInterval->end > maxTime) maxTime = pTInterval->end;
+      }
+
+      total++;
     }
+    count = total;
   }
+
+  int minTime{std::numeric_limits<int>::max()};
+  int maxTime{0};
+  int count{0};
 };

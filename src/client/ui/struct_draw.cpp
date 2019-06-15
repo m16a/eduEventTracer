@@ -6,45 +6,39 @@ void ThreadsRender::Render(RenderContext& ctx) {
   for (auto& t : m_threads) t.second.Render(ctx);
 }
 
-void ThreadView::Render(RenderContext& ctx) { Render(m_pRoot.get()); }
+void ThreadView::Render(RenderContext& ctx) { Render(m_pRoot.get(), ctx); }
 
-void Render(STimeInterval* node, RenderContext& ctx) {
+void RenderNode(STimeInterval* node, RenderContext& ctx) {
   ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
   const ImVec2 p = ImGui::GetCursorScreenPos();
   static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
   const ImU32 col32 = ImColor(col);
 
-  const float x1 =
-      p.x + (node->start - ctx.viewBeginTime) * /*coef **/ ctx.scale;
+  const float x1 = p.x + (node->begin - ctx.viewBeginTime) * ctx.scale;
   const float y1 = p.y + 30.0f;
 
-  const float x2 = p.x + (node->end - ctx.viewBeginTime) * /*coef **/ ctx.scale;
+  const float x2 = p.x + (node->end - ctx.viewBeginTime) * ctx.scale;
   const float y2 = p.y + 50.0f;
 
   draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
 }
 
 void ThreadView::Render(INode* node, RenderContext& ctx) {
-  STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(pTimedEvent);
+  if (!node->pTimedEvent) return;
+
+  STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(node->pTimedEvent);
 
   if (pTInterval) {
-    if ((pTInterval->start > ctx.viewStartTime &&
-         pTInterval->start < ctx.viewEndTime) ||
-        (pTInterval->end > ctx.viewStartTime &&
+    if ((pTInterval->begin > ctx.viewBeginTime &&
+         pTInterval->begin < ctx.viewEndTime) ||
+        (pTInterval->end > ctx.viewBeginTime &&
          pTInterval->end < ctx.viewEndTime) ||
-        (pTInterval->start < ctx.viewStartTime &&
+        (pTInterval->begin < ctx.viewBeginTime &&
          pTInterval->end > ctx.viewEndTime)) {
-      // pTimedEvent->Render(ctx);
+      RenderNode(pTInterval, ctx);
 
-      Render(pTimedEvent);
-
-      for (auto& c : children) Render(c.get(), ctx);
+      for (auto& c : node->children) Render(c.get(), ctx);
     }
   }
-}
-
-struct INode {
-  ITimedEvent* pTimedEvent;
-  std::vector<std::unique_ptr<INode>> children;
 }

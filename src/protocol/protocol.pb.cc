@@ -38,8 +38,8 @@ void protobuf_AssignDesc_include_2fprotocol_2eproto() {
   STracingInterval_descriptor_ = file->message_type(0);
   static const int STracingInterval_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, tid_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, starttime_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, endtime_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, begin_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, end_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, category_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, module_),
@@ -96,10 +96,10 @@ void protobuf_AddDesc_include_2fprotocol_2eproto_impl() {
 
   protobuf_InitDefaults_include_2fprotocol_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\026include/protocol.proto\022\006Tracer\"s\n\020STra"
-    "cingInterval\022\013\n\003tid\030\001 \002(\005\022\021\n\tstartTime\030\002"
-    " \002(\005\022\017\n\007endTime\030\003 \002(\005\022\014\n\004name\030\004 \002(\t\022\020\n\010c"
-    "ategory\030\005 \002(\t\022\016\n\006module\030\006 \002(\005", 149);
+    "\n\026include/protocol.proto\022\006Tracer\"k\n\020STra"
+    "cingInterval\022\013\n\003tid\030\001 \002(\005\022\r\n\005begin\030\002 \002(\005"
+    "\022\013\n\003end\030\003 \002(\005\022\014\n\004name\030\004 \002(\t\022\020\n\010category\030"
+    "\005 \002(\t\022\016\n\006module\030\006 \002(\005", 141);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "include/protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_include_2fprotocol_2eproto);
@@ -131,8 +131,8 @@ static void MergeFromFail(int line) {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int STracingInterval::kTidFieldNumber;
-const int STracingInterval::kStartTimeFieldNumber;
-const int STracingInterval::kEndTimeFieldNumber;
+const int STracingInterval::kBeginFieldNumber;
+const int STracingInterval::kEndFieldNumber;
 const int STracingInterval::kNameFieldNumber;
 const int STracingInterval::kCategoryFieldNumber;
 const int STracingInterval::kModuleFieldNumber;
@@ -256,33 +256,33 @@ bool STracingInterval::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_startTime;
+        if (input->ExpectTag(16)) goto parse_begin;
         break;
       }
 
-      // required int32 startTime = 2;
+      // required int32 begin = 2;
       case 2: {
         if (tag == 16) {
-         parse_startTime:
-          set_has_starttime();
+         parse_begin:
+          set_has_begin();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &starttime_)));
+                 input, &begin_)));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(24)) goto parse_endTime;
+        if (input->ExpectTag(24)) goto parse_end;
         break;
       }
 
-      // required int32 endTime = 3;
+      // required int32 end = 3;
       case 3: {
         if (tag == 24) {
-         parse_endTime:
-          set_has_endtime();
+         parse_end:
+          set_has_end();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &endtime_)));
+                 input, &end_)));
         } else {
           goto handle_unusual;
         }
@@ -369,14 +369,14 @@ void STracingInterval::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->tid(), output);
   }
 
-  // required int32 startTime = 2;
-  if (has_starttime()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->starttime(), output);
+  // required int32 begin = 2;
+  if (has_begin()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->begin(), output);
   }
 
-  // required int32 endTime = 3;
-  if (has_endtime()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->endtime(), output);
+  // required int32 end = 3;
+  if (has_end()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->end(), output);
   }
 
   // required string name = 4;
@@ -420,14 +420,14 @@ void STracingInterval::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->tid(), target);
   }
 
-  // required int32 startTime = 2;
-  if (has_starttime()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->starttime(), target);
+  // required int32 begin = 2;
+  if (has_begin()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->begin(), target);
   }
 
-  // required int32 endTime = 3;
-  if (has_endtime()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->endtime(), target);
+  // required int32 end = 3;
+  if (has_end()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->end(), target);
   }
 
   // required string name = 4;
@@ -476,18 +476,18 @@ size_t STracingInterval::RequiredFieldsByteSizeFallback() const {
         this->tid());
   }
 
-  if (has_starttime()) {
-    // required int32 startTime = 2;
+  if (has_begin()) {
+    // required int32 begin = 2;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->starttime());
+        this->begin());
   }
 
-  if (has_endtime()) {
-    // required int32 endTime = 3;
+  if (has_end()) {
+    // required int32 end = 3;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->endtime());
+        this->end());
   }
 
   if (has_name()) {
@@ -523,15 +523,15 @@ size_t STracingInterval::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->tid());
 
-    // required int32 startTime = 2;
+    // required int32 begin = 2;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->starttime());
+        this->begin());
 
-    // required int32 endTime = 3;
+    // required int32 end = 3;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->endtime());
+        this->end());
 
     // required string name = 4;
     total_size += 1 +
@@ -593,11 +593,11 @@ void STracingInterval::UnsafeMergeFrom(const STracingInterval& from) {
     if (from.has_tid()) {
       set_tid(from.tid());
     }
-    if (from.has_starttime()) {
-      set_starttime(from.starttime());
+    if (from.has_begin()) {
+      set_begin(from.begin());
     }
-    if (from.has_endtime()) {
-      set_endtime(from.endtime());
+    if (from.has_end()) {
+      set_end(from.end());
     }
     if (from.has_name()) {
       set_has_name();
@@ -643,8 +643,8 @@ void STracingInterval::Swap(STracingInterval* other) {
 }
 void STracingInterval::InternalSwap(STracingInterval* other) {
   std::swap(tid_, other->tid_);
-  std::swap(starttime_, other->starttime_);
-  std::swap(endtime_, other->endtime_);
+  std::swap(begin_, other->begin_);
+  std::swap(end_, other->end_);
   name_.Swap(&other->name_);
   category_.Swap(&other->category_);
   std::swap(module_, other->module_);
@@ -688,52 +688,52 @@ void STracingInterval::set_tid(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.tid)
 }
 
-// required int32 startTime = 2;
-bool STracingInterval::has_starttime() const {
+// required int32 begin = 2;
+bool STracingInterval::has_begin() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-void STracingInterval::set_has_starttime() {
+void STracingInterval::set_has_begin() {
   _has_bits_[0] |= 0x00000002u;
 }
-void STracingInterval::clear_has_starttime() {
+void STracingInterval::clear_has_begin() {
   _has_bits_[0] &= ~0x00000002u;
 }
-void STracingInterval::clear_starttime() {
-  starttime_ = 0;
-  clear_has_starttime();
+void STracingInterval::clear_begin() {
+  begin_ = 0;
+  clear_has_begin();
 }
-::google::protobuf::int32 STracingInterval::starttime() const {
-  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.startTime)
-  return starttime_;
+::google::protobuf::int32 STracingInterval::begin() const {
+  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.begin)
+  return begin_;
 }
-void STracingInterval::set_starttime(::google::protobuf::int32 value) {
-  set_has_starttime();
-  starttime_ = value;
-  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.startTime)
+void STracingInterval::set_begin(::google::protobuf::int32 value) {
+  set_has_begin();
+  begin_ = value;
+  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.begin)
 }
 
-// required int32 endTime = 3;
-bool STracingInterval::has_endtime() const {
+// required int32 end = 3;
+bool STracingInterval::has_end() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-void STracingInterval::set_has_endtime() {
+void STracingInterval::set_has_end() {
   _has_bits_[0] |= 0x00000004u;
 }
-void STracingInterval::clear_has_endtime() {
+void STracingInterval::clear_has_end() {
   _has_bits_[0] &= ~0x00000004u;
 }
-void STracingInterval::clear_endtime() {
-  endtime_ = 0;
-  clear_has_endtime();
+void STracingInterval::clear_end() {
+  end_ = 0;
+  clear_has_end();
 }
-::google::protobuf::int32 STracingInterval::endtime() const {
-  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.endTime)
-  return endtime_;
+::google::protobuf::int32 STracingInterval::end() const {
+  // @@protoc_insertion_point(field_get:Tracer.STracingInterval.end)
+  return end_;
 }
-void STracingInterval::set_endtime(::google::protobuf::int32 value) {
-  set_has_endtime();
-  endtime_ = value;
-  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.endTime)
+void STracingInterval::set_end(::google::protobuf::int32 value) {
+  set_has_end();
+  end_ = value;
+  // @@protoc_insertion_point(field_set:Tracer.STracingInterval.end)
 }
 
 // required string name = 4;

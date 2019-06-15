@@ -73,23 +73,14 @@ bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
   std::cout << "TI: " << arg.endTime << " - " << arg.startTime << " = "
             << arg.endTime - arg.startTime << std::endl;
 
-  if (arg.startTime < m_startEpoch) m_startEpoch = arg.startTime;
-
-  arg.startTime -= m_startEpoch;
-  arg.endTime -= m_startEpoch;
   m_intervals.emplace_back(arg);
 
   return true;
 }
 
 bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
-  std::cout << arg.name << " TI: " << arg.endTime << " - " << arg.startTime
-            << " = " << arg.endTime - arg.startTime << std::endl;
-
-  if (arg.startTime < m_startEpoch) m_startEpoch = arg.startTime;
-
-  arg.startTime -= m_startEpoch;
-  arg.endTime -= m_startEpoch;
+  std::cout << arg.name << " TI: " << arg.end << " - " << arg.begin << " = "
+            << arg.end - arg.begin << std::endl;
   GetMessageHub().Get<STracingInterval>().AddMessage(arg, arg.tid);
 
   return true;
@@ -100,10 +91,6 @@ void CEventCollector::ProcessIncommingData() {
 }
 
 bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
-  if (arg.begin < m_startEpoch) m_startEpoch = arg.begin;
-
-  arg.begin -= m_startEpoch;
-  arg.end -= m_startEpoch;
   GetMessageHub().Get<STracingMainFrame>().AddMessage(arg, arg.tid);
 
   return true;

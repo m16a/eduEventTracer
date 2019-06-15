@@ -68,18 +68,16 @@ void TimeLine::Render(CEventCollector& eventCollector,
 
   m_mouseHandler.Update(*this);
 
-  {
-    float width =
-        0.0f;  //(intervals.back().endTime - intervals.front().startTime);
+  if (thrdsRend.count) {
+    float width = (thrdsRend.maxTime - thrdsRend.minTime);
 
     const float winWidth = ImGui::GetWindowWidth();
-
-    const float coef = winWidth / width;
+    const float widthCoef = winWidth / width;
 
     ImGui::BeginChild("scrolling2", ImVec2(0, 0), false);
 
-    m_begin = 0.0f;  // intervals.front().startTime;
-    m_end = 0.0f;    // intervals.back().endTime;
+    m_begin = thrdsRend.minTime;
+    m_end = thrdsRend.maxTime;
 
     static bool bOnce = false;
 
@@ -89,31 +87,14 @@ void TimeLine::Render(CEventCollector& eventCollector,
       m_viewBegin = m_begin;
       m_viewEnd = m_end;
     }
-
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    //    ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
     RenderContext ctx;
+    ctx.scale = m_scale * widthCoef;
+    ctx.viewBeginTime = m_viewBegin;
+    ctx.viewEndTime = m_viewEnd;
     thrdsRend.Render(ctx);
 
-    /*
-for (const auto& interval : intervals) {
-if (interval.endTime > m_viewBegin || interval.startTime < m_viewEnd) {
-const ImVec2 p = ImGui::GetCursorScreenPos();
-static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-const ImU32 col32 = ImColor(col);
-
-const float x1 =
-p.x + (interval.startTime - m_viewBegin) * coef * m_scale;
-const float y1 = p.y + 30.0f;
-
-const float x2 =
-p.x + (interval.endTime - m_viewBegin) * coef * m_scale;
-const float y2 = p.y + 50.0f;
-
-draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
-}
-}
-    */
     RenderMarks();
     ImGui::EndChild();
   }
@@ -183,7 +164,8 @@ void TimeLine::RenderMarks() {
   char buff[50];
   for (int i = 0; i < kMarksCount; ++i) {
     float value =
-        m_viewBegin + (m_viewEnd - m_viewBegin) * (i + 1) / (kMarksCount + 1);
+        /*m_viewBegin + */ (m_viewEnd - m_viewBegin) * (i + 1) /
+        (kMarksCount + 1);
 
     const float x = p.x + winWidth * (i + 1) / (kMarksCount + 1);
     const float y1 = p.y + winHeight - 20.0f;
