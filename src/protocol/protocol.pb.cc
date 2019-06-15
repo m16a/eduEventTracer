@@ -97,8 +97,8 @@ void protobuf_AddDesc_include_2fprotocol_2eproto_impl() {
   protobuf_InitDefaults_include_2fprotocol_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\026include/protocol.proto\022\006Tracer\"k\n\020STra"
-    "cingInterval\022\013\n\003tid\030\001 \002(\005\022\r\n\005begin\030\002 \002(\005"
-    "\022\013\n\003end\030\003 \002(\005\022\014\n\004name\030\004 \002(\t\022\020\n\010category\030"
+    "cingInterval\022\013\n\003tid\030\001 \002(\005\022\r\n\005begin\030\002 \002(\003"
+    "\022\013\n\003end\030\003 \002(\003\022\014\n\004name\030\004 \002(\t\022\020\n\010category\030"
     "\005 \002(\t\022\016\n\006module\030\006 \002(\005", 141);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "include/protocol.proto", &protobuf_RegisterTypes);
@@ -160,8 +160,8 @@ void STracingInterval::SharedCtor() {
   _cached_size_ = 0;
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   category_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&tid_, 0, reinterpret_cast<char*>(&module_) -
-    reinterpret_cast<char*>(&tid_) + sizeof(module_));
+  ::memset(&begin_, 0, reinterpret_cast<char*>(&module_) -
+    reinterpret_cast<char*>(&begin_) + sizeof(module_));
 }
 
 STracingInterval::~STracingInterval() {
@@ -218,7 +218,7 @@ void STracingInterval::Clear() {
 } while (0)
 
   if (_has_bits_[0 / 32] & 63u) {
-    ZR_(tid_, module_);
+    ZR_(begin_, module_);
     if (has_name()) {
       name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
@@ -260,13 +260,13 @@ bool STracingInterval::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 begin = 2;
+      // required int64 begin = 2;
       case 2: {
         if (tag == 16) {
          parse_begin:
           set_has_begin();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &begin_)));
         } else {
           goto handle_unusual;
@@ -275,13 +275,13 @@ bool STracingInterval::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 end = 3;
+      // required int64 end = 3;
       case 3: {
         if (tag == 24) {
          parse_end:
           set_has_end();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &end_)));
         } else {
           goto handle_unusual;
@@ -369,14 +369,14 @@ void STracingInterval::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->tid(), output);
   }
 
-  // required int32 begin = 2;
+  // required int64 begin = 2;
   if (has_begin()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->begin(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->begin(), output);
   }
 
-  // required int32 end = 3;
+  // required int64 end = 3;
   if (has_end()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->end(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->end(), output);
   }
 
   // required string name = 4;
@@ -420,14 +420,14 @@ void STracingInterval::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->tid(), target);
   }
 
-  // required int32 begin = 2;
+  // required int64 begin = 2;
   if (has_begin()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->begin(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->begin(), target);
   }
 
-  // required int32 end = 3;
+  // required int64 end = 3;
   if (has_end()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->end(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->end(), target);
   }
 
   // required string name = 4;
@@ -477,16 +477,16 @@ size_t STracingInterval::RequiredFieldsByteSizeFallback() const {
   }
 
   if (has_begin()) {
-    // required int32 begin = 2;
+    // required int64 begin = 2;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->begin());
   }
 
   if (has_end()) {
-    // required int32 end = 3;
+    // required int64 end = 3;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->end());
   }
 
@@ -523,14 +523,14 @@ size_t STracingInterval::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->tid());
 
-    // required int32 begin = 2;
+    // required int64 begin = 2;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->begin());
 
-    // required int32 end = 3;
+    // required int64 end = 3;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->end());
 
     // required string name = 4;
@@ -688,7 +688,7 @@ void STracingInterval::set_tid(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.tid)
 }
 
-// required int32 begin = 2;
+// required int64 begin = 2;
 bool STracingInterval::has_begin() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -699,20 +699,20 @@ void STracingInterval::clear_has_begin() {
   _has_bits_[0] &= ~0x00000002u;
 }
 void STracingInterval::clear_begin() {
-  begin_ = 0;
+  begin_ = GOOGLE_LONGLONG(0);
   clear_has_begin();
 }
-::google::protobuf::int32 STracingInterval::begin() const {
+::google::protobuf::int64 STracingInterval::begin() const {
   // @@protoc_insertion_point(field_get:Tracer.STracingInterval.begin)
   return begin_;
 }
-void STracingInterval::set_begin(::google::protobuf::int32 value) {
+void STracingInterval::set_begin(::google::protobuf::int64 value) {
   set_has_begin();
   begin_ = value;
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.begin)
 }
 
-// required int32 end = 3;
+// required int64 end = 3;
 bool STracingInterval::has_end() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -723,14 +723,14 @@ void STracingInterval::clear_has_end() {
   _has_bits_[0] &= ~0x00000004u;
 }
 void STracingInterval::clear_end() {
-  end_ = 0;
+  end_ = GOOGLE_LONGLONG(0);
   clear_has_end();
 }
-::google::protobuf::int32 STracingInterval::end() const {
+::google::protobuf::int64 STracingInterval::end() const {
   // @@protoc_insertion_point(field_get:Tracer.STracingInterval.end)
   return end_;
 }
-void STracingInterval::set_end(::google::protobuf::int32 value) {
+void STracingInterval::set_end(::google::protobuf::int64 value) {
   set_has_end();
   end_ = value;
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.end)

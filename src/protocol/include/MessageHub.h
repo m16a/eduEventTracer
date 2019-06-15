@@ -138,8 +138,8 @@ class MessageHub {
   CDispatcher m_dispatcher;
 
   void GetAllNodes(std::vector<ITimedEvent*>& outNodes) {
-    std::vector<ITimedEvent*> nodes;
     for (auto& c : m_messageContainers) {
+      std::vector<ITimedEvent*> nodes;
       c->GetAllNodes(nodes);
       outNodes.insert(outNodes.end(), nodes.begin(), nodes.end());
     }

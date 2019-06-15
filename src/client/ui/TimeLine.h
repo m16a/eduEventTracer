@@ -36,8 +36,8 @@ class TimeLine : public MouseListener {
   void OnMouseClicked() override;
   void OnMouseWheel(float value) override;
 
-  int m_begin;
-  int m_end;
+  TTime m_begin;
+  TTime m_end;
   float m_viewBegin;
   float m_viewEnd;
   float m_scale{1.0f};

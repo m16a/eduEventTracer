@@ -172,7 +172,7 @@ void TimeLine::RenderMarks() {
     const float y2 = p.y + winHeight;
     draw_list->AddLine(ImVec2(x, y1), ImVec2(x, y2), col32);
 
-    snprintf(buff, sizeof(buff), "%.2f ms", value);
+    snprintf(buff, sizeof(buff), "%.2f ms", value / 1000.f);
     draw_list->AddText(ImVec2(x + 4.0f, y1 + 5.0f), col32, buff);
   }
 }

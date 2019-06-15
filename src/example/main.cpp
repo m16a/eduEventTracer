@@ -23,9 +23,16 @@ void Sleep10ms() {
 
 void WorkerThread() {}
 
+void Foo() {
+  TRACE("", "");
+  RandomSleep();
+}
+
 void PhysThread() {
   while (true) {
     TRACE("", "");
+    RandomSleep();
+    Foo();
     RandomSleep();
   }
 }
@@ -50,7 +57,8 @@ int main() {
   StartThreads();
   while (true) {
     {
-      TRACE_MAIN_FRAME();
+      TRACE("", "");
+      //      TRACE_MAIN_FRAME();
       MainFrame();
       // fake payload
       RandomSleep();

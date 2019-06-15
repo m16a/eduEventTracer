@@ -4,8 +4,8 @@ package Tracer;
 
 message  STracingInterval{
 	required int32 tid = 1;
-	required int32 begin = 2;
-	required int32 end = 3;
+	required int64 begin = 2;
+	required int64  end = 3;
 	
 	required string name = 4;
 	required string category = 5;

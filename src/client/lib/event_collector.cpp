@@ -1,8 +1,9 @@
 #include "event_collector.h"
 
+#include "MessageHub.h"
+
 #include <unistd.h>
 #include <iostream>
-#include "MessageHub.h"
 
 const char* stateNames[] = {"Disconnected", "Connecting", "Connected",
                             "Capturing",    "Transfer",   "Processing",

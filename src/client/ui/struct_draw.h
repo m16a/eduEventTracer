@@ -7,8 +7,8 @@
 #include <map>
 
 struct RenderContext {
-  int viewBeginTime;
-  int viewEndTime;
+  TTime viewBeginTime;
+  TTime viewEndTime;
   float scale;
   float topY;
   int currentDepth;
@@ -116,12 +116,17 @@ struct ThreadView {
 
   void Insert(ITimedEvent* e) {
     std::unique_ptr<INode> pNode = std::make_unique<INode>();
-    pNode->pTimedEvent = e;
 
-    if (!m_pRoot)
+    if (!m_pRoot) {
       m_pRoot = std::move(pNode);
-    else
+      std::unique_ptr<INode> pNode2 = std::make_unique<INode>();
+      pNode2->pTimedEvent = e;
+
+      m_pRoot->children.push_back(std::move(pNode2));
+    } else {
+      pNode->pTimedEvent = e;
       m_pRoot->AddChild(std::move(pNode));
+    }
   };
   void Render(RenderContext& ctx);
   void Render(INode* node, RenderContext& ctx);
@@ -136,7 +141,7 @@ struct ThreadsLayout {
 struct ThreadsRender {
   struct Settings {
     static constexpr float SpanHeight = 20.0f;
-    static constexpr float OffsetBetweenThreadsY = 30.0f;
+    static constexpr float OffsetBetweenThreadsY = 40.0f;
   };
   void Render(RenderContext& ctx);
 
@@ -146,8 +151,8 @@ struct ThreadsRender {
   void InsertTimedEvent(ITimedEvent* e){};
   void InitFromMessageHub(MessageHub& messageHub);
 
-  int minTime{std::numeric_limits<int>::max()};
-  int maxTime{0};
+  TTime minTime{std::numeric_limits<TTime>::max()};
+  TTime maxTime{0};
   int count{0};
 
  private:

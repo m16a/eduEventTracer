@@ -1,4 +1,5 @@
 #include "struct_draw.h"
+#include <iostream>
 #include "imgui.h"
 
 void ThreadsRender::Render(RenderContext& ctx) {
@@ -30,29 +31,58 @@ void RenderNode(STimeInterval* node, RenderContext& ctx) {
 }
 
 void ThreadView::Render(INode* node, RenderContext& ctx) {
-  if (!node->pTimedEvent) return;
+  if (ctx.currentDepth != 0) {
+    if (!node->pTimedEvent) return;
 
-  STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(node->pTimedEvent);
+    STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(node->pTimedEvent);
 
-  if (pTInterval) {
-    if ((pTInterval->begin > ctx.viewBeginTime &&
-         pTInterval->begin < ctx.viewEndTime) ||
-        (pTInterval->end > ctx.viewBeginTime &&
-         pTInterval->end < ctx.viewEndTime) ||
-        (pTInterval->begin < ctx.viewBeginTime &&
-         pTInterval->end > ctx.viewEndTime)) {
-      RenderNode(pTInterval, ctx);
+    if (pTInterval) {
+      if ((pTInterval->begin > ctx.viewBeginTime &&
+           pTInterval->begin < ctx.viewEndTime) ||
+          (pTInterval->end > ctx.viewBeginTime &&
+           pTInterval->end < ctx.viewEndTime) ||
+          (pTInterval->begin < ctx.viewBeginTime &&
+           pTInterval->end > ctx.viewEndTime)) {
+        RenderNode(pTInterval, ctx);
 
-      ctx.currentDepth++;
+        RenderContext tmp_ctx(ctx);
+        tmp_ctx.currentDepth++;
 
-      for (auto& c : node->children) Render(c.get(), ctx);
+        for (auto& c : node->children) Render(c.get(), tmp_ctx);
+      }
     }
+  } else {
+    RenderContext tmp_ctx(ctx);
+    tmp_ctx.currentDepth++;
+
+    for (auto& c : node->children) Render(c.get(), tmp_ctx);
   }
 }
 
 void ThreadsRender::InitFromMessageHub(MessageHub& messageHub) {
   std::vector<ITimedEvent*> tmpNodes;
   messageHub.GetAllNodes(tmpNodes);
+
+  {
+    // find min/max
+    for (auto& node : tmpNodes) {
+      STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(node);
+      if (pTInterval) {
+        if (pTInterval->begin < minTime) minTime = pTInterval->begin;
+        if (pTInterval->end > maxTime) maxTime = pTInterval->end;
+      }
+    }
+
+    for (auto& node : tmpNodes) {
+      STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(node);
+      if (pTInterval) {
+        pTInterval->begin -= minTime;
+        pTInterval->end -= minTime;
+      }
+    }
+    maxTime -= minTime;
+    minTime = 0;
+  }
 
   int total = 0;
   for (auto& n : tmpNodes) {
@@ -63,17 +93,12 @@ void ThreadsRender::InitFromMessageHub(MessageHub& messageHub) {
 
     it->second.Insert(n);
 
-    STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(n);
-    if (pTInterval) {
-      if (pTInterval->begin < minTime) minTime = pTInterval->begin;
-      if (pTInterval->end > maxTime) maxTime = pTInterval->end;
-    }
-
     total++;
   }
 
   InitLayout();
 
+  // TODO:michealsh: do better sync
   count = total;
 }
 

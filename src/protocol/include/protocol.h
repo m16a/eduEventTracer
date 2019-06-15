@@ -40,14 +40,14 @@ struct ITimedEvent {
 };
 
 struct STimePoint : public ITimedEvent {
-  int time;
+  TTime time;
 
   void Render(RenderContext&) override {}
 };
 
 struct STimeInterval : public ITimedEvent {
-  int begin;
-  int end;
+  TTime begin;
+  TTime end;
 
   void Render(RenderContext&) override;
 };
@@ -126,22 +126,24 @@ struct STracingInterval : public STimeInterval {
 struct STracingMainFrame : public STimeInterval {
   void Serialize(Ser& ser) {
     if (ser.isReading) {
-      int* pVal = reinterpret_cast<int*>(ser.buffer.data());
+      TTime* pVal = reinterpret_cast<TTime*>(ser.buffer.data());
       begin = *pVal;
       pVal += 1;
       end = *pVal;
       pVal += 1;
       tid = *pVal;
     } else {
-      ser.buffer.resize(sizeof(int) * 3);
-      memcpy(ser.buffer.data(), &begin, 4);
-      memcpy(ser.buffer.data() + 4, &end, 4);
-      memcpy(ser.buffer.data() + 8, &tid, 4);
+      size_t tS = sizeof(TTime);
+      ser.buffer.resize(tS * 3);
+      memcpy(ser.buffer.data(), &begin, tS);
+      // TODO: michaelsh: pay attention to x86 and x64
+      memcpy(ser.buffer.data() + 1, &end, tS);
+      memcpy(ser.buffer.data() + 2, &tid, tS);
     }
   }
 };
 
-int GetTimeNowMs();
+TTime GetTimeNowMs();
 
 struct STracingLegend {
   std::vector<std::pair<int, const char*>> threadNames;

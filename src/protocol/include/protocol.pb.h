@@ -124,19 +124,19 @@ class STracingInterval
   ::google::protobuf::int32 tid() const;
   void set_tid(::google::protobuf::int32 value);
 
-  // required int32 begin = 2;
+  // required int64 begin = 2;
   bool has_begin() const;
   void clear_begin();
   static const int kBeginFieldNumber = 2;
-  ::google::protobuf::int32 begin() const;
-  void set_begin(::google::protobuf::int32 value);
+  ::google::protobuf::int64 begin() const;
+  void set_begin(::google::protobuf::int64 value);
 
-  // required int32 end = 3;
+  // required int64 end = 3;
   bool has_end() const;
   void clear_end();
   static const int kEndFieldNumber = 3;
-  ::google::protobuf::int32 end() const;
-  void set_end(::google::protobuf::int32 value);
+  ::google::protobuf::int64 end() const;
+  void set_end(::google::protobuf::int64 value);
 
   // required string name = 4;
   bool has_name() const;
@@ -192,9 +192,9 @@ class STracingInterval
   mutable int _cached_size_;
   ::google::protobuf::internal::ArenaStringPtr name_;
   ::google::protobuf::internal::ArenaStringPtr category_;
+  ::google::protobuf::int64 begin_;
+  ::google::protobuf::int64 end_;
   ::google::protobuf::int32 tid_;
-  ::google::protobuf::int32 begin_;
-  ::google::protobuf::int32 end_;
   ::google::protobuf::int32 module_;
   friend void protobuf_InitDefaults_include_2fprotocol_2eproto_impl();
   friend void protobuf_AddDesc_include_2fprotocol_2eproto_impl();
@@ -233,7 +233,7 @@ inline void STracingInterval::set_tid(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.tid)
 }
 
-// required int32 begin = 2;
+// required int64 begin = 2;
 inline bool STracingInterval::has_begin() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -242,34 +242,34 @@ inline void STracingInterval::clear_has_begin() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void STracingInterval::clear_begin() {
-  begin_ = 0;
+  begin_ = GOOGLE_LONGLONG(0);
   clear_has_begin();
 }
-inline ::google::protobuf::int32 STracingInterval::begin() const {
+inline ::google::protobuf::int64 STracingInterval::begin() const {
   // @@protoc_insertion_point(field_get:Tracer.STracingInterval.begin)
   return begin_;
 }
-inline void STracingInterval::set_begin(::google::protobuf::int32 value) {
+inline void STracingInterval::set_begin(::google::protobuf::int64 value) {
   set_has_begin();
   begin_ = value;
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.begin)
 }
 
-// required int32 end = 3;
+// required int64 end = 3;
 inline bool STracingInterval::has_end() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void STracingInterval::set_has_end() { _has_bits_[0] |= 0x00000004u; }
 inline void STracingInterval::clear_has_end() { _has_bits_[0] &= ~0x00000004u; }
 inline void STracingInterval::clear_end() {
-  end_ = 0;
+  end_ = GOOGLE_LONGLONG(0);
   clear_has_end();
 }
-inline ::google::protobuf::int32 STracingInterval::end() const {
+inline ::google::protobuf::int64 STracingInterval::end() const {
   // @@protoc_insertion_point(field_get:Tracer.STracingInterval.end)
   return end_;
 }
-inline void STracingInterval::set_end(::google::protobuf::int32 value) {
+inline void STracingInterval::set_end(::google::protobuf::int64 value) {
   set_has_end();
   end_ = value;
   // @@protoc_insertion_point(field_set:Tracer.STracingInterval.end)

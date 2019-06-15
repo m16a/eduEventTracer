@@ -31,12 +31,12 @@ void InitProtocol() {
   RegisterMessage<STimeIntervalArg>();
 }
 
-int GetTimeNowMs() {
+TTime GetTimeNowMs() {
   std::chrono::high_resolution_clock::time_point start =
       std::chrono::high_resolution_clock::now();
-  int resultMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-                     start.time_since_epoch())
-                     .count();
+  TTime resultMs = std::chrono::duration_cast<std::chrono::microseconds>(
+                       start.time_since_epoch())
+                       .count();
   return resultMs;
 }
 
