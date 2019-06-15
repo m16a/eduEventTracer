@@ -164,8 +164,7 @@ void TimeLine::RenderMarks() {
   char buff[50];
   for (int i = 0; i < kMarksCount; ++i) {
     float value =
-        /*m_viewBegin + */ (m_viewEnd - m_viewBegin) * (i + 1) /
-        (kMarksCount + 1);
+        m_viewBegin + (m_viewEnd - m_viewBegin) * (i + 1) / (kMarksCount + 1);
 
     const float x = p.x + winWidth * (i + 1) / (kMarksCount + 1);
     const float y1 = p.y + winHeight - 20.0f;

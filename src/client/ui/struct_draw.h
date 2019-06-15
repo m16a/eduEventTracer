@@ -73,8 +73,20 @@ struct INode {
         }
 
         if (!wasAdded) {
-          if (start == end) {  // insert case
-            children.insert(children.begin() + start, std::move(pNewChild));
+          if (start == end) {
+            if (start == children.size()) {
+              children.insert(children.begin() + start, std::move(pNewChild));
+            } else {
+              STimeInterval* pTIntervalB =
+                  dynamic_cast<STimeInterval*>(children[start]->pTimedEvent);
+              if (IsEncompas(pTIntervalA, pTIntervalB) == EEncompasRes::Yes) {
+                pNewChild->children.push_back(std::move(children[start]));
+                children.erase(children.begin() + start);
+                children.insert(children.begin() + start, std::move(pNewChild));
+              } else {  // insert case
+                children.insert(children.begin() + start, std::move(pNewChild));
+              }
+            }
           } else {  // encompas
             for (int i = start; i < end; ++i)
               pNewChild->children.push_back(std::move(children[i]));
@@ -87,23 +99,20 @@ struct INode {
     return bSuccess;
   }
 
-  int GetDepth() {
-    int res = 0;
-    GetDepthInternal(this, res);
-    return res;
-  }
+  int GetDepth() { return GetDepthInternal(this); }
 
-  static void GetDepthInternal(const INode* node, int& currDepth) {
-    if (node->children.empty()) return;
+  static int GetDepthInternal(const INode* node) {
+    if (node->children.empty()) return 0;
 
-    currDepth++;
-
+    int max = 0;
     for (int i = 0; i < node->children.size(); ++i) {
-      int tmp = currDepth;
-      GetDepthInternal(node->children[i].get(), tmp);
-      currDepth = std::max(currDepth, tmp);
+      max = std::max(GetDepthInternal(node->children[i].get()), max);
     }
+
+    return max + 1;
   }
+  static void Dump(const INode* node, int depth);
+  void Dump();
 };
 
 struct ThreadView {

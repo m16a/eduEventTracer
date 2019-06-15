@@ -108,6 +108,8 @@ void ThreadsRender::InitLayout() {
 
     tView.InitData();
     m_layout.tidOrder.push_back(t.first);
+    std::cout << "********************\n";
+    tView.m_pRoot->Dump();
   }
 
   float currentY = 10.0f;
@@ -121,3 +123,18 @@ void ThreadsRender::InitLayout() {
 }
 
 void ThreadView::InitData() { m_depth = m_pRoot->GetDepth(); }
+
+void INode::Dump(const INode* node, int depth) {
+  for (int i = 0; i < depth; ++i) std::cout << "\t";
+
+  STimeInterval* pTInterval = dynamic_cast<STimeInterval*>(node->pTimedEvent);
+  if (pTInterval) {
+    std::cout << pTInterval->begin << " " << pTInterval->end << std::endl;
+  }
+  depth++;
+
+  for (int i = 0; i < node->children.size(); i++)
+    Dump(node->children[i].get(), depth);
+}
+
+void INode::Dump() { Dump(this, 0); }
