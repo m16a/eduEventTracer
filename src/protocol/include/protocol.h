@@ -146,7 +146,32 @@ struct STracingMainFrame : public STimeInterval {
 TTime GetTimeNowMs();
 
 struct STracingLegend {
-  std::vector<std::pair<int, const char*>> threadNames;
+  std::map<int, std::string> mapTidToName;
+
+  void Serialize(Ser& ser) {
+    if (ser.isReading) {
+      Tracer::STracingLegend msg;
+      msg.ParseFromArray(ser.buffer.data(), ser.buffer.size());
+
+      auto it = msg.maptidtoname().begin();
+      while (it != msg.maptidtoname().end()) {
+        mapTidToName.insert(std::pair<int, std::string>(it->first, it->second));
+        ++it;
+      }
+
+    } else {
+      Tracer::STracingLegend msg;
+
+      // auto test = Tracer::STracingLegend::default_instance();
+      auto map = msg.mutable_maptidtoname();
+
+      for (auto& kv : mapTidToName) (*map)[kv.first] = kv.second;
+
+      size_t size = msg.ByteSizeLong();
+      ser.buffer.resize(size);
+      msg.SerializeToArray(ser.buffer.data(), size);
+    }
+  }
 };
 
 void InitProtocol();

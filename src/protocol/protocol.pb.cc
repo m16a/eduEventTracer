@@ -24,6 +24,10 @@ namespace {
 const ::google::protobuf::Descriptor* STracingInterval_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   STracingInterval_reflection_ = NULL;
+const ::google::protobuf::Descriptor* STracingLegend_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  STracingLegend_reflection_ = NULL;
+const ::google::protobuf::Descriptor* STracingLegend_MapTidToNameEntry_descriptor_ = NULL;
 
 }  // namespace
 
@@ -54,6 +58,21 @@ void protobuf_AssignDesc_include_2fprotocol_2eproto() {
       -1,
       sizeof(STracingInterval),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingInterval, _internal_metadata_));
+  STracingLegend_descriptor_ = file->message_type(1);
+  static const int STracingLegend_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingLegend, maptidtoname_),
+  };
+  STracingLegend_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      STracingLegend_descriptor_,
+      STracingLegend::internal_default_instance(),
+      STracingLegend_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingLegend, _has_bits_),
+      -1,
+      -1,
+      sizeof(STracingLegend),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(STracingLegend, _internal_metadata_));
+  STracingLegend_MapTidToNameEntry_descriptor_ = STracingLegend_descriptor_->nested_type(0);
 }
 
 namespace {
@@ -69,6 +88,17 @@ void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       STracingInterval_descriptor_, STracingInterval::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      STracingLegend_descriptor_, STracingLegend::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+        STracingLegend_MapTidToNameEntry_descriptor_,
+        ::google::protobuf::internal::MapEntry<
+            ::google::protobuf::int32,
+            ::std::string,
+            ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
+            ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+            0>::CreateDefaultInstance(
+                STracingLegend_MapTidToNameEntry_descriptor_));
 }
 
 }  // namespace
@@ -76,6 +106,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_include_2fprotocol_2eproto() {
   STracingInterval_default_instance_.Shutdown();
   delete STracingInterval_reflection_;
+  STracingLegend_default_instance_.Shutdown();
+  delete STracingLegend_reflection_;
 }
 
 void protobuf_InitDefaults_include_2fprotocol_2eproto_impl() {
@@ -83,7 +115,10 @@ void protobuf_InitDefaults_include_2fprotocol_2eproto_impl() {
 
   ::google::protobuf::internal::GetEmptyString();
   STracingInterval_default_instance_.DefaultConstruct();
+  ::google::protobuf::internal::GetEmptyString();
+  STracingLegend_default_instance_.DefaultConstruct();
   STracingInterval_default_instance_.get_mutable()->InitAsDefaultInstance();
+  STracingLegend_default_instance_.get_mutable()->InitAsDefaultInstance();
 }
 
 GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_InitDefaults_include_2fprotocol_2eproto_once_);
@@ -99,7 +134,10 @@ void protobuf_AddDesc_include_2fprotocol_2eproto_impl() {
     "\n\026include/protocol.proto\022\006Tracer\"k\n\020STra"
     "cingInterval\022\013\n\003tid\030\001 \002(\005\022\r\n\005begin\030\002 \002(\003"
     "\022\013\n\003end\030\003 \002(\003\022\014\n\004name\030\004 \002(\t\022\020\n\010category\030"
-    "\005 \002(\t\022\016\n\006module\030\006 \002(\005", 141);
+    "\005 \002(\t\022\016\n\006module\030\006 \002(\005\"\205\001\n\016STracingLegend"
+    "\022>\n\014mapTidToName\030\001 \003(\0132(.Tracer.STracing"
+    "Legend.MapTidToNameEntry\0323\n\021MapTidToName"
+    "Entry\022\013\n\003key\030\001 \001(\005\022\r\n\005value\030\002 \001(\t:\0028\001", 277);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "include/protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_include_2fprotocol_2eproto);
@@ -870,6 +908,389 @@ void STracingInterval::set_module(::google::protobuf::int32 value) {
 
 inline const STracingInterval* STracingInterval::internal_default_instance() {
   return &STracingInterval_default_instance_.get();
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int STracingLegend::kMapTidToNameFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+STracingLegend::STracingLegend()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_include_2fprotocol_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:Tracer.STracingLegend)
+}
+
+void STracingLegend::InitAsDefaultInstance() {
+}
+
+STracingLegend::STracingLegend(const STracingLegend& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:Tracer.STracingLegend)
+}
+
+void STracingLegend::SharedCtor() {
+  _cached_size_ = 0;
+  maptidtoname_.SetAssignDescriptorCallback(
+      protobuf_AssignDescriptorsOnce);
+  maptidtoname_.SetEntryDescriptor(
+      &::Tracer::STracingLegend_MapTidToNameEntry_descriptor_);
+}
+
+STracingLegend::~STracingLegend() {
+  // @@protoc_insertion_point(destructor:Tracer.STracingLegend)
+  SharedDtor();
+}
+
+void STracingLegend::SharedDtor() {
+}
+
+void STracingLegend::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* STracingLegend::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return STracingLegend_descriptor_;
+}
+
+const STracingLegend& STracingLegend::default_instance() {
+  protobuf_InitDefaults_include_2fprotocol_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<STracingLegend> STracingLegend_default_instance_;
+
+STracingLegend* STracingLegend::New(::google::protobuf::Arena* arena) const {
+  STracingLegend* n = new STracingLegend;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void STracingLegend::Clear() {
+// @@protoc_insertion_point(message_clear_start:Tracer.STracingLegend)
+  maptidtoname_.Clear();
+  _has_bits_.Clear();
+  if (_internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->Clear();
+  }
+}
+
+bool STracingLegend::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:Tracer.STracingLegend)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // map<int32, string> mapTidToName = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(input->IncrementRecursionDepth());
+         parse_loop_mapTidToName:
+          STracingLegend_MapTidToNameEntry::Parser< ::google::protobuf::internal::MapField<
+              ::google::protobuf::int32, ::std::string,
+              ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
+              ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+              0 >,
+            ::google::protobuf::Map< ::google::protobuf::int32, ::std::string > > parser(&maptidtoname_);
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+              input, &parser));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            parser.value().data(), parser.value().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "Tracer.STracingLegend.MapTidToNameEntry.value");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(10)) goto parse_loop_mapTidToName;
+        input->UnsafeDecrementRecursionDepth();
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:Tracer.STracingLegend)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:Tracer.STracingLegend)
+  return false;
+#undef DO_
+}
+
+void STracingLegend::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:Tracer.STracingLegend)
+  // map<int32, string> mapTidToName = 1;
+  if (!this->maptidtoname().empty()) {
+    typedef ::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_pointer
+        ConstPtr;
+    typedef ::google::protobuf::internal::SortItem< ::google::protobuf::int32, ConstPtr > SortItem;
+    typedef ::google::protobuf::internal::CompareByFirstField<SortItem> Less;
+    struct Utf8Check {
+      static void Check(ConstPtr p) {
+        ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+          p->second.data(), p->second.length(),
+          ::google::protobuf::internal::WireFormat::SERIALIZE,
+          "Tracer.STracingLegend.MapTidToNameEntry.value");
+      }
+    };
+
+    if (output->IsSerializationDeterminstic() &&
+        this->maptidtoname().size() > 1) {
+      ::google::protobuf::scoped_array<SortItem> items(
+          new SortItem[this->maptidtoname().size()]);
+      typedef ::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::size_type size_type;
+      size_type n = 0;
+      for (::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_iterator
+          it = this->maptidtoname().begin();
+          it != this->maptidtoname().end(); ++it, ++n) {
+        items[n] = SortItem(&*it);
+      }
+      ::std::sort(&items[0], &items[n], Less());
+      ::google::protobuf::scoped_ptr<STracingLegend_MapTidToNameEntry> entry;
+      for (size_type i = 0; i < n; i++) {
+        entry.reset(maptidtoname_.NewEntryWrapper(
+            items[i].second->first, items[i].second->second));
+        ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+            1, *entry, output);
+        Utf8Check::Check(items[i].second);
+      }
+    } else {
+      ::google::protobuf::scoped_ptr<STracingLegend_MapTidToNameEntry> entry;
+      for (::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_iterator
+          it = this->maptidtoname().begin();
+          it != this->maptidtoname().end(); ++it) {
+        entry.reset(maptidtoname_.NewEntryWrapper(
+            it->first, it->second));
+        ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+            1, *entry, output);
+        Utf8Check::Check(&*it);
+      }
+    }
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:Tracer.STracingLegend)
+}
+
+::google::protobuf::uint8* STracingLegend::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:Tracer.STracingLegend)
+  // map<int32, string> mapTidToName = 1;
+  if (!this->maptidtoname().empty()) {
+    typedef ::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_pointer
+        ConstPtr;
+    typedef ::google::protobuf::internal::SortItem< ::google::protobuf::int32, ConstPtr > SortItem;
+    typedef ::google::protobuf::internal::CompareByFirstField<SortItem> Less;
+    struct Utf8Check {
+      static void Check(ConstPtr p) {
+        ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+          p->second.data(), p->second.length(),
+          ::google::protobuf::internal::WireFormat::SERIALIZE,
+          "Tracer.STracingLegend.MapTidToNameEntry.value");
+      }
+    };
+
+    if (deterministic &&
+        this->maptidtoname().size() > 1) {
+      ::google::protobuf::scoped_array<SortItem> items(
+          new SortItem[this->maptidtoname().size()]);
+      typedef ::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::size_type size_type;
+      size_type n = 0;
+      for (::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_iterator
+          it = this->maptidtoname().begin();
+          it != this->maptidtoname().end(); ++it, ++n) {
+        items[n] = SortItem(&*it);
+      }
+      ::std::sort(&items[0], &items[n], Less());
+      ::google::protobuf::scoped_ptr<STracingLegend_MapTidToNameEntry> entry;
+      for (size_type i = 0; i < n; i++) {
+        entry.reset(maptidtoname_.NewEntryWrapper(
+            items[i].second->first, items[i].second->second));
+        target = ::google::protobuf::internal::WireFormatLite::
+                   InternalWriteMessageNoVirtualToArray(
+                       1, *entry, deterministic, target);
+;
+        Utf8Check::Check(items[i].second);
+      }
+    } else {
+      ::google::protobuf::scoped_ptr<STracingLegend_MapTidToNameEntry> entry;
+      for (::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_iterator
+          it = this->maptidtoname().begin();
+          it != this->maptidtoname().end(); ++it) {
+        entry.reset(maptidtoname_.NewEntryWrapper(
+            it->first, it->second));
+        target = ::google::protobuf::internal::WireFormatLite::
+                   InternalWriteMessageNoVirtualToArray(
+                       1, *entry, deterministic, target);
+;
+        Utf8Check::Check(&*it);
+      }
+    }
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Tracer.STracingLegend)
+  return target;
+}
+
+size_t STracingLegend::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Tracer.STracingLegend)
+  size_t total_size = 0;
+
+  // map<int32, string> mapTidToName = 1;
+  total_size += 1 *
+      ::google::protobuf::internal::FromIntSize(this->maptidtoname_size());
+  {
+    ::google::protobuf::scoped_ptr<STracingLegend_MapTidToNameEntry> entry;
+    for (::google::protobuf::Map< ::google::protobuf::int32, ::std::string >::const_iterator
+        it = this->maptidtoname().begin();
+        it != this->maptidtoname().end(); ++it) {
+      entry.reset(maptidtoname_.NewEntryWrapper(it->first, it->second));
+      total_size += ::google::protobuf::internal::WireFormatLite::
+          MessageSizeNoVirtual(*entry);
+    }
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void STracingLegend::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:Tracer.STracingLegend)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const STracingLegend* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const STracingLegend>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Tracer.STracingLegend)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:Tracer.STracingLegend)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void STracingLegend::MergeFrom(const STracingLegend& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:Tracer.STracingLegend)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void STracingLegend::UnsafeMergeFrom(const STracingLegend& from) {
+  GOOGLE_DCHECK(&from != this);
+  maptidtoname_.MergeFrom(from.maptidtoname_);
+  if (from._internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::UnknownFieldSet::MergeToInternalMetdata(
+      from.unknown_fields(), &_internal_metadata_);
+  }
+}
+
+void STracingLegend::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:Tracer.STracingLegend)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void STracingLegend::CopyFrom(const STracingLegend& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Tracer.STracingLegend)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool STracingLegend::IsInitialized() const {
+
+  return true;
+}
+
+void STracingLegend::Swap(STracingLegend* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void STracingLegend::InternalSwap(STracingLegend* other) {
+  maptidtoname_.Swap(&other->maptidtoname_);
+  std::swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata STracingLegend::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = STracingLegend_descriptor_;
+  metadata.reflection = STracingLegend_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// STracingLegend
+
+// map<int32, string> mapTidToName = 1;
+int STracingLegend::maptidtoname_size() const {
+  return maptidtoname_.size();
+}
+void STracingLegend::clear_maptidtoname() {
+  maptidtoname_.Clear();
+}
+ const ::google::protobuf::Map< ::google::protobuf::int32, ::std::string >&
+STracingLegend::maptidtoname() const {
+  // @@protoc_insertion_point(field_map:Tracer.STracingLegend.mapTidToName)
+  return maptidtoname_.GetMap();
+}
+ ::google::protobuf::Map< ::google::protobuf::int32, ::std::string >*
+STracingLegend::mutable_maptidtoname() {
+  // @@protoc_insertion_point(field_mutable_map:Tracer.STracingLegend.mapTidToName)
+  return maptidtoname_.MutableMap();
+}
+
+inline const STracingLegend* STracingLegend::internal_default_instance() {
+  return &STracingLegend_default_instance_.get();
 }
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 

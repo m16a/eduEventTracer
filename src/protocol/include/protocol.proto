@@ -12,17 +12,6 @@ message  STracingInterval{
 	required int32 module = 6;
 }
 
-/*
-struct STracingInterval
-{
-	int tid;
-
-  int startTime;
-  int endTime;
-
-	std::string name;
-	std::string category;
-	int module;
-};
-*/
-
+message  STracingLegend{
+	map<int32, string> mapTidToName = 1;
+}

@@ -3,6 +3,10 @@
 #include <limits>
 #include "client.h"
 
+#include <map>
+#include <mutex>
+#include <string>
+
 struct IEventCollectorListener {
   virtual void OnRecivedData() = 0;
 };
@@ -39,11 +43,10 @@ class CEventCollector : public CClient {
   bool OnTracingIntervalEvent(STracingInterval& arg);
   bool OnTracingMainFrameEvent(STracingMainFrame& arg);
   bool OnTransferComplete(ServiceTransferComplete& arg);
+  bool OnTracingLegend(STracingLegend& arg);
 
   const std::vector<STimeIntervalArg>& GetIntervals() const;
   const std::vector<STracingInterval>& GetIntervals2() const;
-
-  void DebugGenerateSamples();
 
   size_t GetCapturedSize() const { return m_capturedSize; }
 
@@ -56,8 +59,7 @@ class CEventCollector : public CClient {
 
  private:
   EState m_state{EState::Disconnected};
-  std::vector<STimeIntervalArg> m_intervals;
-  std::vector<STracingInterval> m_intervals2;
 
   size_t m_capturedSize{0};
+  std::map<int, std::string> mapTidToName;
 };

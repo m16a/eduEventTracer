@@ -35,6 +35,7 @@ void Foo() {
 }
 
 void PhysThread() {
+  THREAD_BEGIN("Phys");
   while (true) {
     TRACE("", "");
     RandomSleep();
@@ -44,6 +45,7 @@ void PhysThread() {
 }
 
 void RenderThread() {
+  THREAD_BEGIN("Render");
   while (true) {
     TRACE("", "");
     Foo();
@@ -67,6 +69,7 @@ int main() {
       TRACE("", "");
       //      TRACE_MAIN_FRAME();
       MainFrame();
+      THREAD_BEGIN("Main");
       Foo();
       // fake payload
       RandomSleep();

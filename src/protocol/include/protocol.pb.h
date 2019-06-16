@@ -23,6 +23,8 @@
 #include <google/protobuf/arenastring.h>
 #include <google/protobuf/extension_set.h>
 #include <google/protobuf/generated_message_util.h>
+#include <google/protobuf/map.h>
+#include <google/protobuf/map_field_inl.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/metadata.h>
 #include <google/protobuf/repeated_field.h>
@@ -38,6 +40,7 @@ void protobuf_AssignDesc_include_2fprotocol_2eproto();
 void protobuf_ShutdownFile_include_2fprotocol_2eproto();
 
 class STracingInterval;
+class STracingLegend;
 
 // ===================================================================
 
@@ -205,6 +208,118 @@ class STracingInterval
 };
 extern ::google::protobuf::internal::ExplicitlyConstructed<STracingInterval>
     STracingInterval_default_instance_;
+
+// -------------------------------------------------------------------
+
+class STracingLegend
+    : public ::google::protobuf::
+          Message /* @@protoc_insertion_point(class_definition:Tracer.STracingLegend) */ {
+ public:
+  STracingLegend();
+  virtual ~STracingLegend();
+
+  STracingLegend(const STracingLegend& from);
+
+  inline STracingLegend& operator=(const STracingLegend& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const STracingLegend& default_instance();
+
+  static const STracingLegend* internal_default_instance();
+
+  void Swap(STracingLegend* other);
+
+  // implements Message ----------------------------------------------
+
+  inline STracingLegend* New() const { return New(NULL); }
+
+  STracingLegend* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const STracingLegend& from);
+  void MergeFrom(const STracingLegend& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(
+      ::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+
+ private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(STracingLegend* other);
+  void UnsafeMergeFrom(const STracingLegend& from);
+
+ private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // map<int32, string> mapTidToName = 1;
+  int maptidtoname_size() const;
+  void clear_maptidtoname();
+  static const int kMapTidToNameFieldNumber = 1;
+  const ::google::protobuf::Map< ::google::protobuf::int32, ::std::string>&
+  maptidtoname() const;
+  ::google::protobuf::Map< ::google::protobuf::int32, ::std::string>*
+  mutable_maptidtoname();
+
+  // @@protoc_insertion_point(class_scope:Tracer.STracingLegend)
+ private:
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  typedef ::google::protobuf::internal::MapEntryLite<
+      ::google::protobuf::int32, ::std::string,
+      ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
+      ::google::protobuf::internal::WireFormatLite::TYPE_STRING, 0>
+      STracingLegend_MapTidToNameEntry;
+  ::google::protobuf::internal::MapField<
+      ::google::protobuf::int32, ::std::string,
+      ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
+      ::google::protobuf::internal::WireFormatLite::TYPE_STRING, 0>
+      maptidtoname_;
+  friend void protobuf_InitDefaults_include_2fprotocol_2eproto_impl();
+  friend void protobuf_AddDesc_include_2fprotocol_2eproto_impl();
+  friend void protobuf_AssignDesc_include_2fprotocol_2eproto();
+  friend void protobuf_ShutdownFile_include_2fprotocol_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<STracingLegend>
+    STracingLegend_default_instance_;
 
 // ===================================================================
 
@@ -422,7 +537,31 @@ inline void STracingInterval::set_module(::google::protobuf::int32 value) {
 inline const STracingInterval* STracingInterval::internal_default_instance() {
   return &STracingInterval_default_instance_.get();
 }
+// -------------------------------------------------------------------
+
+// STracingLegend
+
+// map<int32, string> mapTidToName = 1;
+inline int STracingLegend::maptidtoname_size() const {
+  return maptidtoname_.size();
+}
+inline void STracingLegend::clear_maptidtoname() { maptidtoname_.Clear(); }
+inline const ::google::protobuf::Map< ::google::protobuf::int32, ::std::string>&
+STracingLegend::maptidtoname() const {
+  // @@protoc_insertion_point(field_map:Tracer.STracingLegend.mapTidToName)
+  return maptidtoname_.GetMap();
+}
+inline ::google::protobuf::Map< ::google::protobuf::int32, ::std::string>*
+STracingLegend::mutable_maptidtoname() {
+  // @@protoc_insertion_point(field_mutable_map:Tracer.STracingLegend.mapTidToName)
+  return maptidtoname_.MutableMap();
+}
+
+inline const STracingLegend* STracingLegend::internal_default_instance() {
+  return &STracingLegend_default_instance_.get();
+}
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
 
 // @@protoc_insertion_point(namespace_scope)
 

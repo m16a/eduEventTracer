@@ -6,9 +6,15 @@
 #include <thread>
 
 // TODO:michaelsh: change to shared ptr
+std::mutex gGetEventProvideMutex;
 std::unique_ptr<CEventProvider> gpEventProvider;
 
-CEventProvider& GetEventProvider() { return *gpEventProvider.get(); }
+CEventProvider& GetEventProvider() {
+  std::lock_guard<std::mutex> lock(gGetEventProvideMutex);
+  if (!gpEventProvider) gpEventProvider = std::make_unique<CEventProvider>();
+
+  return *gpEventProvider.get();
+}
 
 void Sleep500ms() {
   struct timespec t, empty;
@@ -18,13 +24,14 @@ void Sleep500ms() {
 }
 
 void MainFrame() {
-  if (!gpEventProvider) {
-    gpEventProvider = std::make_unique<CEventProvider>();
+  static bool sOnce = false;
 
+  if (!sOnce) {
+    sOnce = true;
     CEventProvider& tmp = GetEventProvider();
     std::thread t([&tmp] {
       while (true) {
-        gpEventProvider->Update();
+        tmp.Update();
         Sleep500ms();
       }
     });
@@ -91,6 +98,11 @@ bool CEventProvider::OnStartCapture(ServiceStartCapture&) {
 void CEventProvider::SendCollectedData() {
   std::cout << "Send starting..." << std::endl;
 
+  STracingLegend legend;
+  legend.mapTidToName = mapTidToNames;
+
+  PostEvent(legend);
+
   GetMessageHub().SendOverNetwork(*this);
 
   PostEvent(ServiceTransferComplete());
@@ -133,4 +145,13 @@ STracingIntervalGuard::STracingIntervalGuard() {
 STracingIntervalGuard::~STracingIntervalGuard() {
   msg.end = GetTimeNowMs();
   ProfileEvent(msg);
+}
+
+SThreadName::SThreadName(const char* name) {
+  GetEventProvider().AddTidName(GetTid(), name);
+}
+
+void CEventProvider::AddTidName(int tid, const char* name) {
+  std::lock_guard<std::mutex> lock(m_tidToNamesMutex);
+  mapTidToNames.insert(std::make_pair(GetTid(), std::string(name)));
 }

@@ -17,6 +17,7 @@ CEventCollector::CEventCollector() {
   GetMessageHub().Bind(this, &CEventCollector::OnTracingMainFrameEvent);
 
   GetMessageHub().Bind(this, &CEventCollector::OnTransferComplete);
+  GetMessageHub().Bind(this, &CEventCollector::OnTracingLegend);
 }
 
 CEventCollector::~CEventCollector() {
@@ -71,11 +72,6 @@ bool CEventCollector::OnTransferComplete(ServiceTransferComplete& arg) {
 }
 
 bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
-  std::cout << "TI: " << arg.endTime << " - " << arg.startTime << " = "
-            << arg.endTime - arg.startTime << std::endl;
-
-  m_intervals.emplace_back(arg);
-
   return true;
 }
 
@@ -97,10 +93,6 @@ bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
   return true;
 }
 
-const std::vector<STimeIntervalArg>& CEventCollector::GetIntervals() const {
-  return m_intervals;
-}
-
 const std::vector<STracingInterval>& CEventCollector::GetIntervals2() const {
   return GetMessageHub().Get<STracingInterval>().GetTmp();
 }
@@ -109,8 +101,11 @@ bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg) {
   m_capturedSize += arg.size;
 }
 
-void CEventCollector::DebugGenerateSamples() {
-  for (int i = 0; i < 1000; ++i) {
-    m_intervals.emplace_back(STimeIntervalArg(i * 10, i * 10 + 5));
+bool CEventCollector::OnTracingLegend(STracingLegend& arg) {
+  mapTidToName = arg.mapTidToName;
+  for (auto& kv : mapTidToName) {
+    std::cout << "Threads:\n";
+    std::cout << "\t" << kv.first << " " << kv.second << std::endl;
   }
+  return true;
 }

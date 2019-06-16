@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "MessageHub.h"
 #include "server.h"
 #include "timer.h"
@@ -28,6 +29,10 @@ class CEventProvider : public CServer {
       GetMessageHub().Get<T>().AddMessage(event);
   }
 
+  std::map<int, std::string> mapTidToNames;
+
+  void AddTidName(int tid, const char* name);
+
  private:
   void GoToState(EState s);
   void OnStateEntered(EState s);
@@ -38,13 +43,12 @@ class CEventProvider : public CServer {
   void SendCollectedData();
 
  private:
-  std::vector<STimeIntervalArg> m_storedEvents;
-  std::vector<STracingInterval> m_storedEvents2;
-
   Timer m_FeedbakTimer;
   const int m_kCaptureSizeFeedbackPeriodSec{1};
 
   EState m_state{EState::Listening};
+
+  std::mutex m_tidToNamesMutex;
 };
 
 CEventProvider& GetEventProvider();
@@ -63,6 +67,10 @@ struct STracingIntervalGuard {
   STracingInterval msg;
 };
 
-#define TRACE(module, category) STracingIntervalGuard tmp
-#define TRACE_MAIN_FRAME() STracingMainFrameGuard tmp
-#define TRACE_THREAD(name)
+struct SThreadName {
+  SThreadName(const char* name);
+};
+
+#define TRACE(module, category) STracingIntervalGuard tmp_STracingIntervalGuard
+#define TRACE_MAIN_FRAME() STracingMainFrameGuard tmp_STracingMainFrameGuard
+#define THREAD_BEGIN(name) static SThreadName tmp_SThreadName(name)
