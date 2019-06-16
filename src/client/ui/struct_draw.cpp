@@ -1,6 +1,8 @@
 #include "struct_draw.h"
-#include <iostream>
+#include "event_collector.h"
 #include "imgui.h"
+
+#include <iostream>
 
 void ThreadsRender::Render(RenderContext& ctx) {
   for (auto& t : m_threads) {
@@ -10,7 +12,25 @@ void ThreadsRender::Render(RenderContext& ctx) {
   }
 }
 
-void ThreadView::Render(RenderContext& ctx) { Render(m_pRoot.get(), ctx); }
+void ThreadView::Render(RenderContext& ctx) {
+  Render(m_pRoot.get(), ctx);
+
+  ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+  const ImVec2 p = ImGui::GetCursorScreenPos();
+  static ImVec4 col = ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+  ImU32 col32 = ImColor(col);
+
+  char buff[50];
+
+  const float x = p.x + 30.0f;
+  const float y = p.y + ctx.topY;
+  // draw_list->AddLine(ImVec2(x, y1), ImVec2(x, y2), col32);
+
+  snprintf(buff, sizeof(buff), "%s (%d)",
+           (m_name.c_str() ? m_name.c_str() : ""), m_tid);
+  draw_list->AddText(ImVec2(x, y), col32, buff);
+}
 
 void RenderNode(STimeInterval* node, RenderContext& ctx) {
   ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -63,7 +83,8 @@ void ThreadView::Render(INode* node, RenderContext& ctx) {
   }
 }
 
-void ThreadsRender::InitFromMessageHub(MessageHub& messageHub) {
+void ThreadsRender::InitFromMessageHub(MessageHub& messageHub,
+                                       CEventCollector& eventCollector) {
   std::vector<ITimedEvent*> tmpNodes;
   messageHub.GetAllNodes(tmpNodes);
 
@@ -100,17 +121,21 @@ void ThreadsRender::InitFromMessageHub(MessageHub& messageHub) {
     total++;
   }
 
-  InitLayout();
+  InitLayout(eventCollector);
 
   // TODO:michealsh: do better sync
   count = total;
 }
 
-void ThreadsRender::InitLayout() {
+void ThreadsRender::InitLayout(CEventCollector& eventCollector) {
   for (auto& t : m_threads) {
     ThreadView& tView = t.second;
 
     tView.InitData();
+    tView.m_tid = t.first;
+    auto it = eventCollector.mapTidToName.find(t.first);
+    if (it != eventCollector.mapTidToName.end()) tView.m_name = it->second;
+
     m_layout.tidOrder.push_back(t.first);
     std::cout << "********************\n";
     tView.m_pRoot->Dump();

@@ -16,7 +16,7 @@ class App : public IEventCollectorListener {
   TimeLine m_timeLine;
   ThreadsRender m_threadsRender;
 
-  void OnRecivedData() override;
+  void OnRecivedData(CEventCollector& eventCollector) override;
 };
 
 #endif  // EDUEVENTTRACER_APP_H

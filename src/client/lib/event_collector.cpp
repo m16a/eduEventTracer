@@ -84,7 +84,7 @@ bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
 }
 
 void CEventCollector::ProcessIncommingData() {
-  if (m_delegate) m_delegate->OnRecivedData();
+  if (m_delegate) m_delegate->OnRecivedData(*this);
 }
 
 bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {

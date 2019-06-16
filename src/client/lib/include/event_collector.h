@@ -7,8 +7,10 @@
 #include <mutex>
 #include <string>
 
+class CEventCollector;
+
 struct IEventCollectorListener {
-  virtual void OnRecivedData() = 0;
+  virtual void OnRecivedData(CEventCollector& eventCollector) = 0;
 };
 
 class CEventCollector : public CClient {
@@ -54,6 +56,8 @@ class CEventCollector : public CClient {
 
   IEventCollectorListener* m_delegate;
 
+  std::map<int, std::string> mapTidToName;
+
  private:
   void GoToState(EState s);
 
@@ -61,5 +65,4 @@ class CEventCollector : public CClient {
   EState m_state{EState::Disconnected};
 
   size_t m_capturedSize{0};
-  std::map<int, std::string> mapTidToName;
 };

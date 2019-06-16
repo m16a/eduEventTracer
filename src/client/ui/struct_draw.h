@@ -6,6 +6,8 @@
 #include <limits>
 #include <map>
 
+class CEventCollector;
+
 struct RenderContext {
   TTime viewBeginTime;
   TTime viewEndTime;
@@ -116,7 +118,8 @@ struct INode {
 };
 
 struct ThreadView {
-  int m_name;
+  std::string m_name;
+  int m_tid;
   int m_topY;
   int m_bottomY;
   int m_depth;
@@ -158,12 +161,13 @@ struct ThreadsRender {
 
   std::map<int, ThreadView> m_threads;
   void InsertTimedEvent(ITimedEvent* e){};
-  void InitFromMessageHub(MessageHub& messageHub);
+  void InitFromMessageHub(MessageHub& messageHub,
+                          CEventCollector& eventCollector);
 
   TTime minTime{std::numeric_limits<TTime>::max()};
   TTime maxTime{0};
   int count{0};
 
  private:
-  void InitLayout();
+  void InitLayout(CEventCollector& eventCollector);
 };
