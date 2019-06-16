@@ -17,7 +17,7 @@ void RenderNode(STimeInterval* node, RenderContext& ctx) {
 
   const ImVec2 p = ImGui::GetCursorScreenPos();
   static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-  const ImU32 col32 = ImColor(col);
+  ImU32 col32 = ImColor(col);
 
   const float x1 = p.x + (node->begin - ctx.viewBeginTime) * ctx.scale;
   const float y =
@@ -28,6 +28,10 @@ void RenderNode(STimeInterval* node, RenderContext& ctx) {
   const float y2 = p.y + y + ThreadsRender::Settings::SpanHeight;
 
   draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+
+  static ImVec4 col2 = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+  col32 = ImColor(col2);
+  draw_list->AddRect(ImVec2(x1, y1), ImVec2(x2, y2), col32);
 }
 
 void ThreadView::Render(INode* node, RenderContext& ctx) {
