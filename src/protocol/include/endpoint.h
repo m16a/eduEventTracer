@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <type_traits>
 #include "buffer.h"
 #include "protocol.h"
@@ -16,17 +17,15 @@ class CEndPoint : public ISocketListener {
   void PostEvent(TArg&& data) {
     if (!CanPostEvents()) return;
 
-    Ser ser;
-    ser.isReading = false;
-    data.Serialize(ser);
+    std::stringbuf buff;
+    std::ostream out(&buff);
     int id = GetMessageId<typename std::remove_reference<TArg>::type>();
-    ser.buffer.insert(
-        ser.buffer.begin(),
-        static_cast<int>(id));  // TODO:michaelsh:avoid mem shifting
+    out << id;
+    out << data;
 
     std::cout << "posting msg:" << static_cast<int>(id) << std::endl;
 
-    m_pSock->Send(ser.buffer);
+    m_pSock->Send(buff.str().c_str(), buff.str().length());
   }
 
   bool ConnectSync(const char* ip, int port);
@@ -38,7 +37,7 @@ class CEndPoint : public ISocketListener {
   virtual bool CanPostEvents() { return true; };
 
  protected:
-  virtual void OnMsg(TBuff& buff) override;
+  virtual void OnMsg(std::istream& strm) override;
   virtual void OnNewListener() override{};
   virtual void OnHostDisconnect() override{};
   virtual void OnListenerDisonnected() override{};

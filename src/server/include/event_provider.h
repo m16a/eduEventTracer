@@ -6,7 +6,6 @@
 #include "timer.h"
 
 void MainFrame();
-void ProfileEvent(const STimeIntervalArg& event);
 void ProfileEvent(const STracingInterval& event);
 void ProfileEvent(const STracingMainFrame& event);
 

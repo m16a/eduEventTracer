@@ -15,7 +15,6 @@
 #include "protocol.h"
 #include "utills.h"
 
-// TODO:michaelsh: delete
 #include <iostream>
 
 struct ITimedEvent;
@@ -86,17 +85,14 @@ struct MessageContainer : public MessageContainerBase {
 
 const constexpr int MaxMessageTypeCount = 100;
 class CDispatcher {
-  using THndlr = std::function<bool(TBuff&)>;
+  using THndlr = std::function<bool(std::istream&)>;
 
  public:
   template <class TCaller, class argType>
   void Bind(TCaller* ownr, bool (TCaller::*callback)(argType&)) {
-    auto lambda = [ownr, callback](TBuff& buffer) {
-      Ser ser;
-      ser.buffer = buffer;  // TODO:michaelsh: extra copy
-      ser.isReading = true;
+    auto lambda = [ownr, callback](std::istream& strm) {
       argType strct;
-      strct.Serialize(ser);
+      strm >> strct;
 
       return (ownr->*callback)(strct);
     };
@@ -106,7 +102,7 @@ class CDispatcher {
     m_hndlrs[index] = lambda;
   }
 
-  void OnMsg(int index, TBuff& buff) { m_hndlrs[index](buff); }
+  void OnMsg(int index, std::istream& strm) { m_hndlrs[index](strm); }
 
  private:
   std::array<THndlr, MaxMessageTypeCount> m_hndlrs;

@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 
 static bool IsListeningSocket(int sock) {
   bool res = false;
@@ -102,9 +103,10 @@ void CLinuxSocket::Update() {
   }
 }
 
-void CLinuxSocket::Send(TBuff buff) {
+void CLinuxSocket::Send(const char* buff, size_t len) {
   // TODO:avoid copy
-  m_outMsgs.push_back(buff);
+  std::vector<char> tmp(buff, buff + len);
+  m_outMsgs.push_back(tmp);
 }
 
 // poll socket
@@ -130,11 +132,10 @@ void CLinuxSocket::UpdateClient() {
   struct sockaddr_in address;
   int addrlen = sizeof(address);
 
-  TBuff buffer;
-  buffer.resize(1024);
+  static std::string buffer(100 * 1024, 0);  // 100KB
   if (FD_ISSET(m_sock, &m_readfds)) {
     ssize_t valread = 0;
-    if ((valread = read(m_sock, buffer.data(), buffer.size())) == 0) {
+    if ((valread = read(m_sock, &buffer[0], buffer.length())) == 0) {
       // Somebody disconnected , get his details and print
       getpeername(m_sock, (struct sockaddr*)&address, (socklen_t*)&addrlen);
       std::cout << "Host disconnected , ip: " << inet_ntoa(address.sin_addr)
@@ -146,11 +147,18 @@ void CLinuxSocket::UpdateClient() {
       if (m_listener) m_listener->OnHostDisconnect();
     } else if (valread > 0) {
       buffer.resize(valread);
+      std::stringbuf strBuff(buffer);
+      std::istream out(&strBuff);
 
-      if (m_listener) {
-        m_listener->OnMsg(buffer);
-        std::cout << "something was received\n";
+      std::cout << "somthing was recived, size: " << valread << std::endl;
+
+      // Dump(buffer);
+
+      while (out.good()) {
+        std::cout << "read msg" << std::endl;
+        if (m_listener) m_listener->OnMsg(out);
       }
+
     } else {
       std::cout << "read error: " << errno << ", valread: " << valread
                 << std::endl;
@@ -252,10 +260,10 @@ void CLinuxSocket::UpdateServer() {
       // Check if it was for closing , and also read the
       // incoming message
       std::cout << "somthing to read" << std::endl;
-      TBuff buffer;
-      buffer.resize(1024);  // 1K
+
+      static std::string buffer(100 * 1024, 0);  // 100KB
       size_t valread = 0;
-      if ((valread = read(sd, buffer.data(), 1024)) == 0) {
+      if ((valread = read(sd, &buffer[0], buffer.size())) == 0) {
         // Somebody disconnected , get his details and print
         getpeername(sd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
         std::cout << "Host disconnected , ip: " << inet_ntoa(address.sin_addr)
@@ -269,11 +277,17 @@ void CLinuxSocket::UpdateServer() {
 
       } else {
         buffer.resize(valread);
+        std::stringbuf strBuff(buffer);
+        std::istream out(&strBuff);
 
         std::cout << "somthing was recived, size: " << valread << std::endl;
-        Dump(buffer);
 
-        if (m_listener) m_listener->OnMsg(buffer);
+        // Dump(buffer);
+
+        while (out.good()) {
+          std::cout << "read msg" << std::endl;
+          if (m_listener) m_listener->OnMsg(out);
+        }
       }
     }
 

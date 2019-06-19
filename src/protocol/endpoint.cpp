@@ -1,4 +1,5 @@
 #include "endpoint.h"
+#include <istream>
 #include "MessageHub.h"
 
 CEndPoint::CEndPoint(int port) {
@@ -16,15 +17,18 @@ void CEndPoint::Listen() { m_pSock->Listen(); }
 
 void CEndPoint::Update() { m_pSock->Update(); }
 
-void CEndPoint::OnMsg(TBuff& buff) {
-  if (buff.empty()) {
-    std::cout << "received empty msg" << std::endl;
-    return;
-  }
+void CEndPoint::OnMsg(std::istream& strm) {
+  // TODO:michaelsh: check stream integrity
+  /*
+if (0 && buff.empty()) {
+std::cout << "received empty msg" << std::endl;
+return;
+}
+  */
 
-  int type = static_cast<int>(buff[0]);
-  buff.erase(buff.begin());  // TODO: memory shifting
-  std::cout << "recived msg: " << type << std::endl;
+  int msgId = -1;
+  strm >> msgId;
+  std::cout << "recived msg: " << msgId << std::endl;
 
-  GetMessageHub().m_dispatcher.OnMsg(type, buff);
+  GetMessageHub().m_dispatcher.OnMsg(msgId, strm);
 }

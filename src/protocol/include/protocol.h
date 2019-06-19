@@ -2,7 +2,7 @@
 
 #include <string.h>
 #include <sys/types.h>
-#include "buffer.h"
+#include "defines.h"
 #include "protocol.pb.h"
 
 int GenerateMessageId();
@@ -18,75 +18,57 @@ void RegisterServiceMessage() {
   GetMessageId<T>();
 }
 
-bool Serialize(Ser& ser);
+/*-----------------------------------------------------*/
+struct ServiceStartCapture {};
 
-struct ServiceStartCapture {
-  void Serialize(Ser& ser) {}
-};
+std::istream &operator>>(std::istream &in, ServiceStartCapture &c);
 
-struct ServiceStopCapture {
-  void Serialize(Ser& ser) {}
-};
+std::ostream &operator<<(std::ostream &out, const ServiceStartCapture &c);
 
-struct ServiceTransferComplete {
-  void Serialize(Ser& ser) {}
-};
+/*-----------------------------------------------------*/
+struct ServiceStopCapture {};
 
+std::istream &operator>>(std::istream &in, ServiceStopCapture &c);
+
+std::ostream &operator<<(std::ostream &out, const ServiceStopCapture &c);
+
+/*-----------------------------------------------------*/
+struct ServiceTransferComplete {};
+
+std::istream &operator>>(std::istream &in, ServiceTransferComplete &c);
+
+std::ostream &operator<<(std::ostream &out, const ServiceTransferComplete &c);
+
+/*-----------------------------------------------------*/
 struct RenderContext;
 
 struct ITimedEvent {
-  virtual void Render(RenderContext&) = 0;
+  virtual void Render(RenderContext &) = 0;
   int tid;
 };
 
 struct STimePoint : public ITimedEvent {
   TTime time;
 
-  void Render(RenderContext&) override {}
+  void Render(RenderContext &) override {}
 };
 
+/*-----------------------------------------------------*/
 struct STimeInterval : public ITimedEvent {
   TTime begin;
   TTime end;
 
-  void Render(RenderContext&) override;
+  void Render(RenderContext &) override;
 };
 
-struct STimeIntervalArg : public STimeInterval {
-  int startTime;
-  int endTime;
-
-  STimeIntervalArg() {}
-  STimeIntervalArg(int _startTime, int _endTime)
-      : startTime(_startTime), endTime(_endTime) {}
-
-  void Serialize(Ser& ser) {
-    if (ser.isReading) {
-      int* pVal = reinterpret_cast<int*>(ser.buffer.data());
-      startTime = *pVal;
-      pVal += 1;
-      endTime = *pVal;
-    } else {
-      ser.buffer.resize(sizeof(int) * 2);
-      memcpy(ser.buffer.data(), &startTime, 4);
-      memcpy(ser.buffer.data() + 4, &endTime, 4);
-    }
-  }
-};
-
+/*-----------------------------------------------------*/
 struct SCatpuredSizeFeedback {
   size_t size;
-
-  void Serialize(Ser& ser) {
-    if (ser.isReading) {
-      int* pVal = reinterpret_cast<int*>(ser.buffer.data());
-      size = *pVal;
-    } else {
-      ser.buffer.resize(4);
-      memcpy(ser.buffer.data(), &size, 4);
-    }
-  }
 };
+
+std::istream &operator>>(std::istream &in, SCatpuredSizeFeedback &c);
+
+std::ostream &operator<<(std::ostream &out, const SCatpuredSizeFeedback &c);
 
 // ----------------------- Tracing ------------------------
 
@@ -94,84 +76,28 @@ struct STracingInterval : public STimeInterval {
   std::string name;
   std::string category;
   int module;
-
-  void Serialize(Ser& ser) {
-    if (ser.isReading) {
-      Tracer::STracingInterval interval;
-      interval.ParseFromArray(ser.buffer.data(), ser.buffer.size());
-
-      tid = interval.tid();
-      begin = interval.begin();
-      end = interval.end();
-
-      name = interval.name();
-      category = interval.category();
-      module = interval.module();
-    } else {
-      Tracer::STracingInterval interval;
-      interval.set_tid(tid);
-      interval.set_begin(begin);
-      interval.set_end(end);
-
-      interval.set_name(name);
-      interval.set_category(category);
-      interval.set_module(module);
-
-      size_t size = interval.ByteSizeLong();
-      ser.buffer.resize(size);
-      interval.SerializeToArray(ser.buffer.data(), size);
-    }
-  }
 };
-struct STracingMainFrame : public STimeInterval {
-  void Serialize(Ser& ser) {
-    if (ser.isReading) {
-      TTime* pVal = reinterpret_cast<TTime*>(ser.buffer.data());
-      begin = *pVal;
-      pVal += 1;
-      end = *pVal;
-      pVal += 1;
-      tid = *pVal;
-    } else {
-      size_t tS = sizeof(TTime);
-      ser.buffer.resize(tS * 3);
-      memcpy(ser.buffer.data(), &begin, tS);
-      // TODO: michaelsh: pay attention to x86 and x64
-      memcpy(ser.buffer.data() + 1, &end, tS);
-      memcpy(ser.buffer.data() + 2, &tid, tS);
-    }
-  }
-};
+
+std::istream &operator>>(std::istream &in, STracingInterval &c);
+
+std::ostream &operator<<(std::ostream &out, const STracingInterval &c);
+
+// ----------------------- Tracing Main Frame ------------------------
+struct STracingMainFrame : public STimeInterval {};
+
+std::istream &operator>>(std::istream &in, STracingMainFrame &c);
+
+std::ostream &operator<<(std::ostream &out, const STracingMainFrame &c);
 
 TTime GetTimeNowMs();
 
+// ----------------------- Tracing Legend ------------------------
 struct STracingLegend {
   std::map<int, std::string> mapTidToName;
-
-  void Serialize(Ser& ser) {
-    if (ser.isReading) {
-      Tracer::STracingLegend msg;
-      msg.ParseFromArray(ser.buffer.data(), ser.buffer.size());
-
-      auto it = msg.maptidtoname().begin();
-      while (it != msg.maptidtoname().end()) {
-        mapTidToName.insert(std::pair<int, std::string>(it->first, it->second));
-        ++it;
-      }
-
-    } else {
-      Tracer::STracingLegend msg;
-
-      // auto test = Tracer::STracingLegend::default_instance();
-      auto map = msg.mutable_maptidtoname();
-
-      for (auto& kv : mapTidToName) (*map)[kv.first] = kv.second;
-
-      size_t size = msg.ByteSizeLong();
-      ser.buffer.resize(size);
-      msg.SerializeToArray(ser.buffer.data(), size);
-    }
-  }
 };
+
+std::istream &operator>>(std::istream &in, STracingLegend &c);
+
+std::ostream &operator<<(std::ostream &out, const STracingLegend &c);
 
 void InitProtocol();

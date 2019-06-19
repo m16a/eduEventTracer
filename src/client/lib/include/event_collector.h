@@ -40,15 +40,11 @@ class CEventCollector : public CClient {
   virtual void OnListenerDisonnected() override;
 
   // callbacks
-  bool OnTimeIntervalEvent(STimeIntervalArg& arg);
   bool OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg);
   bool OnTracingIntervalEvent(STracingInterval& arg);
   bool OnTracingMainFrameEvent(STracingMainFrame& arg);
   bool OnTransferComplete(ServiceTransferComplete& arg);
   bool OnTracingLegend(STracingLegend& arg);
-
-  const std::vector<STimeIntervalArg>& GetIntervals() const;
-  const std::vector<STracingInterval>& GetIntervals2() const;
 
   size_t GetCapturedSize() const { return m_capturedSize; }
 

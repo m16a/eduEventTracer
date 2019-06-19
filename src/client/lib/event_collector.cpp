@@ -11,7 +11,6 @@ const char* stateNames[] = {"Disconnected", "Connecting", "Connected",
 CEventCollector::CEventCollector() {
   InitProtocol();
 
-  GetMessageHub().Bind(this, &CEventCollector::OnTimeIntervalEvent);
   GetMessageHub().Bind(this, &CEventCollector::OnCapturedSizeFeedback);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingIntervalEvent);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingMainFrameEvent);
@@ -52,6 +51,9 @@ void CEventCollector::Update() {
     case EState::Capturing:
       break;
   }
+
+  // TODO:michaelsh: support win
+  usleep(10000);
 }
 
 void CEventCollector::GoToState(EState s) {
@@ -71,10 +73,6 @@ bool CEventCollector::OnTransferComplete(ServiceTransferComplete& arg) {
   GoToState(EState::Analyze);
 }
 
-bool CEventCollector::OnTimeIntervalEvent(STimeIntervalArg& arg) {
-  return true;
-}
-
 bool CEventCollector::OnTracingIntervalEvent(STracingInterval& arg) {
   std::cout << arg.name << " TI: " << arg.end << " - " << arg.begin << " = "
             << arg.end - arg.begin << std::endl;
@@ -91,10 +89,6 @@ bool CEventCollector::OnTracingMainFrameEvent(STracingMainFrame& arg) {
   GetMessageHub().Get<STracingMainFrame>().AddMessage(arg, arg.tid);
 
   return true;
-}
-
-const std::vector<STracingInterval>& CEventCollector::GetIntervals2() const {
-  return GetMessageHub().Get<STracingInterval>().GetTmp();
 }
 
 bool CEventCollector::OnCapturedSizeFeedback(SCatpuredSizeFeedback& arg) {
