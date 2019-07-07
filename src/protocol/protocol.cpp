@@ -24,11 +24,18 @@ void RegisterMessage() {
   GetMessageHub().RegisterMessage<T>();
 }
 
+void LogHandlerFn(google::protobuf::LogLevel level, const char *filename,
+                  int line, const std::string &message) {
+  std::cout << "protobuf handler: " << message << std::endl;
+}
+
 void InitProtocol() {
   InitServiceMessages();
 
   RegisterMessage<STracingInterval>();
   RegisterMessage<STracingMainFrame>();
+
+  google::protobuf::SetLogHandler(LogHandlerFn);
 }
 
 TTime GetTimeNowMs() {
@@ -76,7 +83,10 @@ std::ostream &operator<<(std::ostream &out, const SCatpuredSizeFeedback &c) {
 
 std::istream &operator>>(std::istream &in, STracingInterval &c) {
   Tracer::STracingInterval interval;
-  interval.ParseFromIstream(&in);
+  bool success = interval.ParseFromIstream(&in);
+  if (!success) {
+    std::cout << "STracingInterval deserialization fail" << std::endl;
+  }
 
   c.tid = interval.tid();
   c.begin = interval.begin();
@@ -121,6 +131,8 @@ std::istream &operator>>(std::istream &in, STracingLegend &c) {
     c.mapTidToName.insert(std::pair<int, std::string>(it->first, it->second));
     ++it;
   }
+
+  std::cout << "STracingLegend rdstate: " << in.rdstate() << std::endl;
   return in;
 }
 

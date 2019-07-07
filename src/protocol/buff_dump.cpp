@@ -2,15 +2,16 @@
 #include <iostream>
 #include "buffer.h"
 
-void Dump(TBuff& buff) {
-  for (int i = 0; i < buff.size(); ++i) {
-    char c = buff[i];
+void Dump(const char* buffer, size_t len) {
+  std::cout << std::noskipws;
+  for (int i = 0; i < len; ++i) {
+    char c = buffer[i];
 
     char tmpStr[10];
-    snprintf(tmpStr, sizeof(buff), "%02x ", c);
+    snprintf(tmpStr, 4, "%02x ", c);
     std::cout << tmpStr;
 
     if (i % 20 == 0 && i > 0) std::cout << std::endl;
   }
-  std::cout << std::endl;
+  std::cout << std::endl << std::skipws;
 }

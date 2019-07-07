@@ -5,4 +5,4 @@
 using TBuff = std::vector<char>;
 using TTime = long long int;  // int64
 
-void Dump(TBuff& buff);
+void Dump(const char* buffer, size_t len);

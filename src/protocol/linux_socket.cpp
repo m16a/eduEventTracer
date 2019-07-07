@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
+#include "assert.h"
 
 static bool IsListeningSocket(int sock) {
   bool res = false;
@@ -104,9 +105,18 @@ void CLinuxSocket::Update() {
 }
 
 void CLinuxSocket::Send(const char* buff, size_t len) {
-  // TODO:avoid copy
-  std::vector<char> tmp(buff, buff + len);
-  m_outMsgs.push_back(tmp);
+  if (len) {
+    // TODO:avoid copy
+    std::vector<char> tmp;
+    tmp.reserve(len + 4);
+    char* p = (char*)&len;
+    for (int i = 0; i < 4; i++) {
+      tmp.push_back(*(p + i));
+    }
+    tmp.insert(tmp.end(), buff, buff + len);
+
+    m_outMsgs.push_back(tmp);
+  }
 }
 
 // poll socket
@@ -147,17 +157,12 @@ void CLinuxSocket::UpdateClient() {
       if (m_listener) m_listener->OnHostDisconnect();
     } else if (valread > 0) {
       buffer.resize(valread);
-      std::stringbuf strBuff(buffer);
-      std::istream out(&strBuff);
+      m_inputBuffer.append(buffer);
 
       std::cout << "somthing was recived, size: " << valread << std::endl;
+      Dump(buffer.c_str(), valread);
 
-      // Dump(buffer);
-
-      while (out.good()) {
-        std::cout << "read msg" << std::endl;
-        if (m_listener) m_listener->OnMsg(out);
-      }
+      ParseMessages(m_inputBuffer);
 
     } else {
       std::cout << "read error: " << errno << ", valread: " << valread
@@ -170,8 +175,9 @@ void CLinuxSocket::UpdateClient() {
     while (!m_outMsgs.empty()) {
       TBuff& msg = m_outMsgs.front();
 
-      std::cout << "msg sending. size: " << msg.size() << std::endl;
-      Dump(msg);
+      std::cout << "[" << m_sentMsgCnt++
+                << "] msg sending, size: " << msg.size() - 4 << std::endl;
+      Dump(msg.data(), msg.size());
 
       ssize_t size = send(m_sock, msg.data(), msg.size(), 0);
 
@@ -186,6 +192,39 @@ void CLinuxSocket::UpdateClient() {
   }
 }
 
+void CLinuxSocket::ParseMessages(std::string& buffer) {
+  ssize_t curr = 0;
+  while (curr < buffer.size()) {
+    int msgSize = 0;
+
+    if (curr + 4 > buffer.size()) break;
+
+    char* p = (char*)&msgSize;
+    const char* pBegin = buffer.c_str() + curr;
+    for (int i = 0; i < 4; i++) {
+      *(p + i) = buffer[curr + i];
+    }
+    curr += 4;
+
+    if (curr + msgSize > buffer.size()) {
+      curr -= 4;
+      break;
+    }
+
+    std::string sB(buffer, curr, msgSize);
+    std::stringbuf strBuff(sB);
+    std::istream in(&strBuff);
+
+    std::cout << "[" << m_recivedMsgCnt++ << "] read msg, size: " << msgSize
+              << std::endl;
+    if (m_listener) m_listener->OnMsg(in);
+
+    Dump(pBegin, msgSize + 4);
+    curr += msgSize;
+  }
+
+  buffer.erase(buffer.begin(), buffer.begin() + curr);
+}
 // check new connections + poll socket + send if can
 void CLinuxSocket::UpdateServer() {
   int max_sd = 0;
@@ -277,17 +316,12 @@ void CLinuxSocket::UpdateServer() {
 
       } else {
         buffer.resize(valread);
-        std::stringbuf strBuff(buffer);
-        std::istream out(&strBuff);
+        m_inputBuffer.append(buffer);
 
         std::cout << "somthing was recived, size: " << valread << std::endl;
+        Dump(buffer.c_str(), valread);
 
-        // Dump(buffer);
-
-        while (out.good()) {
-          std::cout << "read msg" << std::endl;
-          if (m_listener) m_listener->OnMsg(out);
-        }
+        ParseMessages(m_inputBuffer);
       }
     }
 
@@ -295,8 +329,9 @@ void CLinuxSocket::UpdateServer() {
       while (!m_outMsgs.empty()) {
         TBuff& msg = m_outMsgs.front();
 
-        std::cout << "msg sending, size: " << msg.size() << std::endl;
-        Dump(msg);
+        std::cout << "[" << m_sentMsgCnt++
+                  << "] msg sending, size: " << msg.size() - 4 << std::endl;
+        Dump(msg.data(), msg.size());
 
         ssize_t size = send(sd, msg.data(), msg.size(), 0);
 

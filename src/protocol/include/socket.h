@@ -47,6 +47,7 @@ class CLinuxSocket : public ISocket {
   void UpdateServer();
 
  private:
+  void ParseMessages(std::string& buffer);
   int m_sock{0};
   struct sockaddr_in m_address;
   int m_client_sockets[kMaxClients];
@@ -54,5 +55,9 @@ class CLinuxSocket : public ISocket {
   fd_set m_readfds;
   fd_set m_writefds;
 
+  int m_sentMsgCnt{0};
+  int m_recivedMsgCnt{0};
+
   std::list<TBuff> m_outMsgs;
+  std::string m_inputBuffer;
 };
