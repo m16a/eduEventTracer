@@ -4,7 +4,6 @@
 #include <memory>
 #include <sstream>
 #include <type_traits>
-#include "buffer.h"
 #include "protocol.h"
 #include "socket.h"
 

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <iostream>
-#include "buffer.h"
 
 void Dump(const char* buffer, size_t len) {
   std::cout << std::noskipws;

@@ -11,7 +11,7 @@ set(SOURCES main.cpp
 	${CMAKE_SOURCE_DIR}/3rd/imgui-master/imgui_demo.cpp
 	${CMAKE_SOURCE_DIR}/3rd/imgui-master/imgui_draw.cpp
 	${CMAKE_SOURCE_DIR}/3rd/imgui-master/examples/libs/gl3w/GL/gl3w.c
-		TimeLine.cpp TimeLine.h App.cpp struct_draw.cpp)
+		ThreadsView.cpp App.cpp ThreadsPanel.cpp)
 
 add_executable(client_ui ${SOURCES})
 

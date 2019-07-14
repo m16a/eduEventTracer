@@ -10,7 +10,6 @@
 #include "endpoint.h"
 
 #include <functional>
-#include "buffer.h"
 #include "defines.h"
 #include "protocol.h"
 #include "utills.h"

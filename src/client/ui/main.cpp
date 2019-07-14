@@ -202,7 +202,7 @@ int main(int, char**) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    app.Update(ec);
+    app.Update();
 
     UpdateUI(window, ec, logBuffer);
 
