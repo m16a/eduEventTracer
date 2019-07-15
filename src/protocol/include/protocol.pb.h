@@ -38,6 +38,7 @@ void protobuf_AddDesc_include_2fprotocol_2eproto();
 void protobuf_AssignDesc_include_2fprotocol_2eproto();
 void protobuf_ShutdownFile_include_2fprotocol_2eproto();
 
+class SEvent;
 class STracingInterval;
 class STracingLegend;
 
@@ -312,6 +313,134 @@ class STracingLegend
   void InitAsDefaultInstance();
   static STracingLegend* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class SEvent
+    : public ::google::protobuf::
+          Message /* @@protoc_insertion_point(class_definition:Tracer.SEvent)
+                   */
+{
+ public:
+  SEvent();
+  virtual ~SEvent();
+
+  SEvent(const SEvent& from);
+
+  inline SEvent& operator=(const SEvent& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SEvent& default_instance();
+
+  void Swap(SEvent* other);
+
+  // implements Message ----------------------------------------------
+
+  inline SEvent* New() const { return New(NULL); }
+
+  SEvent* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const SEvent& from);
+  void MergeFrom(const SEvent& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(
+      ::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+
+ private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(SEvent* other);
+
+ private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int32 tid = 1;
+  bool has_tid() const;
+  void clear_tid();
+  static const int kTidFieldNumber = 1;
+  ::google::protobuf::int32 tid() const;
+  void set_tid(::google::protobuf::int32 value);
+
+  // required int64 time = 2;
+  bool has_time() const;
+  void clear_time();
+  static const int kTimeFieldNumber = 2;
+  ::google::protobuf::int64 time() const;
+  void set_time(::google::protobuf::int64 value);
+
+  // required string name = 3;
+  bool has_name() const;
+  void clear_name();
+  static const int kNameFieldNumber = 3;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // @@protoc_insertion_point(class_scope:Tracer.SEvent)
+ private:
+  inline void set_has_tid();
+  inline void clear_has_tid();
+  inline void set_has_time();
+  inline void clear_has_time();
+  inline void set_has_name();
+  inline void clear_has_name();
+
+  // helper for ByteSize()
+  int RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::int64 time_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  ::google::protobuf::int32 tid_;
+  friend void protobuf_AddDesc_include_2fprotocol_2eproto();
+  friend void protobuf_AssignDesc_include_2fprotocol_2eproto();
+  friend void protobuf_ShutdownFile_include_2fprotocol_2eproto();
+
+  void InitAsDefaultInstance();
+  static SEvent* default_instance_;
+};
 // ===================================================================
 
 // ===================================================================
@@ -545,7 +674,110 @@ STracingLegend::mutable_maptidtoname() {
   return maptidtoname_.MutableMap();
 }
 
+// -------------------------------------------------------------------
+
+// SEvent
+
+// required int32 tid = 1;
+inline bool SEvent::has_tid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void SEvent::set_has_tid() { _has_bits_[0] |= 0x00000001u; }
+inline void SEvent::clear_has_tid() { _has_bits_[0] &= ~0x00000001u; }
+inline void SEvent::clear_tid() {
+  tid_ = 0;
+  clear_has_tid();
+}
+inline ::google::protobuf::int32 SEvent::tid() const {
+  // @@protoc_insertion_point(field_get:Tracer.SEvent.tid)
+  return tid_;
+}
+inline void SEvent::set_tid(::google::protobuf::int32 value) {
+  set_has_tid();
+  tid_ = value;
+  // @@protoc_insertion_point(field_set:Tracer.SEvent.tid)
+}
+
+// required int64 time = 2;
+inline bool SEvent::has_time() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void SEvent::set_has_time() { _has_bits_[0] |= 0x00000002u; }
+inline void SEvent::clear_has_time() { _has_bits_[0] &= ~0x00000002u; }
+inline void SEvent::clear_time() {
+  time_ = GOOGLE_LONGLONG(0);
+  clear_has_time();
+}
+inline ::google::protobuf::int64 SEvent::time() const {
+  // @@protoc_insertion_point(field_get:Tracer.SEvent.time)
+  return time_;
+}
+inline void SEvent::set_time(::google::protobuf::int64 value) {
+  set_has_time();
+  time_ = value;
+  // @@protoc_insertion_point(field_set:Tracer.SEvent.time)
+}
+
+// required string name = 3;
+inline bool SEvent::has_name() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void SEvent::set_has_name() { _has_bits_[0] |= 0x00000004u; }
+inline void SEvent::clear_has_name() { _has_bits_[0] &= ~0x00000004u; }
+inline void SEvent::clear_name() {
+  name_.ClearToEmptyNoArena(
+      &::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_name();
+}
+inline const ::std::string& SEvent::name() const {
+  // @@protoc_insertion_point(field_get:Tracer.SEvent.name)
+  return name_.GetNoArena(
+      &::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void SEvent::set_name(const ::std::string& value) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+                   value);
+  // @@protoc_insertion_point(field_set:Tracer.SEvent.name)
+}
+inline void SEvent::set_name(const char* value) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+                   ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Tracer.SEvent.name)
+}
+inline void SEvent::set_name(const char* value, size_t size) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+                   ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Tracer.SEvent.name)
+}
+inline ::std::string* SEvent::mutable_name() {
+  set_has_name();
+  // @@protoc_insertion_point(field_mutable:Tracer.SEvent.name)
+  return name_.MutableNoArena(
+      &::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* SEvent::release_name() {
+  // @@protoc_insertion_point(field_release:Tracer.SEvent.name)
+  clear_has_name();
+  return name_.ReleaseNoArena(
+      &::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void SEvent::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    set_has_name();
+  } else {
+    clear_has_name();
+  }
+  name_.SetAllocatedNoArena(
+      &::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:Tracer.SEvent.name)
+}
+
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // @@protoc_insertion_point(namespace_scope)

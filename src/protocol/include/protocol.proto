@@ -15,3 +15,9 @@ message  STracingInterval{
 message  STracingLegend{
 	map<int32, string> mapTidToName = 1;
 }
+
+message SEvent{
+	required int32 tid = 1;
+	required int64 time = 2;
+	required string name = 3;
+}

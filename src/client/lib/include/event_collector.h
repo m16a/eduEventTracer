@@ -45,6 +45,7 @@ class CEventCollector : public CClient {
   bool OnTracingMainFrameEvent(STracingMainFrame& arg);
   bool OnTransferComplete(ServiceTransferComplete& arg);
   bool OnTracingLegend(STracingLegend& arg);
+  bool OnTracingEvent(SEvent& arg);
 
   size_t GetCapturedSize() const { return m_capturedSize; }
 

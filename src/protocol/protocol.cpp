@@ -34,6 +34,7 @@ void InitProtocol() {
 
   RegisterMessage<STracingInterval>();
   RegisterMessage<STracingMainFrame>();
+  RegisterMessage<SEvent>();
 
   google::protobuf::SetLogHandler(LogHandlerFn);
 }
@@ -145,5 +146,28 @@ std::ostream &operator<<(std::ostream &out, const STracingLegend &c) {
   for (auto &kv : c.mapTidToName) (*map)[kv.first] = kv.second;
 
   msg.SerializeToOstream(&out);
+  return out;
+}
+
+std::istream &operator>>(std::istream &in, SEvent &c) {
+  Tracer::SEvent event;
+  bool success = event.ParseFromIstream(&in);
+  if (!success) {
+    std::cout << "SEvent deserialization fail" << std::endl;
+  }
+
+  c.tid = event.tid();
+  c.time = event.time();
+
+  c.name = event.name();
+  return in;
+}
+
+std::ostream &operator<<(std::ostream &out, const SEvent &c) {
+  Tracer::SEvent event;
+  event.set_tid(c.tid);
+  event.set_time(c.time);
+  event.set_name(c.name);
+  event.SerializeToOstream(&out);
   return out;
 }

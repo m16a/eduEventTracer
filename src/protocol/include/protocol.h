@@ -100,4 +100,11 @@ std::istream &operator>>(std::istream &in, STracingLegend &c);
 
 std::ostream &operator<<(std::ostream &out, const STracingLegend &c);
 
+struct SEvent : public STimePoint {
+  std::string name;
+};
+
+std::istream &operator>>(std::istream &in, SEvent &c);
+std::ostream &operator<<(std::ostream &out, const SEvent &c);
+
 void InitProtocol();

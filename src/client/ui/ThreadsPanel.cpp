@@ -143,6 +143,13 @@ void SThreadsData::Init(MessageHub &messageHub,
         if (pTInterval->begin < m_minTime) m_minTime = pTInterval->begin;
         if (pTInterval->end > m_maxTime) m_maxTime = pTInterval->end;
       }
+
+      SEvent *pEvent = dynamic_cast<SEvent *>(node);
+      if (pEvent) {
+        TTime t = pEvent->time;
+        if (t < m_minTime) m_minTime = t;
+        if (t > m_maxTime) m_maxTime = t;
+      }
     }
 
     for (auto &node : tmpNodes) {
@@ -151,7 +158,13 @@ void SThreadsData::Init(MessageHub &messageHub,
         pTInterval->begin -= m_minTime;
         pTInterval->end -= m_minTime;
       }
+
+      SEvent *pEvent = dynamic_cast<SEvent *>(node);
+      if (pEvent) {
+        pEvent->time -= m_minTime;
+      }
     }
+
     m_maxTime -= m_minTime;
     m_minTime = 0;
   }

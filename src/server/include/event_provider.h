@@ -8,6 +8,7 @@
 void MainFrame();
 void ProfileEvent(const STracingInterval& event);
 void ProfileEvent(const STracingMainFrame& event);
+void ProfileEvent(const SEvent& event);
 
 class CEventProvider : public CServer {
   enum class EState { Listening, Idle, Capturing };
@@ -71,5 +72,14 @@ struct SThreadName {
 };
 
 #define TRACE(module, category) STracingIntervalGuard tmp_STracingIntervalGuard
+#define TRACE_EVENT(_name)     \
+  {                            \
+    SEvent msg;                \
+    msg.time = GetTimeNowMs(); \
+    msg.name = _name;          \
+    msg.tid = GetTid();        \
+    ProfileEvent(msg);         \
+  }
+
 #define TRACE_MAIN_FRAME() STracingMainFrameGuard tmp_STracingMainFrameGuard
 #define THREAD_BEGIN(name) static SThreadName tmp_SThreadName(name)

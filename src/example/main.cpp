@@ -71,6 +71,7 @@ int main() {
       MainFrame();
       THREAD_BEGIN("Main");
       Foo();
+      TRACE_EVENT("eventA");
       // fake payload
       RandomSleep();
     }

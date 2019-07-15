@@ -137,6 +137,8 @@ void ProfileEvent(const STracingMainFrame& event) {
   GetEventProvider().StoreEvent(event);
 }
 
+void ProfileEvent(const SEvent& event) { GetEventProvider().StoreEvent(event); }
+
 STracingIntervalGuard::STracingIntervalGuard() {
   msg.begin = GetTimeNowMs();
   msg.tid = GetTid();

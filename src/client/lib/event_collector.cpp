@@ -17,6 +17,7 @@ CEventCollector::CEventCollector() {
 
   GetMessageHub().Bind(this, &CEventCollector::OnTransferComplete);
   GetMessageHub().Bind(this, &CEventCollector::OnTracingLegend);
+  GetMessageHub().Bind(this, &CEventCollector::OnTracingEvent);
 }
 
 CEventCollector::~CEventCollector() {
@@ -101,5 +102,10 @@ bool CEventCollector::OnTracingLegend(STracingLegend& arg) {
     std::cout << "Threads:\n";
     std::cout << "\t" << kv.first << " " << kv.second << std::endl;
   }
+  return true;
+}
+
+bool CEventCollector::OnTracingEvent(SEvent& arg) {
+  GetMessageHub().Get<SEvent>().AddMessage(arg, arg.tid);
   return true;
 }
