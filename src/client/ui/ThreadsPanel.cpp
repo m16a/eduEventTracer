@@ -19,71 +19,124 @@ inline EEncompasRes IsEncompas(const STimeInterval *a, const STimeInterval *b) {
     return EEncompasRes::Error;
 }
 
+inline EEncompasRes IsEncompas(const STimeInterval *a, const STimePoint *b) {
+  if (a->begin <= b->time && b->time <= a->end)
+    return EEncompasRes::Yes;
+  else
+    return EEncompasRes::No;
+}
+
 bool INode::AddChild(std::unique_ptr<INode> pNewChild) {
   bool bSuccess = true;
   STimeInterval *pTIntervalA =
       dynamic_cast<STimeInterval *>(pNewChild->pTimedEvent);
-  if (pTIntervalA) {
-    if (children.empty())
-      children.emplace_back(std::move(pNewChild));
-    else {
-      int start = 0;
-      int end = 0;
-      int p = start;
-      bool wasAdded = false;
-      while (p < children.size()) {
-        STimeInterval *pTIntervalB =
-            dynamic_cast<STimeInterval *>(children[p]->pTimedEvent);
 
-        if (pTIntervalB) {
-          EEncompasRes encompasRes = IsEncompas(pTIntervalB, pTIntervalA);
+  STimePoint *pTPointA = dynamic_cast<STimePoint *>(pNewChild->pTimedEvent);
 
-          if (encompasRes == EEncompasRes::Error) {
-            bSuccess = false;
+  if (children.empty()) {
+    children.emplace_back(std::move(pNewChild));
+  } else if (pTIntervalA) {
+    int start = 0;
+    int end = 0;
+    int p = start;
+    bool wasAdded = false;
+    while (p < children.size()) {
+      STimeInterval *pTIntervalB =
+          dynamic_cast<STimeInterval *>(children[p]->pTimedEvent);
+
+      if (pTIntervalB) {
+        EEncompasRes encompasRes = IsEncompas(pTIntervalB, pTIntervalA);
+
+        if (encompasRes == EEncompasRes::Error) {
+          bSuccess = false;
+          break;
+        } else if (encompasRes == EEncompasRes::Yes) {
+          bSuccess = children[start]->AddChild(std::move(pNewChild));
+          if (bSuccess) {
+            wasAdded = true;
             break;
-          } else if (encompasRes == EEncompasRes::Yes) {
-            bSuccess = children[start]->AddChild(std::move(pNewChild));
-            if (bSuccess) {
-              wasAdded = true;
-              break;
-            }
           }
+        }
 
-          if (pTIntervalA->begin > pTIntervalB->end) {
+        if (pTIntervalA->begin > pTIntervalB->end) {
+          start++;
+          end++;
+        } else if (pTIntervalA->end > pTIntervalB->end) {
+          end++;
+        } else {
+          break;
+        }
+
+        STimePoint *pTPointB =
+            dynamic_cast<STimePoint *>(children[p]->pTimedEvent);
+
+        if (pTPointB) {
+          if (pTPointB->time < pTIntervalA->begin) {
             start++;
             end++;
-          } else if (pTIntervalA->end > pTIntervalB->end) {
+          } else if (pTIntervalA->end > pTPointB->time) {
             end++;
-          }
-
-          p++;
-        }
-      }
-
-      if (!wasAdded) {
-        if (start == end) {
-          if (start == children.size()) {
-            children.insert(children.begin() + start, std::move(pNewChild));
           } else {
-            STimeInterval *pTIntervalB =
-                dynamic_cast<STimeInterval *>(children[start]->pTimedEvent);
-            if (IsEncompas(pTIntervalA, pTIntervalB) == EEncompasRes::Yes) {
-              pNewChild->children.push_back(std::move(children[start]));
-              children.erase(children.begin() + start);
-              children.insert(children.begin() + start, std::move(pNewChild));
-            } else {  // insert case
-              children.insert(children.begin() + start, std::move(pNewChild));
-            }
+            break;
           }
-        } else {  // encompas
-          for (int i = start; i < end; ++i)
-            pNewChild->children.push_back(std::move(children[i]));
-          children.erase(children.begin() + start, children.begin() + end);
-          children.insert(children.begin() + start, std::move(pNewChild));
         }
+
+        p++;
       }
     }
+
+    if (!wasAdded) {
+      if (start == end) {
+        if (start == children.size()) {
+          children.insert(children.begin() + start, std::move(pNewChild));
+        } else {
+          STimeInterval *pTIntervalB =
+              dynamic_cast<STimeInterval *>(children[start]->pTimedEvent);
+          STimePoint *pTPointB =
+              dynamic_cast<STimePoint *>(children[start]->pTimedEvent);
+          if ((pTIntervalB &&
+               IsEncompas(pTIntervalA, pTIntervalB) == EEncompasRes::Yes) ||
+              (pTPointB &&
+               IsEncompas(pTIntervalA, pTPointB) == EEncompasRes::Yes)) {
+            pNewChild->children.push_back(std::move(children[start]));
+            children.erase(children.begin() + start);
+            children.insert(children.begin() + start, std::move(pNewChild));
+          } else {  // insert case
+            children.insert(children.begin() + start, std::move(pNewChild));
+          }
+        }
+      } else {  // encompas
+        for (int i = start; i < end; ++i)
+          pNewChild->children.push_back(std::move(children[i]));
+        children.erase(children.begin() + start, children.begin() + end);
+        children.insert(children.begin() + start, std::move(pNewChild));
+      }
+    }
+  } else if (pTPointA) {
+    int p = 0;
+    while (p < children.size()) {
+      STimeInterval *pTIntervalB =
+          dynamic_cast<STimeInterval *>(children[p]->pTimedEvent);
+
+      STimePoint *pTPointB =
+          dynamic_cast<STimePoint *>(children[p]->pTimedEvent);
+
+      if (pTPointB) {
+        if (pTPointB->time > pTPointA->time) {
+          break;
+        }
+      } else if (pTIntervalB) {
+        if (pTIntervalB->begin > pTPointA->time) {
+          break;
+        } else if (IsEncompas(pTIntervalB, pTPointA) == EEncompasRes::Yes) {
+          return children[p]->AddChild(std::move(pNewChild));
+        }
+      }
+      p++;
+    }
+    children.insert(children.begin() + p, std::move(pNewChild));
   }
+
   return bSuccess;
 }
 
@@ -120,8 +173,15 @@ void INode::Dump(const INode *node, int depth) {
 
   STimeInterval *pTInterval = dynamic_cast<STimeInterval *>(node->pTimedEvent);
   if (pTInterval) {
-    std::cout << pTInterval->begin << " " << pTInterval->end << std::endl;
+    std::cout << "TI: " << pTInterval->begin << " " << pTInterval->end
+              << std::endl;
   }
+
+  STimePoint *pTPoint = dynamic_cast<STimePoint *>(node->pTimedEvent);
+  if (pTPoint) {
+    std::cout << "TP: " << pTPoint->time << std::endl;
+  }
+
   depth++;
 
   for (int i = 0; i < node->children.size(); i++)
@@ -192,8 +252,8 @@ void SThreadsData::Init(MessageHub &messageHub,
     auto it = eventCollector.mapTidToName.find(t.first);
     if (it != eventCollector.mapTidToName.end()) data.m_name = it->second;
 
-    //    std::cout << "********************\n";
-    //    tView.m_pRoot->Dump();
+    std::cout << "********************\n";
+    data.m_pRoot->Dump();
   }
 }
 

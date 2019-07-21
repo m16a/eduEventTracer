@@ -247,6 +247,30 @@ void RenderNode(STimeInterval* node, RenderContext& ctx) {
   draw_list->AddRect(ImVec2(x1, y1), ImVec2(x2, y2), col32);
 }
 
+void RenderNode(STimePoint* node, RenderContext& ctx) {
+  ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+  const ImVec2 p = ImGui::GetCursorScreenPos();
+  static ImVec4 col = ImVec4(1.0f, 0.0f, 0.4f, 1.0f);
+  ImU32 col32 = ImColor(col);
+
+  const float x1 = p.x + (node->time - ctx.viewBeginTime) * ctx.scale -
+                   SThreadsView::Settings::PointEventWidth / 2.0f;
+  const float y =
+      ctx.topY + ctx.currentDepth * SThreadsView::Settings::SpanHeight;
+  const float y1 = p.y + y;
+
+  const float x2 = p.x + (node->time - ctx.viewBeginTime) * ctx.scale +
+                   SThreadsView::Settings::PointEventWidth / 2.0f;
+  const float y2 = p.y + y + SThreadsView::Settings::SpanHeight;
+
+  draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+
+  static ImVec4 col2 = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+  col32 = ImColor(col2);
+  draw_list->AddRect(ImVec2(x1, y1), ImVec2(x2, y2), col32);
+}
+
 void SThreadView::Render(INode* node, RenderContext& ctx) {
   if (ctx.currentDepth != 0) {
     if (!node->pTimedEvent) return;
@@ -266,6 +290,16 @@ void SThreadView::Render(INode* node, RenderContext& ctx) {
         tmp_ctx.currentDepth++;
 
         for (auto& c : node->children) Render(c.get(), tmp_ctx);
+      }
+      return;
+    }
+
+    STimePoint* pTPoint = dynamic_cast<STimePoint*>(node->pTimedEvent);
+
+    if (pTPoint) {
+      if ((pTPoint->time > ctx.viewBeginTime &&
+           pTPoint->time < ctx.viewEndTime)) {
+        RenderNode(pTPoint, ctx);
       }
     }
   } else {

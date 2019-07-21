@@ -55,6 +55,7 @@ class SThreadsView : public IMouseListener {
   struct Settings {
     static constexpr float SpanHeight = 20.0f;
     static constexpr float OffsetBetweenThreadsY = 40.0f;
+    static constexpr float PointEventWidth = 10.0f;
   };
 
   void Render(SThreadsData& data);
